@@ -30,14 +30,17 @@ class UrlHighlight
     }
 
     /**
-     * @param string $text
+     * Parse string and replace urls with html links
+     *
+     * @param string $string
      * @return string
      */
-    public function highlightUrls(string $text): string
+    public function highlightUrls(string $string): string
     {
         $urlRegex = $this->getUrlRegex(false);
-        $result = preg_replace($urlRegex, '<a href="$1">$1</a>', $text) ?? $text;
+        $result = preg_replace($urlRegex, '<a href="$1">$1</a>', $string) ?? $string;
         $result = $this->filterHighlightInTagAttributes($result);
+        $result = $this->filterHighlightInLinks($result);
         return $result;
     }
 
@@ -85,9 +88,9 @@ class UrlHighlight
     }
 
     /**
-     * Filter a tags in html attributes.
+     * Filter a tags in html attributes
      * Example: <a href="<a href="http://example.com">http://example.com</a>">http://example.com</a>
-     * Result: <a href="http://example.com>http://example.com</a>
+     * Result: <a href="http://example.com">http://example.com</a>
      *
      * @param string $string
      * @return string
@@ -96,14 +99,33 @@ class UrlHighlight
     {
         $regex = '/
             (
-                <\w+\s[^>]+                              # tag start: "<a"
+                <\w+\s[^>]+                              # tag start: "<tag"
                 \w\s?=\s?[\'"]                           # attribute start: "href=""
             )
-            <a\s[^>]*href=[\'"](.*)[\'"][^>]*>[^<]*<\/a> # html link: "<a href="#"<\/a>"
+            <a\s[^>]*href=[\'"](.*)[\'"][^>]*>[^<]*<\/a> # html link: "<a href="#"><\/a>"
             (
                 [\'"]                                    # attribute end: """
                 [^>]*>                                   # tag end: ">"
             )
+        /ixuU';
+
+        return preg_replace($regex, '$1$2$3', $string) ?? $string;
+    }
+
+    /**
+     * Filter a tags in html attributes
+     * Example: <a href="#"><a href="http://example.com">http://example.com</a></a>
+     * Result: <a href="#"http://example.com">http://example.com</a>
+     *
+     * @param string $string
+     * @return string
+     */
+    private function filterHighlightInLinks(string $string): string
+    {
+        $regex = '/
+            (<a[^>]*>)                 # parent tag start "<a"
+            <a[^>]*>([^<]*)<\s*\/\s*a> # child tag "<a><\/a>"
+            (<\s*\/\s*a>)              # parent tag end "<\/a>"
         /ixuU';
 
         return preg_replace($regex, '$1$2$3', $string) ?? $string;

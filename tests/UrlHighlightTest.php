@@ -161,8 +161,11 @@ class UrlHighlightTest extends TestCase
             $output = $isValid ? sprintf('With html <p><a href="%s">%s</a></p>', $url, $url) : sprintf('With html <p>%s</p>', $url);
             $result[] = [sprintf('With html <p>%s</p>', $url), $output];
 
-            $output = sprintf('Inside tag attributes <p><a href="%s">Hello</a></p>', $url);
-            $result[] = [sprintf('Inside tag attributes <p><a href="%s">Hello</a></p>', $url), $output];
+            $output = sprintf('Inside tag attributes <div><img src="%s"></div>', $url);
+            $result[] = [sprintf('Inside tag attributes <div><img src="%s"></div>', $url), $output];
+
+            $output = sprintf('Inside link <p><a href="%s">%s</a></p>', $url, $url);
+            $result[] = [sprintf('Inside link <p><a href="%s">%s</a></p>', $url, $url), $output];
         }
         return $result;
     }
