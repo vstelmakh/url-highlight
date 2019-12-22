@@ -123,7 +123,7 @@ class UrlHighlightTest extends TestCase
         $urls = self::URLS;
         foreach ($urls as [$url, $isValid]) {
             $output = $isValid ? [$url] : [];
-            $result[] = ['Example text before ' . $url . ' and after.', $output];
+            $result[] = [sprintf('Example text before %s and after.', $url), $output];
             $result[] = [sprintf('%s.', $url), $output];
             $result[] = [sprintf('%s,', $url), $output];
             $result[] = [sprintf('<%s>', $url), $output];
@@ -131,7 +131,35 @@ class UrlHighlightTest extends TestCase
             $result[] = [sprintf('"%s"', $url), $output];
             $result[] = [sprintf('“%s”', $url), $output];
             $result[] = [sprintf('Text with <%s> (including brackets).', $url), $output];
-            $result[] = ['Example text before ' . $url . ' and after. Open filename.txt at 3:00pm. For more info see http://google.com.', array_merge($output, ['http://google.com'])];
+            $result[] = [sprintf('Example text before %s and after. Open filename.txt at 3:00pm. For more info see http://google.com.', $url), array_merge($output, ['http://google.com'])];
+        }
+        return $result;
+    }
+
+    /**
+     * @dataProvider highlightUrlsDataProvider
+     * @param string $string
+     * @param string $expected
+     */
+    public function testHighlightUrls(string $string, string $expected): void
+    {
+        $actual = $this->urlHighlight->highlightUrls($string);
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function highlightUrlsDataProvider(): array
+    {
+        $result = [];
+        $urls = self::URLS;
+        foreach ($urls as [$url, $isValid]) {
+            $output = $isValid ? sprintf('Example text before <a href="%s">%s</a> and after.', $url, $url) : sprintf('Example text before %s and after.', $url);
+            $result[] = [sprintf('Example text before %s and after.', $url), $output];
+
+            $output = $isValid ? sprintf('With html <p><a href="%s">%s</a></p>', $url, $url) : sprintf('With html <p>%s</p>', $url);
+            $result[] = [sprintf('With html <p>%s</p>', $url), $output];
         }
         return $result;
     }

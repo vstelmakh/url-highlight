@@ -5,6 +5,18 @@ namespace VStelmakh\UrlHighlight;
 class UrlHighlight
 {
     /**
+     * Check if string is valid url
+     *
+     * @param string $string
+     * @return bool
+     */
+    public function isUrl(string $string): bool
+    {
+        $urlRegex = $this->getUrlRegex(true);
+        return (bool)preg_match($urlRegex, $string);
+    }
+
+    /**
      * Parse string and return array of urls found
      *
      * @param string $string
@@ -18,15 +30,13 @@ class UrlHighlight
     }
 
     /**
-     * Check if string is valid url
-     *
-     * @param string $string
-     * @return bool
+     * @param string $text
+     * @return string
      */
-    public function isUrl(string $string): bool
+    public function highlightUrls(string $text): string
     {
-        $urlRegex = $this->getUrlRegex(true);
-        return (bool)preg_match($urlRegex, $string);
+        $urlRegex = $this->getUrlRegex(false);
+        return preg_replace($urlRegex, '<a href="$1">$1</a>', $text) ?? $text;
     }
 
     /**
