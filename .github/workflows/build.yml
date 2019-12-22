@@ -1,0 +1,40 @@
+name: build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v1
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Get Composer cache dir
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Update Composer dependencies
+        run: composer update --prefer-dist --no-progress --no-suggest --no-interaction
+
+      - name: Run PHP Code Sniffer
+        run: composer run-script test:phpcs
+        if: success()
+
+      - name: Run PHP Stan
+        run: composer run-script test:phpstan
+        if: success() || failure()
+
+      - name: Run PHP Unit
+        run: composer run-script test:phpunit
+        if: success() || failure()
