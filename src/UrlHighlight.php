@@ -50,13 +50,8 @@ class UrlHighlight
      */
     private function getUrlRegex(bool $strict): string
     {
-        $prefix = '';
-        $suffix = '';
-
-        if ($strict) {
-            $prefix = '^';
-            $suffix = '$';
-        }
+        $prefix = $strict ? '^' : '';
+        $suffix = $strict ? '$' : '';
 
         return '/' . $prefix . '
             \b
