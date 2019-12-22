@@ -36,7 +36,9 @@ class UrlHighlight
     public function highlightUrls(string $text): string
     {
         $urlRegex = $this->getUrlRegex(false);
-        return preg_replace($urlRegex, '<a href="$1">$1</a>', $text) ?? $text;
+        $result = preg_replace($urlRegex, '<a href="$1">$1</a>', $text) ?? $text;
+        $result = $this->filterHighlightInTagAttributes($result);
+        return $result;
     }
 
     /**
@@ -80,5 +82,30 @@ class UrlHighlight
                 )
             )
         ' . $suffix . '/ixu';
+    }
+
+    /**
+     * Filter a tags in html attributes.
+     * Example: <a href="<a href="http://example.com">http://example.com</a>">http://example.com</a>
+     * Result: <a href="http://example.com>http://example.com</a>
+     *
+     * @param string $string
+     * @return string
+     */
+    private function filterHighlightInTagAttributes(string $string): string
+    {
+        $regex = '/
+            (
+                <\w+\s[^>]+                              # tag start: "<a"
+                \w\s?=\s?[\'"]                           # attribute start: "href=""
+            )
+            <a\s[^>]*href=[\'"](.*)[\'"][^>]*>[^<]*<\/a> # html link: "<a href="#"<\/a>"
+            (
+                [\'"]                                    # attribute end: """
+                [^>]*>                                   # tag end: ">"
+            )
+        /ixuU';
+
+        return preg_replace($regex, '$1$2$3', $string) ?? $string;
     }
 }

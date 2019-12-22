@@ -111,7 +111,7 @@ class UrlHighlightTest extends TestCase
     public function testGetUrls(string $string, array $expected): void
     {
         $actual = $this->urlHighlight->getUrls($string);
-        $this->assertEquals($expected, $actual, 'For: ' . $string);
+        $this->assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
     /**
@@ -144,7 +144,7 @@ class UrlHighlightTest extends TestCase
     public function testHighlightUrls(string $string, string $expected): void
     {
         $actual = $this->urlHighlight->highlightUrls($string);
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
     /**
@@ -160,6 +160,9 @@ class UrlHighlightTest extends TestCase
 
             $output = $isValid ? sprintf('With html <p><a href="%s">%s</a></p>', $url, $url) : sprintf('With html <p>%s</p>', $url);
             $result[] = [sprintf('With html <p>%s</p>', $url), $output];
+
+            $output = sprintf('Inside tag attributes <p><a href="%s">Hello</a></p>', $url);
+            $result[] = [sprintf('Inside tag attributes <p><a href="%s">Hello</a></p>', $url), $output];
         }
         return $result;
     }
