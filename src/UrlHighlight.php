@@ -15,6 +15,7 @@ class UrlHighlight
     }
 
     /**
+     * @param bool $strict
      * @return string
      */
     private function getUrlRegex(bool $strict): string
@@ -40,7 +41,7 @@ class UrlHighlight
                     |                                     # or
                     www\d*\.                              # www., www1., www2., ...
                     |                                     # or
-                    \w+\.\w{2,}\/                         # looks like domain name followed by a slash
+                    \w+\.\w{2,}\/                         # domain name followed by a slash
                 )
                 (?:                                       # one or more:
                     [^\s()<>]+                                # run of non-space, non-()<>
