@@ -9,6 +9,8 @@ PHP library to parse urls from string input. Current features:
 - Replace urls in string by html tags
 
 ## Installation
+There are [Twig extension](https://github.com/vstelmakh/url-highlight-twig-extension) and [Symfony bundle](https://github.com/vstelmakh/url-highlight-symfony-bundle) available.  
+
 Install the latest version with:  
 ```bash
 $ composer require vstelmakh/url-highlight
@@ -19,7 +21,7 @@ Just instantiate class object:
 ```php
 <?php
 
-use VStelmakh\UrlHighlight;
+use VStelmakh\UrlHighlight\UrlHighlight;
 
 $urlHighlight = new UrlHighlight();
 ```
