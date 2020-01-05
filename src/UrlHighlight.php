@@ -46,8 +46,9 @@ class UrlHighlight
     {
         $urlRegex = $this->getUrlRegex(false);
         $callback = function ($matches) {
+            $protocol = empty($matches['protocol']) ? 'http://' : '';
             return $this->isValidUrlMatch($matches)
-                ? '<a href="' . $matches[0] . '">' . $matches[0] . '</a>'
+                ? '<a href="' . $protocol . $matches[0] . '">' . $matches[0] . '</a>'
                 : $matches[0];
         };
         $result = preg_replace_callback($urlRegex, $callback, $string) ?? $string;
@@ -67,7 +68,7 @@ class UrlHighlight
 
         return '/' . $prefix . '                                                 
             (?:                                                  # protocol or possible host
-                [a-z][\w-]+:                                         # url protocol and colon
+                (?<protocol>[a-z][\w-]+):                            # url protocol and colon
                 (?:         
                     \/{2}                                                # 2 slashes
                     |                                                    # or
@@ -132,7 +133,7 @@ class UrlHighlight
                 <\w+\s[^>]+                              # tag start: "<tag"
                 \w\s?=\s?[\'"]                           # attribute start: "href=""
             )
-            <a\s[^>]*href=[\'"](.*)[\'"][^>]*>[^<]*<\/a> # html link: "<a href="#"><\/a>"
+            <a\s[^>]*href=[\'"].*[\'"][^>]*>([^<]*)<\/a> # html link: "<a href="#"><\/a>"
             (
                 [\'"]                                    # attribute end: """
                 [^>]*>                                   # tag end: ">"
