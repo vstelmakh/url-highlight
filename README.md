@@ -35,7 +35,7 @@ $urlHighlight->isUrl('Other string'); // return: false
 
 Parse urls from string:  
 ```php
-$urlHighlight->getUrls('Hello, http://example.com.'); // return: ['http://example.com.']
+$urlHighlight->getUrls('Hello, http://example.com.'); // return: ['http://example.com']
 ```
 
 Replace urls in string by html tags:  

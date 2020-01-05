@@ -108,7 +108,7 @@ class UrlHighlight
     }
 
     /**
-     * Filter a tags in html attributes
+     * Filter a tags in a tags
      * Example: <a href="#"><a href="http://example.com">http://example.com</a></a>
      * Result: <a href="#"http://example.com">http://example.com</a>
      *
