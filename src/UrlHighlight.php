@@ -13,7 +13,8 @@ class UrlHighlight
     public function isUrl(string $string): bool
     {
         $urlRegex = $this->getUrlRegex(true);
-        return (bool)preg_match($urlRegex, $string);
+        $isMatch = preg_match($urlRegex, $string, $matches);
+        return $isMatch && $this->isValidUrlMatch($matches);
     }
 
     /**
@@ -25,8 +26,14 @@ class UrlHighlight
     public function getUrls(string $string): array
     {
         $urlRegex = $this->getUrlRegex(false);
-        preg_match_all($urlRegex, $string, $matches);
-        return $matches[1];
+        preg_match_all($urlRegex, $string, $matches, PREG_SET_ORDER);
+        $result = [];
+        foreach ($matches as $match) {
+            if ($this->isValidUrlMatch($match)) {
+                $result[] = $match[0];
+            }
+        }
+        return $result;
     }
 
     /**
@@ -38,7 +45,12 @@ class UrlHighlight
     public function highlightUrls(string $string): string
     {
         $urlRegex = $this->getUrlRegex(false);
-        $result = preg_replace($urlRegex, '<a href="$1">$1</a>', $string) ?? $string;
+        $callback = function ($matches) {
+            return $this->isValidUrlMatch($matches)
+                ? '<a href="' . $matches[0] . '">' . $matches[0] . '</a>'
+                : $matches[0];
+        };
+        $result = preg_replace_callback($urlRegex, $callback, $string) ?? $string;
         $result = $this->filterHighlightInTagAttributes($result);
         $result = $this->filterHighlightInLinks($result);
         return $result;
@@ -53,33 +65,56 @@ class UrlHighlight
         $prefix = $strict ? '^' : '';
         $suffix = $strict ? '$' : '';
 
-        return '/' . $prefix . '
-            \b
-            (                                         # Capture URL
-                (?:
-                    [a-z][\w-]+:                          # url protocol and colon
-                    (?:
-                        \/{2}                                 # 2 slashes
-                        |                                     # or
-                        [\w\d]                                # single letter or digit
-                    )
-                    |                                     # or
-                    www\d*\.                              # www., www1., www2., ...
-                    |                                     # or
-                    \w+\.\w{2,}\/                         # domain name followed by a slash
+        return '/' . $prefix . '                                                 
+            (?:                                                  # protocol or possible host
+                [a-z][\w-]+:                                         # url protocol and colon
+                (?:         
+                    \/{2}                                                # 2 slashes
+                    |                                                    # or
+                    [\w\d]                                               # single letter or digit
+                )           
+                |                                                    # or
+                (?<host>[^\s`!()\[\]{};:\'",<>?«»“”‘’\/]+\.\w{2,})   # possible host (captured only if protocol missing)
+            )  
+            (?:                                                  # port, path, query, fragment (one or none)
+                (?:                                                  # one or more:
+                    [^\s()<>]+                                           # run of non-space, non-()<>
+                    |                                                    # or
+                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                   # balanced brackets (up to 2 levels)
+                )*           
+                (?:                                                  # end with:
+                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                   # balanced brackets (up to 2 levels)
+                    |                                                    # or
+                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                      # not a space or punctuation chars
                 )
-                (?:                                       # one or more:
-                    [^\s()<>]+                                # run of non-space, non-()<>
-                    |                                         # or
-                    \(([^\s()<>]+|(\([^\s()<>]+\)))*\)        # balanced brackets (up to 2 levels)
-                )+
-                (?:                                       # end with:
-                    \(([^\s()<>]+|(\([^\s()<>]+\)))*\)        # balanced brackets (up to 2 levels)
-                    |                                         # or
-                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]           # not a space or punctuation chars
-                )
-            )
+            )?
         ' . $suffix . '/ixu';
+    }
+
+    /**
+     * Check if preg_match result contains valid host
+     *
+     * @param array|string[] $match
+     * @return bool
+     */
+    private function isValidUrlMatch(array $match): bool
+    {
+        $host = $match['host'] ?? null;
+        if ($host) {
+            return $this->isValidDomainHost($host) ? true : false;
+        }
+        return true;
+    }
+
+    /**
+     * @param string $host
+     * @return bool
+     */
+    public function isValidDomainHost(string $host): bool
+    {
+        preg_match('/[^.]+$/', $host, $matches);
+        $topLevelDomain = mb_strtolower($matches[0]);
+        return isset(Domains::TOP_LEVEL_DOMAINS[$topLevelDomain]);
     }
 
     /**

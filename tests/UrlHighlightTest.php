@@ -52,9 +52,16 @@ class UrlHighlightTest extends TestCase
         ['bit.ly/path', true],
         ['www.example.com', true],
         ['WWW.EXAMPLE.COM', true],
+        ['★hello.tk/path', true],
+        ['example.com', true],
+        ['example.com/', true],
+        ['subdomain.example.com', true],
+        ['2.example.com', true],
+        ['example.name', true],
+        ['example.xxx', true],
 
         // Combined
-        ['http://user:password@example.com/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor', true],
+        ['http://user:password@example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor', true],
 
         // Not url
         ['6:00am', false],
@@ -66,12 +73,7 @@ class UrlHighlightTest extends TestCase
         ['self::CONSTANT', false],
 
         // Known not match
-//            ['http://example.com/quotes-are-"part"', true],
-//            ['★hello.tk/path', true],
-//            ['example.com', true],
-//            ['example.com/', true],
-//            ['subdomain.example.com', true],
-//            ['2.example.com', true],
+//      ['http://example.com/quotes-are-"part"', true],
     ];
 
     /**
