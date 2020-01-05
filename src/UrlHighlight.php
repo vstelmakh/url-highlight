@@ -111,7 +111,7 @@ class UrlHighlight
      * @param string $host
      * @return bool
      */
-    public function isValidDomainHost(string $host): bool
+    private function isValidDomainHost(string $host): bool
     {
         preg_match('/[^.]+$/', $host, $matches);
         $topLevelDomain = mb_strtolower($matches[0]);
