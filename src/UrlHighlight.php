@@ -46,9 +46,9 @@ class UrlHighlight
     {
         $urlRegex = $this->getUrlRegex(false);
         $callback = function ($matches) {
-            $protocol = empty($matches['protocol']) ? 'http://' : '';
+            $scheme = empty($matches['scheme']) ? 'http://' : '';
             return $this->isValidUrlMatch($matches)
-                ? '<a href="' . $protocol . $matches[0] . '">' . $matches[0] . '</a>'
+                ? '<a href="' . $scheme . $matches[0] . '">' . $matches[0] . '</a>'
                 : $matches[0];
         };
         $result = preg_replace_callback($urlRegex, $callback, $string) ?? $string;
@@ -67,15 +67,15 @@ class UrlHighlight
         $suffix = $strict ? '$' : '';
 
         return '/' . $prefix . '                                                 
-            (?:                                                  # protocol or possible host
-                (?<protocol>[a-z][\w-]+):                            # url protocol and colon
+            (?:                                                  # scheme or possible host
+                (?<scheme>[a-z][\w-]+):                            # url scheme and colon
                 (?:         
                     \/{2}                                                # 2 slashes
                     |                                                    # or
                     [\w\d]                                               # single letter or digit
                 )           
                 |                                                    # or
-                (?<host>[^\s`!()\[\]{};:\'",<>?«»“”‘’\/]+\.\w{2,})   # possible host (captured only if protocol missing)
+                (?<host>[^\s`!()\[\]{};:\'",<>?«»“”‘’\/]+\.\w{2,})   # possible host (captured only if scheme missing)
             )  
             (?:                                                  # port, path, query, fragment (one or none)
                 (?:                                                  # one or more:
