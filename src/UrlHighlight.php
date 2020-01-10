@@ -4,6 +4,23 @@ namespace VStelmakh\UrlHighlight;
 
 class UrlHighlight
 {
+    /** @var bool */
+    private $matchByTLD;
+
+    /** @var string */
+    private $defaultScheme;
+
+    public function __construct($options = [])
+    {
+        $options = array_merge([
+            'match_by_tld' => true,
+            'default_scheme' => 'http',
+        ], $options);
+
+        $this->matchByTLD = (bool) $options['match_by_tld'];
+        $this->defaultScheme = (string) $options['default_scheme'];
+    }
+
     /**
      * Check if string is valid url
      *
@@ -46,7 +63,7 @@ class UrlHighlight
     {
         $urlRegex = $this->getUrlRegex(false);
         $callback = function ($matches) {
-            $scheme = empty($matches['scheme']) ? 'http://' : '';
+            $scheme = empty($matches['scheme']) ? $this->defaultScheme . '://' : '';
             return $this->isValidUrlMatch($matches)
                 ? '<a href="' . $scheme . $matches[0] . '">' . $matches[0] . '</a>'
                 : $matches[0];
@@ -102,7 +119,10 @@ class UrlHighlight
     {
         $host = $match['host'] ?? null;
         if ($host) {
-            return $this->isValidDomainHost($host) ? true : false;
+            if ($this->matchByTLD) {
+                return $this->isValidDomainHost($host);
+            }
+            return false;
         }
         return true;
     }
