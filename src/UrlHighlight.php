@@ -4,21 +4,38 @@ namespace VStelmakh\UrlHighlight;
 
 class UrlHighlight
 {
-    /** @var bool */
-    private $matchByTLD;
-
     /** @var string */
     private $defaultScheme;
 
-    public function __construct($options = [])
+    /** @var MatchValidator */
+    private $matchValidator;
+
+    /**
+     * Available options:
+     *  - match_by_tld: When set to true, will map matches without scheme by top level domain
+     *      (example.com will be recognized as url). For full list of valid top level
+     *      domains see: Domains::TOP_LEVEL_DOMAINS (default true).
+     *  - default_scheme: Scheme to use when highlighting urls without scheme (default 'http').
+     *  - scheme_blacklist: List of schemes not allowed to be recognized as url (default []).
+     *  - scheme_whitelist: List of schemes explicitly allowed to be recognized as url (default []).
+     *
+     * @param array $options
+     */
+    public function __construct(array $options = [])
     {
         $options = array_merge([
             'match_by_tld' => true,
             'default_scheme' => 'http',
+            'scheme_blacklist' => [],
+            'scheme_whitelist' => [],
         ], $options);
 
-        $this->matchByTLD = (bool) $options['match_by_tld'];
         $this->defaultScheme = (string) $options['default_scheme'];
+        $this->matchValidator = new MatchValidator(
+            $options['match_by_tld'],
+            $options['scheme_blacklist'],
+            $options['scheme_whitelist']
+        );
     }
 
     /**
@@ -117,25 +134,9 @@ class UrlHighlight
      */
     private function isValidUrlMatch(array $match): bool
     {
+        $scheme = $match['scheme'] ?? null;
         $host = $match['host'] ?? null;
-        if ($host) {
-            if ($this->matchByTLD) {
-                return $this->isValidDomainHost($host);
-            }
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * @param string $host
-     * @return bool
-     */
-    private function isValidDomainHost(string $host): bool
-    {
-        preg_match('/[^.]+$/', $host, $matches);
-        $topLevelDomain = mb_strtolower($matches[0]);
-        return isset(Domains::TOP_LEVEL_DOMAINS[$topLevelDomain]);
+        return $this->matchValidator->isValidUrl($scheme, $host);
     }
 
     /**
