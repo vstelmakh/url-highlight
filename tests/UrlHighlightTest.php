@@ -77,23 +77,14 @@ class UrlHighlightTest extends TestCase
     ];
 
     /**
-     * @var UrlHighlight
-     */
-    private $urlHighlight;
-
-    public function setUp(): void
-    {
-        $this->urlHighlight = new UrlHighlight();
-    }
-
-    /**
      * @dataProvider isUrlDataProvider
      * @param string $string
      * @param bool $expected
      */
     public function testIsUrl(string $string, bool $expected): void
     {
-        $actual = $this->urlHighlight->isUrl($string);
+        $urlHighlight = new UrlHighlight();
+        $actual = $urlHighlight->isUrl($string);
         $this->assertEquals($expected, $actual, 'Expected ' . ($expected ? '"true"' : '"false"') . ' for: ' . $string);
     }
 
@@ -116,7 +107,8 @@ class UrlHighlightTest extends TestCase
      */
     public function testGetUrls(string $string, array $expected): void
     {
-        $actual = $this->urlHighlight->getUrls($string);
+        $urlHighlight = new UrlHighlight();
+        $actual = $urlHighlight->getUrls($string);
         $this->assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
@@ -148,7 +140,8 @@ class UrlHighlightTest extends TestCase
      */
     public function testHighlightUrls(string $string, string $expected): void
     {
-        $actual = $this->urlHighlight->highlightUrls($string);
+        $urlHighlight = new UrlHighlight();
+        $actual = $urlHighlight->highlightUrls($string);
         $this->assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
