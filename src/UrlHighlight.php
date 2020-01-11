@@ -12,14 +12,18 @@ class UrlHighlight
 
     /**
      * Available options:
+     *
      *  - match_by_tld: When set to true, will map matches without scheme by top level domain
      *      (example.com will be recognized as url). For full list of valid top level
      *      domains see: Domains::TOP_LEVEL_DOMAINS (default true).
+     *
      *  - default_scheme: Scheme to use when highlighting urls without scheme (default 'http').
+     *
      *  - scheme_blacklist: List of schemes not allowed to be recognized as url (default []).
+     *
      *  - scheme_whitelist: List of schemes explicitly allowed to be recognized as url (default []).
      *
-     * @param array $options
+     * @param array|mixed[] $options
      */
     public function __construct(array $options = [])
     {

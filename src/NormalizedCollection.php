@@ -36,8 +36,8 @@ class NormalizedCollection
     }
 
     /**
-     * @param array $array
-     * @return array
+     * @param array|string[] $array
+     * @return array|string[]
      */
     private function getNormalizedMap(array $array): array
     {

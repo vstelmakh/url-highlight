@@ -180,7 +180,7 @@ class UrlHighlightTest extends TestCase
      * @dataProvider optionsMatchByTldDataProvider
      * @param bool $matchByTld
      * @param string $input
-     * @param array $expectations
+     * @param array|mixed[] $expectations
      */
     public function testOptionsMatchByTld(bool $matchByTld, string $input, array $expectations): void
     {
@@ -228,7 +228,7 @@ class UrlHighlightTest extends TestCase
      * @dataProvider optionsDefaultSchemeDataProvider
      * @param string $defaultScheme
      * @param string $input
-     * @param array $expectations
+     * @param array|mixed[] $expectations
      */
     public function testOptionsDefaultScheme(string $defaultScheme, string $input, array $expectations): void
     {
@@ -271,9 +271,9 @@ class UrlHighlightTest extends TestCase
 
     /**
      * @dataProvider optionsSchemeBlacklistDataProvider
-     * @param array $schemeBlacklist
+     * @param array|string[] $schemeBlacklist
      * @param string $input
-     * @param array $expectations
+     * @param array|mixed[] $expectations
      */
     public function testOptionsSchemeBlacklist(array $schemeBlacklist, string $input, array $expectations): void
     {
@@ -319,9 +319,9 @@ class UrlHighlightTest extends TestCase
 
     /**
      * @dataProvider optionsSchemeWhitelistDataProvider
-     * @param array $schemeWhitelist
+     * @param array|string[] $schemeWhitelist
      * @param string $input
-     * @param array $expectations
+     * @param array|mixed[] $expectations
      */
     public function testOptionsSchemeWhitelist(array $schemeWhitelist, string $input, array $expectations): void
     {

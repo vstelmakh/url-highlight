@@ -15,7 +15,7 @@ class MatchValidator
     /** @var NormalizedCollection */
     private $schemeBlacklist;
 
-    /**@var NormalizedCollection */
+    /** @var NormalizedCollection */
     private $schemeWhitelist;
 
     /**
