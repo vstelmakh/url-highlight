@@ -77,23 +77,14 @@ class UrlHighlightTest extends TestCase
     ];
 
     /**
-     * @var UrlHighlight
-     */
-    private $urlHighlight;
-
-    public function setUp(): void
-    {
-        $this->urlHighlight = new UrlHighlight();
-    }
-
-    /**
      * @dataProvider isUrlDataProvider
      * @param string $string
      * @param bool $expected
      */
     public function testIsUrl(string $string, bool $expected): void
     {
-        $actual = $this->urlHighlight->isUrl($string);
+        $urlHighlight = new UrlHighlight();
+        $actual = $urlHighlight->isUrl($string);
         $this->assertEquals($expected, $actual, 'Expected ' . ($expected ? '"true"' : '"false"') . ' for: ' . $string);
     }
 
@@ -116,7 +107,8 @@ class UrlHighlightTest extends TestCase
      */
     public function testGetUrls(string $string, array $expected): void
     {
-        $actual = $this->urlHighlight->getUrls($string);
+        $urlHighlight = new UrlHighlight();
+        $actual = $urlHighlight->getUrls($string);
         $this->assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
@@ -148,7 +140,8 @@ class UrlHighlightTest extends TestCase
      */
     public function testHighlightUrls(string $string, string $expected): void
     {
-        $actual = $this->urlHighlight->highlightUrls($string);
+        $urlHighlight = new UrlHighlight();
+        $actual = $urlHighlight->highlightUrls($string);
         $this->assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
@@ -174,5 +167,203 @@ class UrlHighlightTest extends TestCase
             $result[] = [sprintf('Inside link <p><a href="%s">%s</a></p>', $url, $url), $output];
         }
         return $result;
+    }
+
+    /**
+     * @dataProvider optionsMatchByTldDataProvider
+     * @param bool $matchByTld
+     * @param string $input
+     * @param array|mixed[] $expectations
+     */
+    public function testOptionsMatchByTld(bool $matchByTld, string $input, array $expectations): void
+    {
+        $options = ['match_by_tld' => $matchByTld];
+        $urlHighlight = new UrlHighlight($options);
+
+        $isUrl = $urlHighlight->isUrl($input);
+        $this->assertEquals($expectations['isUrl'], $isUrl, 'Options: ' . json_encode($options));
+
+        $urls = $urlHighlight->getUrls($input);
+        $this->assertEquals($expectations['getUrls'], $urls, 'Options: ' . json_encode($options));
+
+        $highlight = $urlHighlight->highlightUrls($input);
+        $this->assertEquals($expectations['highlightUrls'], $highlight, 'Options: ' . json_encode($options));
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function optionsMatchByTldDataProvider(): array
+    {
+        return [
+            [
+                true,
+                'example.com',
+                [
+                    'isUrl' => true,
+                    'getUrls' => ['example.com'],
+                    'highlightUrls' => '<a href="http://example.com">example.com</a>',
+                ]
+            ],
+            [
+                false,
+                'example.com',
+                [
+                    'isUrl' => false,
+                    'getUrls' => [],
+                    'highlightUrls' => 'example.com',
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider optionsDefaultSchemeDataProvider
+     * @param string $defaultScheme
+     * @param string $input
+     * @param array|mixed[] $expectations
+     */
+    public function testOptionsDefaultScheme(string $defaultScheme, string $input, array $expectations): void
+    {
+        $options = ['default_scheme' => $defaultScheme];
+        $urlHighlight = new UrlHighlight($options);
+
+        $highlight = $urlHighlight->highlightUrls($input);
+        $this->assertEquals($expectations['highlightUrls'], $highlight, 'Options: ' . json_encode($options));
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function optionsDefaultSchemeDataProvider(): array
+    {
+        return [
+            [
+                'http',
+                'example.com',
+                [
+                    'highlightUrls' => '<a href="http://example.com">example.com</a>',
+                ]
+            ],
+            [
+                'https',
+                'example.com',
+                [
+                    'highlightUrls' => '<a href="https://example.com">example.com</a>',
+                ]
+            ],
+            [
+                'ftp',
+                'example.com',
+                [
+                    'highlightUrls' => '<a href="ftp://example.com">example.com</a>',
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider optionsSchemeBlacklistDataProvider
+     * @param array|string[] $schemeBlacklist
+     * @param string $input
+     * @param array|mixed[] $expectations
+     */
+    public function testOptionsSchemeBlacklist(array $schemeBlacklist, string $input, array $expectations): void
+    {
+        $options = ['scheme_blacklist' => $schemeBlacklist];
+        $urlHighlight = new UrlHighlight($options);
+
+        $isUrl = $urlHighlight->isUrl($input);
+        $this->assertEquals($expectations['isUrl'], $isUrl, 'Options: ' . json_encode($options));
+
+        $urls = $urlHighlight->getUrls($input);
+        $this->assertEquals($expectations['getUrls'], $urls, 'Options: ' . json_encode($options));
+
+        $highlight = $urlHighlight->highlightUrls($input);
+        $this->assertEquals($expectations['highlightUrls'], $highlight, 'Options: ' . json_encode($options));
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function optionsSchemeBlacklistDataProvider(): array
+    {
+        return [
+            [
+                [],
+                'http://example.com',
+                [
+                    'isUrl' => true,
+                    'getUrls' => ['http://example.com'],
+                    'highlightUrls' => '<a href="http://example.com">http://example.com</a>',
+                ]
+            ],
+            [
+                ['http'],
+                'http://example.com',
+                [
+                    'isUrl' => false,
+                    'getUrls' => [],
+                    'highlightUrls' => 'http://example.com',
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider optionsSchemeWhitelistDataProvider
+     * @param array|string[] $schemeWhitelist
+     * @param string $input
+     * @param array|mixed[] $expectations
+     */
+    public function testOptionsSchemeWhitelist(array $schemeWhitelist, string $input, array $expectations): void
+    {
+        $options = ['scheme_whitelist' => $schemeWhitelist];
+        $urlHighlight = new UrlHighlight($options);
+
+        $isUrl = $urlHighlight->isUrl($input);
+        $this->assertEquals($expectations['isUrl'], $isUrl, 'Options: ' . json_encode($options));
+
+        $urls = $urlHighlight->getUrls($input);
+        $this->assertEquals($expectations['getUrls'], $urls, 'Options: ' . json_encode($options));
+
+        $highlight = $urlHighlight->highlightUrls($input);
+        $this->assertEquals($expectations['highlightUrls'], $highlight, 'Options: ' . json_encode($options));
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function optionsSchemeWhitelistDataProvider(): array
+    {
+        return [
+            [
+                [],
+                'http://example.com',
+                [
+                    'isUrl' => true,
+                    'getUrls' => ['http://example.com'],
+                    'highlightUrls' => '<a href="http://example.com">http://example.com</a>',
+                ]
+            ],
+            [
+                ['http'],
+                'http://example.com',
+                [
+                    'isUrl' => true,
+                    'getUrls' => ['http://example.com'],
+                    'highlightUrls' => '<a href="http://example.com">http://example.com</a>',
+                ]
+            ],
+            [
+                ['https'],
+                'http://example.com',
+                [
+                    'isUrl' => false,
+                    'getUrls' => [],
+                    'highlightUrls' => 'http://example.com',
+                ]
+            ],
+        ];
     }
 }

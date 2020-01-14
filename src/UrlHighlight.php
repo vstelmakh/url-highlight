@@ -4,6 +4,44 @@ namespace VStelmakh\UrlHighlight;
 
 class UrlHighlight
 {
+    /** @var string */
+    private $defaultScheme;
+
+    /** @var MatchValidator */
+    private $matchValidator;
+
+    /**
+     * Available options:
+     *
+     *  - match_by_tld: if true, will map matches without scheme by top level domain
+     *      (example.com will be recognized as url). For full list of valid top level
+     *      domains see: Domains::TOP_LEVEL_DOMAINS (default true).
+     *
+     *  - default_scheme: scheme to use when highlighting urls without scheme (default 'http').
+     *
+     *  - scheme_blacklist: array of schemes not allowed to be recognized as url (default []).
+     *
+     *  - scheme_whitelist: array of schemes explicitly allowed to be recognized as url (default []).
+     *
+     * @param array|mixed[] $options
+     */
+    public function __construct(array $options = [])
+    {
+        $options = array_merge([
+            'match_by_tld' => true,
+            'default_scheme' => 'http',
+            'scheme_blacklist' => [],
+            'scheme_whitelist' => [],
+        ], $options);
+
+        $this->defaultScheme = (string) $options['default_scheme'];
+        $this->matchValidator = new MatchValidator(
+            $options['match_by_tld'],
+            $options['scheme_blacklist'],
+            $options['scheme_whitelist']
+        );
+    }
+
     /**
      * Check if string is valid url
      *
@@ -46,9 +84,9 @@ class UrlHighlight
     {
         $urlRegex = $this->getUrlRegex(false);
         $callback = function ($matches) {
-            $protocol = empty($matches['protocol']) ? 'http://' : '';
+            $scheme = empty($matches['scheme']) ? $this->defaultScheme . '://' : '';
             return $this->isValidUrlMatch($matches)
-                ? '<a href="' . $protocol . $matches[0] . '">' . $matches[0] . '</a>'
+                ? '<a href="' . $scheme . $matches[0] . '">' . $matches[0] . '</a>'
                 : $matches[0];
         };
         $result = preg_replace_callback($urlRegex, $callback, $string) ?? $string;
@@ -67,15 +105,15 @@ class UrlHighlight
         $suffix = $strict ? '$' : '';
 
         return '/' . $prefix . '                                                 
-            (?:                                                  # protocol or possible host
-                (?<protocol>[a-z][\w-]+):                            # url protocol and colon
+            (?:                                                  # scheme or possible host
+                (?<scheme>[a-z][\w-]+):                            # url scheme and colon
                 (?:         
                     \/{2}                                                # 2 slashes
                     |                                                    # or
                     [\w\d]                                               # single letter or digit
                 )           
                 |                                                    # or
-                (?<host>[^\s`!()\[\]{};:\'",<>?«»“”‘’\/]+\.\w{2,})   # possible host (captured only if protocol missing)
+                (?<host>[^\s`!()\[\]{};:\'",<>?«»“”‘’\/]+\.\w{2,})   # possible host (captured only if scheme missing)
             )  
             (?:                                                  # port, path, query, fragment (one or none)
                 (?:                                                  # one or more:
@@ -100,22 +138,9 @@ class UrlHighlight
      */
     private function isValidUrlMatch(array $match): bool
     {
+        $scheme = $match['scheme'] ?? null;
         $host = $match['host'] ?? null;
-        if ($host) {
-            return $this->isValidDomainHost($host) ? true : false;
-        }
-        return true;
-    }
-
-    /**
-     * @param string $host
-     * @return bool
-     */
-    private function isValidDomainHost(string $host): bool
-    {
-        preg_match('/[^.]+$/', $host, $matches);
-        $topLevelDomain = mb_strtolower($matches[0]);
-        return isset(Domains::TOP_LEVEL_DOMAINS[$topLevelDomain]);
+        return $this->matchValidator->isValidUrl($scheme, $host);
     }
 
     /**
