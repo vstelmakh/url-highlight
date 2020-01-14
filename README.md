@@ -26,6 +26,25 @@ use VStelmakh\UrlHighlight\UrlHighlight;
 $urlHighlight = new UrlHighlight();
 ```
 
+## Configuration
+Additional options could be provided via constructor:
+- `match_by_tld`: if true, will map matches without scheme by top level domain
+    (example.com will be recognized as url). For full list of valid top level
+    domains see: Domains::TOP_LEVEL_DOMAINS (default true).
+- `default_scheme`: scheme to use when highlighting urls without scheme (default 'http').
+- `scheme_blacklist`: array of schemes not allowed to be recognized as url (default []).
+- `scheme_whitelist`: array of schemes explicitly allowed to be recognized as url (default []).
+
+Example:
+```php
+$urlHighlight = new UrlHighlight([
+    'match_by_tld' => false,
+    'default_scheme' => 'https',
+    'scheme_blacklist' => ['ssh', 'ftp'],
+    'scheme_whitelist' => [],
+]);
+```
+
 ## Usage
 Check if string is url:  
 ```php
