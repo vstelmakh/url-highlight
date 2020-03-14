@@ -11,7 +11,7 @@ PHP library to parse urls from string input. Current features:
 ## Installation
 There are [Twig extension](https://github.com/vstelmakh/url-highlight-twig-extension) and [Symfony bundle](https://github.com/vstelmakh/url-highlight-symfony-bundle) available.  
 
-Install the latest version with:  
+Install the latest version with [composer](https://getcomposer.org/):  
 ```bash
 $ composer require vstelmakh/url-highlight
 ```
