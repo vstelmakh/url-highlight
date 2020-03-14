@@ -1,8 +1,8 @@
 ![Url highlight](./resources/url-highlight-logo.svg)
 ---
-![Build status](https://github.com/vstelmakh/url-highlight/workflows/build/badge.svg?branch=master)
-![PHP version](https://img.shields.io/packagist/php-v/vstelmakh/url-highlight)
-![License](https://img.shields.io/github/license/vstelmakh/url-highlight)
+[![Build status](https://github.com/vstelmakh/url-highlight/workflows/build/badge.svg?branch=master)](https://github.com/vstelmakh/url-highlight/actions)
+[![PHP version](https://img.shields.io/packagist/php-v/vstelmakh/url-highlight)](https://www.php.net/)
+[![License](https://img.shields.io/github/license/vstelmakh/url-highlight)](LICENSE)
 
 **Url highlight** - PHP library to parse urls from string input. Current features:
 - Check if string is url
