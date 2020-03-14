@@ -20,6 +20,7 @@ $ composer require vstelmakh/url-highlight
 Just instantiate class object:  
 ```php
 <?php
+require __DIR__ . '/vendor/autoload.php';
 
 use VStelmakh\UrlHighlight\UrlHighlight;
 
