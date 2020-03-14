@@ -1,9 +1,10 @@
-# Url highlight
+![Url highlight](./resources/url-highlight-logo.svg)
+---
 ![Build status](https://github.com/vstelmakh/url-highlight/workflows/build/badge.svg?branch=master)
 ![PHP version](https://img.shields.io/packagist/php-v/vstelmakh/url-highlight)
 ![License](https://img.shields.io/github/license/vstelmakh/url-highlight)
 
-PHP library to parse urls from string input. Current features:
+**Url highlight** - PHP library to parse urls from string input. Current features:
 - Check if string is url
 - Parse urls from string
 - Replace urls in string by html tags
@@ -11,7 +12,7 @@ PHP library to parse urls from string input. Current features:
 ## Installation
 Install the latest version with [composer](https://getcomposer.org/):  
 ```bash
-$ composer require vstelmakh/url-highlight
+composer require vstelmakh/url-highlight
 ```
 Also, there are
  [![Twig](./resources/twig-logo.png) Twig extension](https://github.com/vstelmakh/url-highlight-twig-extension)
