@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 class UrlHighlightTest extends TestCase
 {
     /**
-     * List of urls to test. First argument - url, second - protocol, third - indicates if is valid url.
+     * List of urls to test. First argument - url, second - scheme, third - indicates if is valid url.
      */
     private const URLS = [
         // Simple
@@ -42,13 +42,13 @@ class UrlHighlightTest extends TestCase
         ['http://互联网.ch/互联网', 'http', true],
         ['http://україна.укр/привіт/світ', 'http', true],
 
-        // Other protocol
+        // Other scheme
         ['mailto:name@example.com', 'mailto', true],
         ['ftp://localhost', 'ftp', true],
         ['custom://example-CUSTOM', 'custom', true],
         ['message://%3d330e4f340905078926r6a4ba78dkf3fd71420c1af6fj@mail.example.com%3e', 'message', true],
 
-        // No protocol
+        // No scheme
         ['bit.ly/path', '', true],
         ['www.example.com', '', true],
         ['WWW.EXAMPLE.COM', '', true],
@@ -94,7 +94,7 @@ class UrlHighlightTest extends TestCase
     public function isUrlDataProvider(): array
     {
         $result = [];
-        foreach (self::URLS as [$url, $protocol, $isValid]) {
+        foreach (self::URLS as [$url, $scheme, $isValid]) {
             $result[] = [$url, $isValid];
         }
         return $result;
@@ -118,7 +118,7 @@ class UrlHighlightTest extends TestCase
     public function getUrlsDataProvider(): array
     {
         $result = [];
-        foreach (self::URLS as [$url, $protocol, $isValid]) {
+        foreach (self::URLS as [$url, $scheme, $isValid]) {
             $output = $isValid ? [$url] : [];
             $result[] = [sprintf('Example text before %s and after.', $url), $output];
             $result[] = [sprintf('%s.', $url), $output];
