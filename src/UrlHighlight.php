@@ -105,26 +105,30 @@ class UrlHighlight
         $suffix = $strict ? '$' : '';
 
         return '/' . $prefix . '                                                 
-            (?:                                                  # scheme or possible host
-                (?<scheme>[a-z][\w-]+):                            # url scheme and colon
+            (?:                                                        # scheme or possible host
+                (?<scheme>[a-z][\w-]+):                                  # url scheme and colon
                 (?:         
-                    \/{2}                                                # 2 slashes
-                    |                                                    # or
-                    [\w\d]                                               # single letter or digit
+                    \/{2}                                                      # 2 slashes
+                    |                                                          # or
+                    [\w\d]                                                     # single letter or digit
                 )           
-                |                                                    # or
-                (?<host>[^\s`!()\[\]{};:\'",<>?«»“”‘’\/]+\.\w{2,})   # possible host (captured only if scheme missing)
+                |                                                          # or
+                (?<host>                                                   # possible host (captured only if scheme missing)
+                    [^\s`~!#$%^&*()_=+\[\]{};:\'",<>?«»“”‘’\/\\\|@\-\.]          # start with (not @-.)
+                    [^\s`~!#$%^&*()_=+\[\]{};:\'",<>?«»“”‘’\/\\\|]*              # not allowed chars (most common)
+                    \.(?<tld>\w{2,})                                            # tld (captured only if match by host)
+                )   
             )  
-            (?:                                                  # port, path, query, fragment (one or none)
-                (?:                                                  # one or more:
-                    [^\s()<>]+                                           # run of non-space, non-()<>
-                    |                                                    # or
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                   # balanced brackets (up to 2 levels)
+            (?:                                                        # port, path, query, fragment (one or none)
+                (?:                                                        # one or more:
+                    [^\s()<>]+                                                 # run of non-space, non-()<>
+                    |                                                          # or
+                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
                 )*           
-                (?:                                                  # end with:
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                   # balanced brackets (up to 2 levels)
-                    |                                                    # or
-                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                      # not a space or punctuation chars
+                (?:                                                        # end with:
+                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
+                    |                                                          # or
+                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                            # not a space or punctuation chars
                 )
             )?
         ' . $suffix . '/ixu';
