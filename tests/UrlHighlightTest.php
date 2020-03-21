@@ -71,6 +71,7 @@ class UrlHighlightTest extends TestCase
         ['D:/path/to/', '', false],
         ['D:/path/to/filename.txt', '', false],
         ['self::CONSTANT', '', false],
+        ['user:admin', '', false],
 
         // Known not match
 //      ['http://example.com/quotes-are-"part"', '', true],

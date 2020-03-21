@@ -113,8 +113,8 @@ class UrlHighlight
                 )
                 |                                                          # or
                 (?<host>                                                   # possible host (captured only if scheme missing)
-                    [^\s`~!#$%^&*()_=+\[\]{};:\'",<>?«»“”‘’\/\\\|@\-\.]        # start with (not @-.)
-                    [^\s`~!#$%^&*()_=+\[\]{};:\'",<>?«»“”‘’\/\\\|]*            # not allowed chars (most common)
+                    [^\s`~!#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:@\-\.]        # start with (not @-.)
+                    [^\s`~!#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|]*            # not allowed chars (most common)
                     \.(?<tld>\w{2,})                                           # tld (captured only if match by host)
                 )   
             )  
