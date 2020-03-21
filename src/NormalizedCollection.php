@@ -32,6 +32,7 @@ class NormalizedCollection
      */
     public function isContains(string $value): bool
     {
+        $value = $this->normalize($value);
         return isset($this->values[$value]);
     }
 

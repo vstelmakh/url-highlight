@@ -32,6 +32,8 @@ class NormalizedCollectionTest extends TestCase
             [['value_1'], 'value_2', false],
             [['value_1', 'value_2'], 'value_1', true],
             [['valUE'], 'value', true],
+            [['value'], 'valUE', true],
+            [['valUE'], 'VAlue', true],
             [['valUE', 'other value', 'VALUE'], 'value', true],
             [[' valUE '], 'value', true],
         ];
