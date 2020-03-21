@@ -143,7 +143,8 @@ class UrlHighlight
     {
         $scheme = $match['scheme'] ?? null;
         $host = $match['host'] ?? null;
-        return $this->matchValidator->isValidUrl($scheme, $host);
+        $tld = $match['tld'] ?? null;
+        return $this->matchValidator->isValidUrl($scheme, $host, $tld);
     }
 
     /**
