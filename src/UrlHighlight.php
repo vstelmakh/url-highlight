@@ -106,17 +106,16 @@ class UrlHighlight
 
         return '/' . $prefix . '                                                 
             (?:                                                        # scheme or possible host
-                (?<scheme>[a-z][\w-]+):                                  # url scheme and colon
-                (?:         
-                    \/{2}                                                      # 2 slashes
+                (?:                                                        # scheme
+                    (?<scheme>[a-z][\w-]+):\/{2}                               # scheme ending with :\/\/
                     |                                                          # or
-                    [\w\d]                                                     # single letter or digit
-                )           
+                    (?<scheme>mailto):                                         # mailto
+                )
                 |                                                          # or
                 (?<host>                                                   # possible host (captured only if scheme missing)
-                    [^\s`~!#$%^&*()_=+\[\]{};:\'",<>?«»“”‘’\/\\\|@\-\.]          # start with (not @-.)
-                    [^\s`~!#$%^&*()_=+\[\]{};:\'",<>?«»“”‘’\/\\\|]*              # not allowed chars (most common)
-                    \.(?<tld>\w{2,})                                            # tld (captured only if match by host)
+                    [^\s`~!#$%^&*()_=+\[\]{};:\'",<>?«»“”‘’\/\\\|@\-\.]        # start with (not @-.)
+                    [^\s`~!#$%^&*()_=+\[\]{};:\'",<>?«»“”‘’\/\\\|]*            # not allowed chars (most common)
+                    \.(?<tld>\w{2,})                                           # tld (captured only if match by host)
                 )   
             )  
             (?:                                                        # port, path, query, fragment (one or none)
@@ -131,7 +130,7 @@ class UrlHighlight
                     [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                            # not a space or punctuation chars
                 )
             )?
-        ' . $suffix . '/ixu';
+        ' . $suffix . '/ixuJ';
     }
 
     /**
