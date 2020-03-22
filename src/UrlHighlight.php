@@ -157,9 +157,10 @@ class UrlHighlight
     private function isValidUrlMatch(array $match): bool
     {
         $scheme = $match['scheme'] ?? null;
+        $local = $match['local'] ?? null;
         $host = $match['host'] ?? null;
         $tld = $match['tld'] ?? null;
-        return $this->matchValidator->isValidUrl($scheme, $host, $tld);
+        return $this->matchValidator->isValidUrl($scheme, $local, $host, $tld);
     }
 
     /**

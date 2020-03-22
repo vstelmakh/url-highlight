@@ -32,14 +32,19 @@ class MatchValidator
 
     /**
      * @param string|null $scheme
+     * @param string|null $local
      * @param string|null $host
      * @param string|null $tld
      * @return bool
      */
-    public function isValidUrl(?string $scheme = null, ?string $host = null, ?string $tld = null): bool
+    public function isValidUrl(?string $scheme = null, ?string $local = null, ?string $host = null, ?string $tld = null): bool
     {
         if ($scheme) {
             return $this->isAllowedScheme($scheme);
+        }
+
+        if ($local) {
+            return false; // TODO: email, not valid for now
         }
 
         if ($host && !$this->isValidHost($host)) {
