@@ -51,13 +51,17 @@ class UrlHighlightTest extends TestCase
         ['message://%3d330e4f340905078926r6a4ba78dkf3fd71420c1af6fj@mail.example.com%3e', 'message', true],
 
         // No scheme
+        ['b.de', '', true],
+        ['w.b.de', '', true],
         ['bit.ly/path', '', true],
         ['www.example.com', '', true],
         ['WWW.EXAMPLE.COM', '', true],
         ['★hello.tk/path', '', true],
         ['example.com', '', true],
+        ['example-example.com', '', true],
         ['example.com/', '', true],
         ['subdomain.example.com', '', true],
+        ['sub-domain.example.com', '', true],
         ['2.example.com', '', true],
         ['example.name', '', true],
         ['example.xxx', '', true],
@@ -74,6 +78,15 @@ class UrlHighlightTest extends TestCase
         ['D:/path/to/filename.txt', '', false],
         ['self::CONSTANT', '', false],
         ['user:admin', '', false],
+
+        // Invalid hosts
+        ['example-.com', '', false],
+        ['example.-com', '', false],
+        ['example..com', '', false],
+        ['example.-.com', '', false],
+        ['example.-.com', '', false],
+        ['example.c-.com', '', false],
+        ['example.c"om', '', false],
 
         // Known not match
 //      ['http://example.com/quotes-are-"part"', '', true],
