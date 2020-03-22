@@ -13,7 +13,9 @@ class MatchValidatorTest extends TestCase
      * @param array|string[] $schemeBlacklist
      * @param array|string[] $schemeWhitelist
      * @param string|null $scheme
+     * @param string|null $local
      * @param string|null $host
+     * @param string|null $tld
      * @param bool $expected
      */
     public function testIsValidUrl(
@@ -21,11 +23,13 @@ class MatchValidatorTest extends TestCase
         array $schemeBlacklist,
         array $schemeWhitelist,
         ?string $scheme = null,
+        ?string $local = null,
         ?string $host = null,
+        ?string $tld = null,
         bool $expected
     ): void {
         $matchValidator = new MatchValidator($matchByTLD, $schemeBlacklist, $schemeWhitelist);
-        $actual = $matchValidator->isValidUrl($scheme, $host);
+        $actual = $matchValidator->isValidUrl($scheme, $local, $host, $tld);
         $this->assertEquals($expected, $actual, 'Dataset: ' . json_encode(func_get_args()));
     }
 
@@ -35,38 +39,41 @@ class MatchValidatorTest extends TestCase
     public function isValidUrlDataProvider(): array
     {
         return [
-            [true, [], [], null, null, false],
-            [true, [], [], 'http', null, true],
-            [true, [], [], null, 'example.com', true],
-            [true, [], [], null, 'filename.txt', false],
-            [true, [], [], 'http', 'example.com', true],
-            [true, [], [], 'http', 'filename.txt', true],
-            [true, ['http'], [], 'http', null, false],
-            [true, ['ftp'], [], 'http', null, true],
-            [true, ['http'], [], null, 'example.com', true],
-            [true, [], ['http'], 'http', null, true],
-            [true, [], ['ftp'], 'http', null, false],
-            [true, [], ['http'], null, 'example.com', true],
-            [true, ['http'], ['http'], 'http', null, false],
-            [true, ['ftp'], ['http'], 'http', null, true],
-            [true, ['ftp'], ['ssh'], 'http', null, false],
-            [true, ['ftp'], ['http'], null, 'example.com', true],
-            [false, [], [], null, null, false],
-            [false, [], [], 'http', null, true],
-            [false, [], [], null, 'example.com', false],
-            [false, [], [], null, 'filename.txt', false],
-            [false, [], [], 'http', 'example.com', true],
-            [false, [], [], 'http', 'filename.txt', true],
-            [false, ['http'], [], 'http', null, false],
-            [false, ['ftp'], [], 'http', null, true],
-            [false, ['http'], [], null, 'example.com', false],
-            [false, [], ['http'], 'http', null, true],
-            [false, [], ['ftp'], 'http', null, false],
-            [false, [], ['http'], null, 'example.com', false],
-            [false, ['http'], ['http'], 'http', null, false],
-            [false, ['ftp'], ['http'], 'http', null, true],
-            [false, ['ftp'], ['ssh'], 'http', null, false],
-            [false, ['ftp'], ['http'], null, 'example.com', false],
+            [true, [], [], null, null, null, null, false],
+            [true, [], [], 'http', null, null, null, true],
+            [true, [], [], null, null, 'example.com', 'com', true],
+            [true, [], [], null, null, 'filename.txt', 'txt', false],
+            [true, [], [], 'http', null, 'example.com', 'com', true],
+            [true, [], [], 'http', null, 'filename.txt', 'txt', true],
+            [true, ['http'], [], 'http', null, null, null, false],
+            [true, ['ftp'], [], 'http', null, null, null, true],
+            [true, ['http'], [], null, null, 'example.com', 'com', true],
+            [true, [], ['http'], 'http', null, null, null, true],
+            [true, [], ['ftp'], 'http', null, null, null, false],
+            [true, [], ['http'], null, null, 'example.com', 'com', true],
+            [true, ['http'], ['http'], 'http', null, null, null, false],
+            [true, ['ftp'], ['http'], 'http', null, null, null, true],
+            [true, ['ftp'], ['ssh'], 'http', null, null, null, false],
+            [true, ['ftp'], ['http'], null, null, 'example.com', 'com', true],
+
+            [false, [], [], null, null, null, null, false],
+            [false, [], [], 'http', null, null, null, true],
+            [false, [], [], null, null, 'example.com', 'com', false],
+            [false, [], [], null, null, 'filename.txt', 'txt', false],
+            [false, [], [], 'http', null, 'example.com', 'com', true],
+            [false, [], [], 'http', null, 'filename.txt', 'txt', true],
+            [false, ['http'], [], 'http', null, null, null, false],
+            [false, ['ftp'], [], 'http', null, null, null, true],
+            [false, ['http'], [], null, null, 'example.com', 'com', false],
+            [false, [], ['http'], 'http', null, null, null, true],
+            [false, [], ['ftp'], 'http', null, null, null, false],
+            [false, [], ['http'], null, null, 'example.com', 'com', false],
+            [false, ['http'], ['http'], 'http', null, null, null, false],
+            [false, ['ftp'], ['http'], 'http', null, null, null, true],
+            [false, ['ftp'], ['ssh'], 'http', null, null, null, false],
+            [false, ['ftp'], ['http'], null, null, 'example.com', 'com', false],
+
+            [false, [], [], null, 'username', 'example.com', 'com', false],
         ];
     }
 }

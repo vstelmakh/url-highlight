@@ -32,17 +32,27 @@ class MatchValidator
 
     /**
      * @param string|null $scheme
+     * @param string|null $local
      * @param string|null $host
+     * @param string|null $tld
      * @return bool
      */
-    public function isValidUrl(?string $scheme = null, ?string $host = null): bool
+    public function isValidUrl(?string $scheme = null, ?string $local = null, ?string $host = null, ?string $tld = null): bool
     {
         if ($scheme) {
             return $this->isAllowedScheme($scheme);
         }
 
-        if ($host && $this->matchByTLD) {
-            return $this->isValidDomainHost($host);
+        if ($local) {
+            return false; // TODO: email, not valid for now
+        }
+
+        if ($host && !$this->isValidHost($host)) {
+            return false;
+        }
+
+        if ($tld && $this->matchByTLD) {
+            return $this->isValidTopLevelDomain($tld);
         }
 
         return false;
@@ -63,10 +73,19 @@ class MatchValidator
      * @param string $host
      * @return bool
      */
-    private function isValidDomainHost(string $host): bool
+    private function isValidHost(string $host): bool
     {
-        preg_match('/[^.]+$/', $host, $matches);
-        $topLevelDomain = mb_strtolower($matches[0]);
+        // TODO: implement host validation
+        return true;
+    }
+
+    /**
+     * @param string $topLevelDomain
+     * @return bool
+     */
+    private function isValidTopLevelDomain(string $topLevelDomain): bool
+    {
+        $topLevelDomain = \mb_strtolower($topLevelDomain);
         return isset(Domains::TOP_LEVEL_DOMAINS[$topLevelDomain]);
     }
 }

@@ -105,29 +105,47 @@ class UrlHighlight
         $suffix = $strict ? '$' : '';
 
         return '/' . $prefix . '                                                 
-            (?:                                                  # scheme or possible host
-                (?<scheme>[a-z][\w-]+):                            # url scheme and colon
-                (?:         
-                    \/{2}                                                # 2 slashes
-                    |                                                    # or
-                    [\w\d]                                               # single letter or digit
-                )           
-                |                                                    # or
-                (?<host>[^\s`!()\[\]{};:\'",<>?«»“”‘’\/]+\.\w{2,})   # possible host (captured only if scheme missing)
+            (?:                                                        # scheme or possible host
+                (?:                                                        # scheme
+                    (?<scheme>[a-z][\w-]+):\/{2}                               # scheme ending with :\/\/
+                    |                                                          # or
+                    (?<scheme>mailto):                                         # mailto
+                )
+                |                                                          # or
+                (?:                                                        # possible local part (email)
+                    (?=[^:\.\-])                                               # start with not :-.
+                    (?<local>[^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|]{1,64})
+                    (?<=[^:\.\-])                                              # end with not :-.
+                    @                                                          # at
+                )?
+                (?<host>                                                   # host (captured only if scheme missing)
+                    (?=[^\-])                                                # label start, not -
+                    [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # label, not allowed chars (most common)
+                    (?:                                                        # sub domain (one or more)
+                        (?<=[^\-])                                               # previous part not end with .-
+                        \.
+                        (?=[^\-])                                                  # sub-domain start, not -
+                        [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # sub-domain, not allowed chars (most common)
+                    )*                                                             
+                    (?<=[^\-])                                               # previous part not end with .-
+                    \.(?<tld>\w{2,63})                                         # tld length (captured only if match by host) 
+                )
+                [\/:]?                                                     # end with \/ or : 
             )  
-            (?:                                                  # port, path, query, fragment (one or none)
-                (?:                                                  # one or more:
-                    [^\s()<>]+                                           # run of non-space, non-()<>
-                    |                                                    # or
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                   # balanced brackets (up to 2 levels)
+            (?:                                                        # port, path, query, fragment (one or none)
+                (?<=[\/:])                                                 # prefixed with \/ or :
+                (?:                                                        # one or more:
+                    [^\s()<>]+                                                 # run of non-space, non-()<>
+                    |                                                          # or
+                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
                 )*           
-                (?:                                                  # end with:
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                   # balanced brackets (up to 2 levels)
-                    |                                                    # or
-                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                      # not a space or punctuation chars
+                (?:                                                        # end with:
+                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
+                    |                                                          # or
+                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                            # not a space or punctuation chars
                 )
             )?
-        ' . $suffix . '/ixu';
+        ' . $suffix . '/ixuJ';
     }
 
     /**
@@ -139,8 +157,10 @@ class UrlHighlight
     private function isValidUrlMatch(array $match): bool
     {
         $scheme = $match['scheme'] ?? null;
+        $local = $match['local'] ?? null;
         $host = $match['host'] ?? null;
-        return $this->matchValidator->isValidUrl($scheme, $host);
+        $tld = $match['tld'] ?? null;
+        return $this->matchValidator->isValidUrl($scheme, $local, $host, $tld);
     }
 
     /**
