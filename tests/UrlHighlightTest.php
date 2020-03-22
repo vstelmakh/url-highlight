@@ -23,6 +23,7 @@ class UrlHighlightTest extends TestCase
         ['http://www.example.com', 'http', true],
         ['http://subdomain.example.com', 'http', true],
         ['http://example.com/with,commas,in,url', 'http', true],
+        ['http://example-example.com', 'http', true],
 
         // Brackets
         ['http://example.com/path_with_(brackets)', 'http', true],
@@ -37,6 +38,7 @@ class UrlHighlightTest extends TestCase
         // Unicode
         ['http://★unicode.com/path', 'http', true],
         ['http://➡★.com/互联网', 'http', true],
+        ['http://➡-★.com/互联网', 'http', true],
         ['www.a.tk/互联网', '', true],
         ['http://互联网.ch', 'http', true],
         ['http://互联网.ch/互联网', 'http', true],
@@ -61,7 +63,7 @@ class UrlHighlightTest extends TestCase
         ['example.xxx', '', true],
 
         // Combined
-        ['http://user:password@example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor', 'http', true],
+        ['http://user:password@example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor', 'http', true],
 
         // Not url
         ['6:00am', '', false],
@@ -118,6 +120,8 @@ class UrlHighlightTest extends TestCase
      */
     public function getUrlsDataProvider(): array
     {
+        $invalidPrefixCharacters = ['`', '~', '!', '#', '$', '%', '^', '&', '*', '(', ')', '_', '=', '+', '[', ']', '{', '}', ';', '\'', '"', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’', '/', '\\', '|', ':', '@', '-', '.'];
+
         $result = [];
         foreach (self::URLS as [$url, $scheme, $isValid]) {
             $output = $isValid ? [$url] : [];
@@ -130,6 +134,10 @@ class UrlHighlightTest extends TestCase
             $result[] = [sprintf('“%s”', $url), $output];
             $result[] = [sprintf('Text with <%s> (including brackets).', $url), $output];
             $result[] = [sprintf('Example text before %s and after. Open filename.txt at 3:00pm. For more info see http://google.com.', $url), array_merge($output, ['http://google.com'])];
+
+            foreach ($invalidPrefixCharacters as $invalidPrefix) {
+                $result[] = [$invalidPrefix . $url, $output];
+            }
         }
         return $result;
     }
