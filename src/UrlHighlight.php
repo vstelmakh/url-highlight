@@ -111,6 +111,7 @@ class UrlHighlight
                     |                                                          # or
                     (?<scheme>mailto):                                         # mailto
                 )
+                (?=[^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.\-])    # followed by valid host character
                 |                                                          # or
                 (?:                                                        # possible local part (email)
                     (?=[^:\.\-])                                               # start with not :-.
