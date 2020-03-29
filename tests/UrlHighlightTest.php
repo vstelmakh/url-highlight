@@ -66,6 +66,7 @@ class UrlHighlightTest extends TestCase
         ['2.example.com', '', true],
         ['example.name', '', true],
         ['example.xxx', '', true],
+        ['that.is.long.host.name.example-domain.com', '', true],
 
         // Combined
         ['http://user:password@example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor', 'http', true],
