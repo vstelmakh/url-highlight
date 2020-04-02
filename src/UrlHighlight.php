@@ -111,6 +111,7 @@ class UrlHighlight
                     |                                                          # or
                     (?<scheme>mailto):                                         # mailto
                 )
+                (?=[^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.\-])    # followed by valid host character
                 |                                                          # or
                 (?:                                                        # possible local part (email)
                     (?=[^:\.\-])                                               # start with not :-.
@@ -119,15 +120,15 @@ class UrlHighlight
                     @                                                          # at
                 )?
                 (?<host>                                                   # host (captured only if scheme missing)
-                    (?=[^\-])                                                # label start, not -
-                    [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # label, not allowed chars (most common)
+                    (?=[^\-])                                                  # label start, not -
+                    [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # label not allowed chars (most common)
+                    (?<=[^\-])                                                 # label end, not -
                     (?:                                                        # sub domain (one or more)
-                        (?<=[^\-])                                               # previous part not end with .-
                         \.
                         (?=[^\-])                                                  # sub-domain start, not -
                         [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # sub-domain, not allowed chars (most common)
+                        (?<=[^\-])                                                 # sub-domain end, not -
                     )*                                                             
-                    (?<=[^\-])                                               # previous part not end with .-
                     \.(?<tld>\w{2,63})                                         # tld length (captured only if match by host) 
                 )
                 [\/:]?                                                     # end with \/ or : 

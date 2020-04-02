@@ -12,6 +12,7 @@ class UrlHighlightTest extends TestCase
      */
     private const URLS = [
         // Simple
+        ['http://a', 'http', true],
         ['http://example.com', 'http', true],
         ['http://example.com/', 'http', true],
         ['http://example.com/path', 'http', true],
@@ -48,7 +49,7 @@ class UrlHighlightTest extends TestCase
         ['mailto:name@example.com', 'mailto', true],
         ['ftp://localhost', 'ftp', true],
         ['custom://example-CUSTOM', 'custom', true],
-        ['message://%3d330e4f340905078926r6a4ba78dkf3fd71420c1af6fj@mail.example.com%3e', 'message', true],
+        ['message://3d330e4f340905078926r6a4ba78dkf3fd71420c1af6fj@mail.example.com%3e', 'message', true],
 
         // No scheme
         ['b.de', '', true],
@@ -65,6 +66,7 @@ class UrlHighlightTest extends TestCase
         ['2.example.com', '', true],
         ['example.name', '', true],
         ['example.xxx', '', true],
+        ['that.is.long.host.name.example-domain.com', '', true],
 
         // Combined
         ['http://user:password@example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor', 'http', true],
@@ -78,6 +80,8 @@ class UrlHighlightTest extends TestCase
         ['D:/path/to/filename.txt', '', false],
         ['self::CONSTANT', '', false],
         ['user:admin', '', false],
+        ['http://', '', false],
+        ['http:://localhost', '', false],
 
         // Invalid hosts
         ['example-.com', '', false],
