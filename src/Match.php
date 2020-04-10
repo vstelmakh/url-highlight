@@ -80,6 +80,10 @@ class Match
         return $this->tld;
     }
 
+    /**
+     * @param string|null $string
+     * @return string|null
+     */
     private function getNotEmptyStringOrNull(?string $string): ?string
     {
         return ($string !== null && $string !== '') ? $string : null;

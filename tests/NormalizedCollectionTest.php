@@ -9,6 +9,7 @@ class NormalizedCollectionTest extends TestCase
 {
     /**
      * @dataProvider isContainsDataProvider
+     *
      * @param array|string[] $values
      * @param string $value
      * @param bool $expected
@@ -41,6 +42,7 @@ class NormalizedCollectionTest extends TestCase
 
     /**
      * @dataProvider isEmptyDataProvider
+     *
      * @param array|string[] $values
      * @param bool $expected
      */

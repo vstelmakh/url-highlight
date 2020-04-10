@@ -7,7 +7,9 @@ namespace VStelmakh\UrlHighlight;
  */
 class NormalizedCollection
 {
-    /** @var array|string[] */
+    /**
+     * @var array|string[]
+     */
     private $values;
 
     /**

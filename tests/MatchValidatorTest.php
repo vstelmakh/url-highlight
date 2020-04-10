@@ -14,7 +14,7 @@ class MatchValidatorTest extends TestCase
      * @param bool $matchByTLD
      * @param array|string[] $schemeBlacklist
      * @param array|string[] $schemeWhitelist
-     * @param array $match
+     * @param Match $match
      * @param bool $expected
      */
     public function testIsValidMatch(

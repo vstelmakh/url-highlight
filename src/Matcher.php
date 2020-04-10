@@ -21,7 +21,7 @@ class Matcher
      * Match string by url regex
      *
      * @param string $string
-     * @return array|null
+     * @return Match|null
      */
     public function match(string $string): ?Match
     {
@@ -125,6 +125,10 @@ class Matcher
         ' . $suffix . '/ixuJ';
     }
 
+    /**
+     * @param array|string[] $rawMatch
+     * @return Match
+     */
     private function createMatch(array $rawMatch): Match
     {
         $scheme = $rawMatch['scheme'] ?? null;
