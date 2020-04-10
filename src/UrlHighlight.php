@@ -4,11 +4,15 @@ namespace VStelmakh\UrlHighlight;
 
 class UrlHighlight
 {
-    /** @var string */
-    private $defaultScheme;
+    /**
+     * @var Matcher
+     */
+    private $matcher;
 
-    /** @var MatchValidator */
-    private $matchValidator;
+    /**
+     * @var Highlighter
+     */
+    private $highlighter;
 
     /**
      * Available options:
@@ -34,12 +38,9 @@ class UrlHighlight
             'scheme_whitelist' => [],
         ], $options);
 
-        $this->defaultScheme = (string) $options['default_scheme'];
-        $this->matchValidator = new MatchValidator(
-            $options['match_by_tld'],
-            $options['scheme_blacklist'],
-            $options['scheme_whitelist']
-        );
+        $matchValidator = new MatchValidator($options['match_by_tld'], $options['scheme_blacklist'], $options['scheme_whitelist']);
+        $this->matcher = new Matcher($matchValidator);
+        $this->highlighter = new Highlighter($this->matcher, $options['default_scheme']);
     }
 
     /**
@@ -50,9 +51,7 @@ class UrlHighlight
      */
     public function isUrl(string $string): bool
     {
-        $urlRegex = $this->getUrlRegex(true);
-        $isMatch = preg_match($urlRegex, $string, $matches);
-        return $isMatch && $this->isValidUrlMatch($matches);
+        return $this->matcher->match($string) !== null;
     }
 
     /**
@@ -63,13 +62,10 @@ class UrlHighlight
      */
     public function getUrls(string $string): array
     {
-        $urlRegex = $this->getUrlRegex(false);
-        preg_match_all($urlRegex, $string, $matches, PREG_SET_ORDER);
         $result = [];
+        $matches = $this->matcher->matchAll($string);
         foreach ($matches as $match) {
-            if ($this->isValidUrlMatch($match)) {
-                $result[] = $match[0];
-            }
+            $result[] = $match[0];
         }
         return $result;
     }
@@ -82,129 +78,6 @@ class UrlHighlight
      */
     public function highlightUrls(string $string): string
     {
-        $urlRegex = $this->getUrlRegex(false);
-        $callback = function ($matches) {
-            $scheme = empty($matches['scheme']) ? $this->defaultScheme . '://' : '';
-            return $this->isValidUrlMatch($matches)
-                ? '<a href="' . $scheme . $matches[0] . '">' . $matches[0] . '</a>'
-                : $matches[0];
-        };
-        $result = preg_replace_callback($urlRegex, $callback, $string) ?? $string;
-        $result = $this->filterHighlightInTagAttributes($result);
-        $result = $this->filterHighlightInLinks($result);
-        return $result;
-    }
-
-    /**
-     * @param bool $strict
-     * @return string
-     */
-    private function getUrlRegex(bool $strict): string
-    {
-        $prefix = $strict ? '^' : '';
-        $suffix = $strict ? '$' : '';
-
-        return '/' . $prefix . '                                                 
-            (?:                                                        # scheme or possible host
-                (?:                                                        # scheme
-                    (?<scheme>[a-z][\w-]+):\/{2}                               # scheme ending with :\/\/
-                    |                                                          # or
-                    (?<scheme>mailto):                                         # mailto
-                )
-                (?=[^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.\-])    # followed by valid host character
-                |                                                          # or
-                (?:                                                        # possible local part (email)
-                    (?=[^:\.\-])                                               # start with not :-.
-                    (?<local>[^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|]{1,64})
-                    (?<=[^:\.\-])                                              # end with not :-.
-                    @                                                          # at
-                )?
-                (?<host>                                                   # host (captured only if scheme missing)
-                    (?=[^\-])                                                  # label start, not -
-                    [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # label not allowed chars (most common)
-                    (?<=[^\-])                                                 # label end, not -
-                    (?:                                                        # sub domain (one or more)
-                        \.
-                        (?=[^\-])                                                  # sub-domain start, not -
-                        [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # sub-domain, not allowed chars (most common)
-                        (?<=[^\-])                                                 # sub-domain end, not -
-                    )*                                                             
-                    \.(?<tld>\w{2,63})                                         # tld length (captured only if match by host) 
-                )
-                [\/:]?                                                     # end with \/ or : 
-            )  
-            (?:                                                        # port, path, query, fragment (one or none)
-                (?<=[\/:])                                                 # prefixed with \/ or :
-                (?:                                                        # one or more:
-                    [^\s()<>]+                                                 # run of non-space, non-()<>
-                    |                                                          # or
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
-                )*           
-                (?:                                                        # end with:
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
-                    |                                                          # or
-                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                            # not a space or punctuation chars
-                )
-            )?
-        ' . $suffix . '/ixuJ';
-    }
-
-    /**
-     * Check if preg_match result contains valid host
-     *
-     * @param array|string[] $match
-     * @return bool
-     */
-    private function isValidUrlMatch(array $match): bool
-    {
-        $scheme = $match['scheme'] ?? null;
-        $local = $match['local'] ?? null;
-        $host = $match['host'] ?? null;
-        $tld = $match['tld'] ?? null;
-        return $this->matchValidator->isValidUrl($scheme, $local, $host, $tld);
-    }
-
-    /**
-     * Filter a tags in html attributes
-     * Example: <a href="<a href="http://example.com">http://example.com</a>">http://example.com</a>
-     * Result: <a href="http://example.com">http://example.com</a>
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInTagAttributes(string $string): string
-    {
-        $regex = '/
-            (
-                <\w+\s[^>]+                              # tag start: "<tag"
-                \w\s?=\s?[\'"]                           # attribute start: "href=""
-            )
-            <a\s[^>]*href=[\'"].*[\'"][^>]*>([^<]*)<\/a> # html link: "<a href="#"><\/a>"
-            (
-                [\'"]                                    # attribute end: """
-                [^>]*>                                   # tag end: ">"
-            )
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
-    }
-
-    /**
-     * Filter a tags in a tags
-     * Example: <a href="#"><a href="http://example.com">http://example.com</a></a>
-     * Result: <a href="#"http://example.com">http://example.com</a>
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInLinks(string $string): string
-    {
-        $regex = '/
-            (<a[^>]*>)                 # parent tag start "<a"
-            <a[^>]*>([^<]*)<\s*\/\s*a> # child tag "<a><\/a>"
-            (<\s*\/\s*a>)              # parent tag end "<\/a>"
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
+        return $this->highlighter->highlightUrls($string);
     }
 }
