@@ -27,6 +27,9 @@ class Matcher
     {
         $urlRegex = $this->getUrlRegex(true);
         preg_match($urlRegex, $string, $rawMatch);
+        if (empty($rawMatch)) {
+            return null;
+        }
         $match = $this->createMatch($rawMatch);
         return $this->matchValidator->isValidMatch($match) ? $match : null;
     }

@@ -2,6 +2,9 @@
 
 namespace VStelmakh\UrlHighlight;
 
+/**
+ * @internal
+ */
 class Match
 {
     /**
@@ -32,10 +35,10 @@ class Match
     public function __construct(string $fullMatch, ?string $scheme, ?string $local, ?string $host, ?string $tld)
     {
         $this->fullMatch = $fullMatch;
-        $this->scheme = $scheme;
-        $this->local = $local;
-        $this->host = $host;
-        $this->tld = $tld;
+        $this->scheme = $this->getNotEmptyStringOrNull($scheme);
+        $this->local = $this->getNotEmptyStringOrNull($local);
+        $this->host = $this->getNotEmptyStringOrNull($host);
+        $this->tld = $this->getNotEmptyStringOrNull($tld);
     }
 
     /**
@@ -75,5 +78,10 @@ class Match
     public function getTld(): ?string
     {
         return $this->tld;
+    }
+
+    private function getNotEmptyStringOrNull(?string $string): ?string
+    {
+        return ($string !== null && $string !== '') ? $string : null;
     }
 }
