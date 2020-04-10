@@ -65,7 +65,7 @@ class UrlHighlight
         $result = [];
         $matches = $this->matcher->matchAll($string);
         foreach ($matches as $match) {
-            $result[] = $match[0];
+            $result[] = $match->getFullMatch();
         }
         return $result;
     }

@@ -31,9 +31,10 @@ class Highlighter
      */
     public function highlightUrls(string $string): string
     {
-        $callback = function ($match) {
-            $scheme = empty($match['scheme']) ? $this->defaultScheme . '://' : '';
-            return '<a href="' . $scheme . $match[0] . '">' . $match[0] . '</a>';
+        $callback = function (Match $match): string {
+            $scheme = $match->getScheme() === null ? $this->defaultScheme . '://' : '';
+            $fullMatch = $match->getFullMatch();
+            return sprintf('<a href="%s%s">%s</a>', $scheme, $fullMatch, $fullMatch);
         };
         $result = $this->matcher->replaceCallback($string, $callback);
         $result = $this->filterHighlightInTagAttributes($result);

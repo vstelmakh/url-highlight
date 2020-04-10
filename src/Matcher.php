@@ -23,10 +23,11 @@ class Matcher
      * @param string $string
      * @return array|null
      */
-    public function match(string $string): ?array
+    public function match(string $string): ?Match
     {
         $urlRegex = $this->getUrlRegex(true);
-        preg_match($urlRegex, $string, $match);
+        preg_match($urlRegex, $string, $rawMatch);
+        $match = $this->createMatch($rawMatch);
         return $this->matchValidator->isValidMatch($match) ? $match : null;
     }
 
@@ -34,15 +35,18 @@ class Matcher
      * Get all valid url regex matches from string
      *
      * @param string $string
-     * @return array
+     * @return array|Match[]
      */
     public function matchAll(string $string): array
     {
         $result = [];
         $urlRegex = $this->getUrlRegex(false);
-        preg_match_all($urlRegex, $string, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $result[] = $this->matchValidator->isValidMatch($match);
+        preg_match_all($urlRegex, $string, $rawMatches, PREG_SET_ORDER);
+        foreach ($rawMatches as $rawMatch) {
+            $match = $this->createMatch($rawMatch);
+            if ($this->matchValidator->isValidMatch($match)) {
+                $result[] = $match;
+            }
         }
         return $result;
     }
@@ -57,10 +61,11 @@ class Matcher
     public function replaceCallback(string $string, callable $callback): string
     {
         $urlRegex = $this->getUrlRegex(false);
-        $callbackWithMatchValidator = function ($match) use ($callback) {
-            return $this->matchValidator->isValidMatch($match) ? $callback($match) : $match[0];
+        $rawMatchCallback = function (array $rawMatch) use ($callback) {
+            $match = $this->createMatch($rawMatch);
+            return $this->matchValidator->isValidMatch($match) ? $callback($match) : $match->getFullMatch();
         };
-        return preg_replace_callback($urlRegex, $callbackWithMatchValidator, $string) ?? $string;
+        return preg_replace_callback($urlRegex, $rawMatchCallback, $string) ?? $string;
     }
 
     /**
@@ -115,5 +120,14 @@ class Matcher
                 )
             )?
         ' . $suffix . '/ixuJ';
+    }
+
+    private function createMatch(array $rawMatch): Match
+    {
+        $scheme = $rawMatch['scheme'] ?? null;
+        $local = $rawMatch['local'] ?? null;
+        $host = $rawMatch['host'] ?? null;
+        $tld = $rawMatch['tld'] ?? null;
+        return new Match($rawMatch[0], $scheme, $local, $host, $tld);
     }
 }

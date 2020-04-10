@@ -37,22 +37,22 @@ class MatchValidator
     /**
      * Verify if url match (scheme or host) fit config requirements
      *
-     * @param array $match
+     * @param Match $match
      * @return bool
      */
-    public function isValidMatch(array $match): bool
+    public function isValidMatch(Match $match): bool
     {
-        $scheme = $match['scheme'] ?? null;
+        $scheme = $match->getScheme();
         if ($scheme) {
             return $this->isAllowedScheme($scheme);
         }
 
-        $local = $match['local'] ?? null;
+        $local = $match->getLocal();
         if ($local) {
             return false; // TODO: email, not valid for now
         }
 
-        $tld = $match['tld'] ?? null;
+        $tld = $match->getTld();
         if ($tld && $this->matchByTLD) {
             return $this->isValidTopLevelDomain($tld);
         }
