@@ -35,7 +35,7 @@ class MatchValidatorTest extends TestCase
     public function isValidMatchDataProvider(): array
     {
         return [
-            [true, [], [], new Match('', null, null, null, null), false],
+            [true, [], [], $this->getMatch(null, null, null, null), false],
             [true, [], [], $this->getMatch('http', null, null, null), true],
             [true, [], [], $this->getMatch(null, null, 'example.com', 'com'), true],
             [true, [], [], $this->getMatch(null, null, 'filename.txt', 'txt'), false],
