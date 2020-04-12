@@ -120,7 +120,7 @@ class MatcherTest extends TestCase
     ];
 
     /**
-     * @var MatchValidator|MockObject
+     * @var MockObject
      */
     private $matchValidator;
 
@@ -155,6 +155,9 @@ class MatcherTest extends TestCase
         $this->assertEquals($expected, $actual, 'Dataset: ' . json_encode(['string' => $string, 'isValid' => $isValid, 'match' => $match]));
     }
 
+    /**
+     * @return array|array[]
+     */
     public function matchDataProvider(): array
     {
         $result = [];
@@ -169,7 +172,7 @@ class MatcherTest extends TestCase
      * @dataProvider matchAllDataProvider
      *
      * @param string $string
-     * @param array|bool $isValidMap
+     * @param array|bool[] $isValidMap
      * @param array|mixed[] $expected
      */
     public function testMatchAll(string $string, array $isValidMap, array $expected): void
@@ -183,6 +186,9 @@ class MatcherTest extends TestCase
         $this->assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
+    /**
+     * @return array|array[]
+     */
     public function matchAllDataProvider(): array
     {
         $enclosed = ['\'%s\'', '"%s"', '(%s)', '{%s}', '[%s]', '<%s>', 'Example text before %s and after.', 'Text with <%s> (including brackets).'];
@@ -243,6 +249,9 @@ class MatcherTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    /**
+     * @return array|array[]
+     */
     public function replaceCallbackDataProvider(): array
     {
         $result = [];
