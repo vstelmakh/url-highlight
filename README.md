@@ -1,13 +1,19 @@
-![Url highlight](./resources/url-highlight-logo.svg)
----
-[![Build status](https://github.com/vstelmakh/url-highlight/workflows/build/badge.svg?branch=master)](https://github.com/vstelmakh/url-highlight/actions)
-[![PHP version](https://img.shields.io/packagist/php-v/vstelmakh/url-highlight)](https://www.php.net/)
-[![License](https://img.shields.io/github/license/vstelmakh/url-highlight)](LICENSE)
+<img src="./resources/url-highlight-logo.svg" width="286" height="93" alt="Url highlight logo">
 
-**Url highlight** - PHP library to parse urls from string input. Current features:
-- Check if string is url
-- Parse urls from string
+---
+
+[![Build status](https://github.com/vstelmakh/url-highlight/workflows/build/badge.svg?branch=master)](https://github.com/vstelmakh/url-highlight/actions)
+[![Packagist version](https://badgen.net/packagist/v/vstelmakh/url-highlight?color=orange)](https://packagist.org/packages/vstelmakh/url-highlight)
+[![PHP version](https://badgen.net/packagist/php/vstelmakh/url-highlight?color=blue)](https://www.php.net/)
+[![License](https://badgen.net/github/license/vstelmakh/url-highlight?color=4d9384)](LICENSE)
+
+**Url highlight** - PHP library to parse urls from string input. Works with complex urls and edge cases.  
+
+Current features:
+- Match urls without scheme by top-level domain
 - Replace urls in string by html tags
+- Extract urls from string
+- Check if string is url
 
 ## Installation
 Install the latest version with [composer](https://getcomposer.org/):  
@@ -15,11 +21,10 @@ Install the latest version with [composer](https://getcomposer.org/):
 composer require vstelmakh/url-highlight
 ```
 Also, there are
- [![Twig](./resources/twig-logo.png) Twig extension](https://github.com/vstelmakh/url-highlight-twig-extension)
- and [![Symfony](./resources/symfony-logo.png) Symfony bundle](https://github.com/vstelmakh/url-highlight-symfony-bundle) available.  
+ [<img src="./resources/twig-logo.png" width="8" height="12" alt="Twig logo"> Twig extension](https://github.com/vstelmakh/url-highlight-twig-extension)
+ and [<img src="./resources/symfony-logo.png" width="12" height="12" alt="Symfony logo"> Symfony bundle](https://github.com/vstelmakh/url-highlight-symfony-bundle) available.  
 
-## Setup
-Just instantiate class object:  
+## Quick start  
 ```php
 <?php
 require __DIR__ . '/vendor/autoload.php';
@@ -27,6 +32,10 @@ require __DIR__ . '/vendor/autoload.php';
 use VStelmakh\UrlHighlight\UrlHighlight;
 
 $urlHighlight = new UrlHighlight();
+echo $urlHighlight->highlightUrls('Hello, http://example.com.');
+
+// Output:
+// Hello, <a href="http://example.com">http://example.com</a>.
 ```
 
 ## Configuration
