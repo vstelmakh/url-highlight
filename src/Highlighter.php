@@ -31,15 +31,23 @@ class Highlighter
      */
     public function highlightUrls(string $string): string
     {
-        $callback = function (Match $match): string {
-            $scheme = $match->getScheme() === null ? $this->defaultScheme . '://' : '';
-            $fullMatch = $match->getFullMatch();
-            return sprintf('<a href="%s%s">%s</a>', $scheme, $fullMatch, $fullMatch);
-        };
-        $result = $this->matcher->replaceCallback($string, $callback);
+        $result = $this->matcher->replaceCallback($string, [$this, 'getMatchAsHighlight']);
         $result = $this->filterHighlightInTagAttributes($result);
         $result = $this->filterHighlightInLinks($result);
         return $result;
+    }
+
+    /**
+     * Convert match to highlighted string
+     *
+     * @param Match $match
+     * @return string
+     */
+    public function getMatchAsHighlight(Match $match): string
+    {
+        $scheme = $match->getScheme() === null ? $this->defaultScheme . '://' : '';
+        $fullMatch = $match->getFullMatch();
+        return sprintf('<a href="%s%s">%s</a>', $scheme, $fullMatch, $fullMatch);
     }
 
     /**
