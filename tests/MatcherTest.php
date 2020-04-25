@@ -81,6 +81,7 @@ class MatcherTest extends TestCase
         ['example.name', true, [null, null, 'example.name', 'name']],
         ['example.xxx', true, [null, null, 'example.xxx', 'xxx']],
         ['example.com/with/%50,co_mm@$,in,url', true, [null, null, 'example.com', 'com']],
+        ['example.com:80', true, [null, null, 'example.com', 'com']],
 
         // Combined
         [
@@ -193,8 +194,7 @@ class MatcherTest extends TestCase
     {
         $enclosed = ['\'%s\'', '"%s"', '(%s)', '{%s}', '[%s]', '<%s>', 'Example text before %s and after.', 'Text with <%s> (including brackets).'];
         $invalidPrefixChars = ['`', '~', '!', '#', '$', '%', '^', '&', '*', '(', ')', '_', '=', '+', '[', ']', '{', '}', ';', '\'', '"', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’', '/', '\\', '|', ':', '@', '-', '.'];
-//        $invalidSuffixChars = ['`', '!', '(', ')', '[', ']', '{', '}', ';', ':', '\'', '"', '.', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’']; // TODO: fails with colon
-        $invalidSuffixChars = ['`', '!', '(', ')', '[', ']', '{', '}', ';', '\'', '"', '.', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’'];
+        $invalidSuffixChars = ['`', '!', '(', ')', '[', ']', '{', '}', ';', ':', '\'', '"', '.', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’'];
 
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {

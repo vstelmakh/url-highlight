@@ -107,10 +107,10 @@ class Matcher
                     )*                                                             
                     \.(?<tld>\w{2,63})                                         # tld length (captured only if match by host) 
                 )
-                [\/:]?                                                     # end with \/ or : 
+                (?:\/|:\d)?                                                # end with slash or port
             )  
             (?:                                                        # port, path, query, fragment (one or none)
-                (?<=[\/:])                                                 # prefixed with \/ or :
+                (?<=[\/:\d])                                               # prefixed with slash or port
                 (?:                                                        # one or more:
                     [^\s()<>]+                                                 # run of non-space, non-()<>
                     |                                                          # or
