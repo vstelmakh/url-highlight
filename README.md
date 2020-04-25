@@ -1,5 +1,7 @@
-![Url highlight](./resources/url-highlight-logo.svg)
+<img src="./resources/url-highlight-logo.svg" width="286" height="93" alt="Url highlight logo">
+
 ---
+
 [![Build status](https://github.com/vstelmakh/url-highlight/workflows/build/badge.svg?branch=master)](https://github.com/vstelmakh/url-highlight/actions)
 [![PHP version](https://img.shields.io/packagist/php-v/vstelmakh/url-highlight)](https://www.php.net/)
 [![License](https://img.shields.io/github/license/vstelmakh/url-highlight)](LICENSE)
@@ -15,8 +17,8 @@ Install the latest version with [composer](https://getcomposer.org/):
 composer require vstelmakh/url-highlight
 ```
 Also, there are
- [![Twig](./resources/twig-logo.png) Twig extension](https://github.com/vstelmakh/url-highlight-twig-extension)
- and [![Symfony](./resources/symfony-logo.png) Symfony bundle](https://github.com/vstelmakh/url-highlight-symfony-bundle) available.  
+ [<img src="./resources/twig-logo.png" width="8" height="12" alt="Twig logo"> Twig extension](https://github.com/vstelmakh/url-highlight-twig-extension)
+ and [<img src="./resources/symfony-logo.png" width="12" height="12" alt="Symfony logo"> Symfony bundle](https://github.com/vstelmakh/url-highlight-symfony-bundle) available.  
 
 ## Setup
 Just instantiate class object:  
