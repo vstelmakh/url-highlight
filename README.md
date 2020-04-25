@@ -20,8 +20,7 @@ Also, there are
  [<img src="./resources/twig-logo.png" width="8" height="12" alt="Twig logo"> Twig extension](https://github.com/vstelmakh/url-highlight-twig-extension)
  and [<img src="./resources/symfony-logo.png" width="12" height="12" alt="Symfony logo"> Symfony bundle](https://github.com/vstelmakh/url-highlight-symfony-bundle) available.  
 
-## Setup
-Just instantiate class object:  
+## Quick start  
 ```php
 <?php
 require __DIR__ . '/vendor/autoload.php';
@@ -29,6 +28,10 @@ require __DIR__ . '/vendor/autoload.php';
 use VStelmakh\UrlHighlight\UrlHighlight;
 
 $urlHighlight = new UrlHighlight();
+echo $urlHighlight->highlightUrls('Hello, http://example.com.');
+
+// Output:
+// Hello, <a href="http://example.com">http://example.com</a>.
 ```
 
 ## Configuration
