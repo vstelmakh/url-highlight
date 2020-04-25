@@ -7,10 +7,13 @@
 [![PHP version](https://badgen.net/packagist/php/vstelmakh/url-highlight?color=blue)](https://www.php.net/)
 [![License](https://badgen.net/github/license/vstelmakh/url-highlight?color=yellow)](LICENSE)
 
-**Url highlight** - PHP library to parse urls from string input. Current features:
-- Check if string is url
-- Parse urls from string
+**Url highlight** - PHP library to parse urls from string input. Works with complex urls and edge cases.  
+
+Current features:
+- Match urls without scheme by top-level domain
 - Replace urls in string by html tags
+- Extract urls from string
+- Check if string is url
 
 ## Installation
 Install the latest version with [composer](https://getcomposer.org/):  
