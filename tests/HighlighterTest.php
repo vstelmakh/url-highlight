@@ -11,7 +11,7 @@ use VStelmakh\UrlHighlight\Matcher;
 class HighlighterTest extends TestCase
 {
     /**
-     * @var Matcher|MockObject
+     * @var Matcher&MockObject
      */
     private $matcher;
 
@@ -37,6 +37,9 @@ class HighlighterTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
+    /**
+     * @return array|array[]
+     */
     public function highlightUrlsDataProvider(): array
     {
         return [
@@ -65,6 +68,9 @@ class HighlighterTest extends TestCase
 
     /**
      * @dataProvider getMatchAsHighlightDataProvider
+     *
+     * @param array|array[] $matchData
+     * @param string $expected
      */
     public function testGetMatchAsHighlight(array $matchData, string $expected): void
     {
@@ -78,6 +84,9 @@ class HighlighterTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
+    /**
+     * @return array|array[]
+     */
     public function getMatchAsHighlightDataProvider(): array
     {
         return [

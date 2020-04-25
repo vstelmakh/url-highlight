@@ -121,7 +121,7 @@ class MatcherTest extends TestCase
     ];
 
     /**
-     * @var MockObject
+     * @var MatchValidator&MockObject
      */
     private $matchValidator;
 
