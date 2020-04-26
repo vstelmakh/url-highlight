@@ -1,0 +1,18 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+ij_continuation_indent_size = 4
+
+[*.php]
+ij_php_variable_naming_style = camel_case
+ij_php_method_brace_style = next_line
+
+[{*.yml,*.yaml}]
+ij_yaml_keep_indents_on_empty_lines = false
+ij_yaml_keep_line_breaks = true
