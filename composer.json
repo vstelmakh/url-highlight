@@ -4,6 +4,13 @@
     "keywords": ["url", "parser", "html"],
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/vstelmakh/url-highlight",
+    "authors": [
+        {
+            "name": "Volodymyr Stelmakh",
+            "homepage": "https://github.com/vstelmakh"
+        }
+    ],
     "require": {
         "php": "^7.1",
         "ext-mbstring": "*"

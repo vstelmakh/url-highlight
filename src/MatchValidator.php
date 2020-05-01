@@ -3,19 +3,23 @@
 namespace VStelmakh\UrlHighlight;
 
 /**
- * Class to verify if url scheme or host fit the requirements
- *
  * @internal
  */
 class MatchValidator
 {
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $matchByTLD;
 
-    /** @var NormalizedCollection */
+    /**
+     * @var NormalizedCollection
+     */
     private $schemeBlacklist;
 
-    /** @var NormalizedCollection */
+    /**
+     * @var NormalizedCollection
+     */
     private $schemeWhitelist;
 
     /**
@@ -31,26 +35,24 @@ class MatchValidator
     }
 
     /**
-     * @param string|null $scheme
-     * @param string|null $local
-     * @param string|null $host
-     * @param string|null $tld
+     * Verify if url match (scheme or host) fit config requirements
+     *
+     * @param Match $match
      * @return bool
      */
-    public function isValidUrl(?string $scheme = null, ?string $local = null, ?string $host = null, ?string $tld = null): bool
+    public function isValidMatch(Match $match): bool
     {
+        $scheme = $match->getScheme();
         if ($scheme) {
             return $this->isAllowedScheme($scheme);
         }
 
+        $local = $match->getLocal();
         if ($local) {
             return false; // TODO: email, not valid for now
         }
 
-        if ($host && !$this->isValidHost($host)) {
-            return false;
-        }
-
+        $tld = $match->getTld();
         if ($tld && $this->matchByTLD) {
             return $this->isValidTopLevelDomain($tld);
         }
@@ -67,16 +69,6 @@ class MatchValidator
         $isAllowedByBlacklist = !$this->schemeBlacklist->isContains($scheme);
         $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->isContains($scheme);
         return $isAllowedByBlacklist && $isAllowedByWhitelist;
-    }
-
-    /**
-     * @param string $host
-     * @return bool
-     */
-    private function isValidHost(string $host): bool
-    {
-        // TODO: implement host validation
-        return true;
     }
 
     /**
