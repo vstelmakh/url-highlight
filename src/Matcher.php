@@ -30,7 +30,7 @@ class Matcher
         if (empty($rawMatch)) {
             return null;
         }
-        $match = $this->createMatch($rawMatch);
+        $match = $this->createMatchOffset($rawMatch);
         return $this->matchValidator->isValidMatch($match) ? $match : null;
     }
 
@@ -46,7 +46,7 @@ class Matcher
         $urlRegex = $this->getUrlRegex(false);
         preg_match_all($urlRegex, $string, $rawMatches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE);
         foreach ($rawMatches as $rawMatch) {
-            $match = $this->createMatch($rawMatch);
+            $match = $this->createMatchOffset($rawMatch);
             if ($this->matchValidator->isValidMatch($match)) {
                 $result[] = $match;
             }
@@ -68,14 +68,7 @@ class Matcher
             $match = $this->createMatch($rawMatch);
             return $this->matchValidator->isValidMatch($match) ? $callback($match) : $match->getFullMatch();
         };
-        return preg_replace_callback(
-            $urlRegex,
-            $rawMatchCallback,
-            $string,
-            -1,
-            $count,
-            PREG_OFFSET_CAPTURE
-        ) ?? $string;
+        return preg_replace_callback($urlRegex, $rawMatchCallback, $string) ?? $string;
     }
 
     /**
@@ -133,10 +126,12 @@ class Matcher
     }
 
     /**
-     * @param array|string[] $rawMatch
+     * Offset not available for preg_replace_callback on PHP 7.1
+     *
+     * @param array|mixed[] $rawMatch
      * @return Match
      */
-    private function createMatch(array $rawMatch): Match
+    private function createMatchOffset(array $rawMatch): Match
     {
         return new Match(
             $rawMatch[0][0],
@@ -145,6 +140,22 @@ class Matcher
             $rawMatch['host'][0] ?? null,
             $rawMatch['tld'][0] ?? null,
             $rawMatch[0][1]
+        );
+    }
+
+    /**
+     * @param array|string[] $rawMatch
+     * @return Match
+     */
+    private function createMatch(array $rawMatch): Match
+    {
+        return new Match(
+            $rawMatch[0],
+            $rawMatch['scheme'] ?? null,
+            $rawMatch['local'] ?? null,
+            $rawMatch['host'] ?? null,
+            $rawMatch['tld'] ?? null,
+            null
         );
     }
 }

@@ -75,6 +75,6 @@ class MatchValidatorTest extends TestCase
 
     private function getMatch(?string $scheme, ?string $local, ?string $host, ?string $tld): Match
     {
-        return new Match('', $scheme, $local, $host, $tld);
+        return new Match('', $scheme, $local, $host, $tld, null);
     }
 }

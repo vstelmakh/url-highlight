@@ -33,7 +33,7 @@ class Match
     private $tld;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $byteOffset;
 
@@ -43,7 +43,7 @@ class Match
         ?string $local,
         ?string $host,
         ?string $tld,
-        int $byteOffset
+        ?int $byteOffset
     ) {
         $this->fullMatch = $fullMatch;
         $this->scheme = $this->getNotEmptyStringOrNull($scheme);
@@ -97,9 +97,9 @@ class Match
      * preg_* functions with flag PREG_OFFSET_CAPTURE return offset in bytes.
      * Keep this in mind working with multi byte encodings.
      *
-     * @return int
+     * @return int|null
      */
-    public function getByteOffset(): int
+    public function getByteOffset(): ?int
     {
         return $this->byteOffset;
     }
