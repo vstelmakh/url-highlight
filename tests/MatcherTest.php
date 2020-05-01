@@ -163,7 +163,7 @@ class MatcherTest extends TestCase
     {
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, $matchData, true);
+            $match = $this->getMatchDataAsMatch($url, $matchData, true, 0);
             $result[] = [$url, $isValid, $match];
         }
         return $result;
@@ -192,31 +192,35 @@ class MatcherTest extends TestCase
      */
     public function matchAllDataProvider(): array
     {
-        $enclosed = ['\'%s\'', '"%s"', '(%s)', '{%s}', '[%s]', '<%s>', 'Example text before %s and after.', 'Text with <%s> (including brackets).'];
+        $enclosed = ['\'%s\'' => 1, '"%s"' => 1, '(%s)' => 1, '{%s}' => 1, '[%s]' => 1, '<%s>' => 1, 'Example text before %s and after.' => 20, 'Text with <%s> (including brackets).' => 11];
         $invalidPrefixChars = ['`', '~', '!', '#', '$', '%', '^', '&', '*', '(', ')', '_', '=', '+', '[', ']', '{', '}', ';', '\'', '"', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’', '/', '\\', '|', ':', '@', '-', '.'];
         $invalidSuffixChars = ['`', '!', '(', ')', '[', ']', '{', '}', ';', ':', '\'', '"', '.', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’'];
 
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, $matchData, false);
             $isValidMap = ($matchData !== null) ? [$isValid] : [];
-            $expected = $isValid ? [$match] : [];
 
             if ($isValid) {
-                foreach ($enclosed as $item) {
+                foreach ($enclosed as $item => $byteOffset) {
+                    $expected = $isValid ? [$this->getMatchDataAsMatch($url, $matchData, false, $byteOffset)] : [];
                     $result[] = [sprintf($item, $url), $isValidMap, $expected];
                 }
+
+                $expected = $isValid ? [$this->getMatchDataAsMatch($url, $matchData, false, 20)] : [];
+                $secondMatchByteOffset = 79 + strlen($url);
                 $result[] = [
                     sprintf('Example text before %s and after. Open filename.txt at 3:00pm. For more info see http://google.com.', $url),
                     array_merge($isValidMap, [false, true]),
-                    array_merge($expected, [new Match('http://google.com', 'http', null, null, null)])
+                    array_merge($expected, [new Match('http://google.com', 'http', null, null, null, $secondMatchByteOffset)])
                 ];
 
                 foreach ($invalidPrefixChars as $prefix) {
+                    $expected = $isValid ? [$this->getMatchDataAsMatch($url, $matchData, false, strlen($prefix))] : [];
                     $result[] = [$prefix . $url, $isValidMap, $expected];
                 }
 
                 foreach ($invalidSuffixChars as $suffix) {
+                    $expected = $isValid ? [$this->getMatchDataAsMatch($url, $matchData, false, 0)] : [];
                     $result[] = [$url . $suffix, $isValidMap, $expected];
                 }
             }
@@ -257,7 +261,7 @@ class MatcherTest extends TestCase
     {
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, $matchData, false);
+            $match = $this->getMatchDataAsMatch($url, $matchData, false, 20);
             $string = sprintf('Example text before %s and after.', $url);
             $output = $isValid ? 'Example text before REPLACE and after.' : $string;
             $result[] = [$string, $isValid, $match, $output];
@@ -269,9 +273,10 @@ class MatcherTest extends TestCase
      * @param string $url
      * @param array|mixed[]|null $matchData
      * @param bool $isStrict
+     * @param int $byteOffset
      * @return Match|null
      */
-    private function getMatchDataAsMatch(string $url, ?array $matchData, bool $isStrict): ?Match
+    private function getMatchDataAsMatch(string $url, ?array $matchData, bool $isStrict, int $byteOffset = 0): ?Match
     {
         if ($matchData === null) {
             return null;
@@ -284,6 +289,8 @@ class MatcherTest extends TestCase
         if ($isStrict && $matchData[0] !== $url) {
             return null;
         }
+
+        $matchData[] = $byteOffset;
 
         return new Match(...$matchData);
     }

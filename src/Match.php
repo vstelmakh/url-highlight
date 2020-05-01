@@ -32,13 +32,25 @@ class Match
      */
     private $tld;
 
-    public function __construct(string $fullMatch, ?string $scheme, ?string $local, ?string $host, ?string $tld)
-    {
+    /**
+     * @var int
+     */
+    private $byteOffset;
+
+    public function __construct(
+        string $fullMatch,
+        ?string $scheme,
+        ?string $local,
+        ?string $host,
+        ?string $tld,
+        int $byteOffset
+    ) {
         $this->fullMatch = $fullMatch;
         $this->scheme = $this->getNotEmptyStringOrNull($scheme);
         $this->local = $this->getNotEmptyStringOrNull($local);
         $this->host = $this->getNotEmptyStringOrNull($host);
         $this->tld = $this->getNotEmptyStringOrNull($tld);
+        $this->byteOffset = $byteOffset;
     }
 
     /**
@@ -64,6 +76,7 @@ class Match
     {
         return $this->local;
     }
+
     /**
      * @return string|null
      */
@@ -78,6 +91,17 @@ class Match
     public function getTld(): ?string
     {
         return $this->tld;
+    }
+
+    /**
+     * preg_* functions with flag PREG_OFFSET_CAPTURE return offset in bytes.
+     * Keep this in mind working with multi byte encodings.
+     *
+     * @return int
+     */
+    public function getByteOffset(): int
+    {
+        return $this->byteOffset;
     }
 
     /**

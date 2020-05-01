@@ -26,7 +26,7 @@ class Matcher
     public function match(string $string): ?Match
     {
         $urlRegex = $this->getUrlRegex(true);
-        preg_match($urlRegex, $string, $rawMatch);
+        preg_match($urlRegex, $string, $rawMatch, PREG_OFFSET_CAPTURE);
         if (empty($rawMatch)) {
             return null;
         }
@@ -44,7 +44,7 @@ class Matcher
     {
         $result = [];
         $urlRegex = $this->getUrlRegex(false);
-        preg_match_all($urlRegex, $string, $rawMatches, PREG_SET_ORDER);
+        preg_match_all($urlRegex, $string, $rawMatches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE);
         foreach ($rawMatches as $rawMatch) {
             $match = $this->createMatch($rawMatch);
             if ($this->matchValidator->isValidMatch($match)) {
@@ -68,7 +68,14 @@ class Matcher
             $match = $this->createMatch($rawMatch);
             return $this->matchValidator->isValidMatch($match) ? $callback($match) : $match->getFullMatch();
         };
-        return preg_replace_callback($urlRegex, $rawMatchCallback, $string) ?? $string;
+        return preg_replace_callback(
+            $urlRegex,
+            $rawMatchCallback,
+            $string,
+            -1,
+            $count,
+            PREG_OFFSET_CAPTURE
+        ) ?? $string;
     }
 
     /**
@@ -131,10 +138,13 @@ class Matcher
      */
     private function createMatch(array $rawMatch): Match
     {
-        $scheme = $rawMatch['scheme'] ?? null;
-        $local = $rawMatch['local'] ?? null;
-        $host = $rawMatch['host'] ?? null;
-        $tld = $rawMatch['tld'] ?? null;
-        return new Match($rawMatch[0], $scheme, $local, $host, $tld);
+        return new Match(
+            $rawMatch[0][0],
+            $rawMatch['scheme'][0] ?? null,
+            $rawMatch['local'][0] ?? null,
+            $rawMatch['host'][0] ?? null,
+            $rawMatch['tld'][0] ?? null,
+            $rawMatch[0][1]
+        );
     }
 }
