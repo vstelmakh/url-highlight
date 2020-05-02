@@ -1,8 +1,10 @@
 <?php
 
-namespace VStelmakh\UrlHighlight;
+namespace VStelmakh\UrlHighlight\Util;
 
 /**
+ * Store unique string values. Case insensitive.
+ *
  * @internal
  */
 class NormalizedCollection

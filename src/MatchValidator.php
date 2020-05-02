@@ -2,6 +2,8 @@
 
 namespace VStelmakh\UrlHighlight;
 
+use VStelmakh\UrlHighlight\Util\NormalizedCollection;
+
 /**
  * @internal
  */

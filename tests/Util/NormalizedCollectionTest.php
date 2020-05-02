@@ -1,8 +1,8 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Tests;
+namespace VStelmakh\UrlHighlight\Tests\Util;
 
-use VStelmakh\UrlHighlight\NormalizedCollection;
+use VStelmakh\UrlHighlight\Util\NormalizedCollection;
 use PHPUnit\Framework\TestCase;
 
 class NormalizedCollectionTest extends TestCase
