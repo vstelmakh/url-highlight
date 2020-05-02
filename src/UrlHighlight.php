@@ -108,8 +108,7 @@ class UrlHighlight
             case self::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS:
                 return new HtmlSpecialCharsHighlighter($this->matcher, $defaultScheme);
             default:
-                // TODO: Change to lib own exception
-                throw new \RuntimeException(sprintf(
+                throw new \InvalidArgumentException(sprintf(
                     'Unsupported highlighter type provided "%s". Supported types [%s].',
                     $type,
                     implode(', ', [self::HIGHLIGHT_TYPE_PLAIN_TEXT, self::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS])

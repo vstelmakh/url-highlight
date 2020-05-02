@@ -164,7 +164,7 @@ class UrlHighlightTest extends TestCase
     public function testOptionsHighlightType(string $highlightType, string $input, string $expected): void
     {
         if ($highlightType === 'unsupported_type') {
-            $this->expectException(\RuntimeException::class);
+            $this->expectException(\InvalidArgumentException::class);
         }
 
         $options = ['highlight_type' => $highlightType];
