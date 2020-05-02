@@ -8,6 +8,30 @@ use PHPUnit\Framework\TestCase;
 class NormalizedCollectionTest extends TestCase
 {
     /**
+     * @dataProvider toArrayDataProvider
+     *
+     * @param array&string[] $values
+     * @param array&string[] $expected
+     */
+    public function testToArray(array $values, array $expected): void
+    {
+        $normalizedCollection = new NormalizedCollection($values);
+        $actual = $normalizedCollection->toArray();
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function toArrayDataProvider(): array
+    {
+        return [
+            [[], []],
+            [['value_1', 'value_2', 'vaLUE_1'], ['value_1', 'value_2']],
+        ];
+    }
+
+    /**
      * @dataProvider containsDataProvider
      *
      * @param array|string[] $values

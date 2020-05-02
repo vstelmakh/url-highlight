@@ -10,16 +10,24 @@ namespace VStelmakh\UrlHighlight\Util;
 class NormalizedCollection
 {
     /**
-     * @var array|string[]
+     * @var array&string[]
      */
     private $values;
 
     /**
-     * @param array|string[] $values
+     * @param array&string[] $values
      */
     public function __construct(array $values)
     {
         $this->values = $this->getNormalizedMap($values);
+    }
+
+    /**
+     * @return array&string[]
+     */
+    public function toArray(): array
+    {
+        return array_values($this->values);
     }
 
     /**
@@ -41,8 +49,8 @@ class NormalizedCollection
     }
 
     /**
-     * @param array|string[] $array
-     * @return array|string[]
+     * @param array&string[] $array
+     * @return array&string[]
      */
     private function getNormalizedMap(array $array): array
     {
