@@ -68,8 +68,8 @@ class MatchValidator
      */
     private function isAllowedScheme(string $scheme): bool
     {
-        $isAllowedByBlacklist = !$this->schemeBlacklist->isContains($scheme);
-        $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->isContains($scheme);
+        $isAllowedByBlacklist = !$this->schemeBlacklist->contains($scheme);
+        $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->contains($scheme);
         return $isAllowedByBlacklist && $isAllowedByWhitelist;
     }
 
