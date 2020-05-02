@@ -8,7 +8,7 @@ use VStelmakh\UrlHighlight\Matcher;
 /**
  * @internal
  */
-class HtmlEntityHighlighter
+class HtmlSpecialCharsHighlighter extends AbstractHighlighter
 {
     private const BYTES_PER_CHAR = 4;
 
@@ -51,10 +51,11 @@ class HtmlEntityHighlighter
                 $this->getFullMatchRegex($match),
                 $this->getCharVariationsRegex($charAfter)
             );
-            $regexes[] = $regex;
+            $regexes[] = $regex; // TODO: filter duplicate regexes
             $replacements[] = $this->getMatchReplacement($match);
         }
 
+        // TODO: add filters
         return preg_replace($regexes, $replacements, $string) ?? $string;
     }
 
@@ -97,16 +98,18 @@ class HtmlEntityHighlighter
      */
     private function getFullMatchRegex(Match $match): string
     {
-        $search = ['&', '"', '\'', '<', '>'];
+        $htmlSpecialChars = ['&', '"', '\'', '<', '>'];
         $replace = [];
-        foreach ($search as $char) {
+        foreach ($htmlSpecialChars as $char) {
             $replace[] = '(?:' . $this->getCharVariationsRegex($char) . ')';
         }
         $fullMatchRegexSafe = preg_quote($match->getFullMatch(), '/');
-        return str_replace($search, $replace, $fullMatchRegexSafe);
+        return str_replace($htmlSpecialChars, $replace, $fullMatchRegexSafe);
     }
 
     /**
+     * TODO: add char code support
+     *
      * @param string $char
      * @return string
      */
@@ -123,6 +126,8 @@ class HtmlEntityHighlighter
     }
 
     /**
+     * TODO: move to abstract
+     *
      * @param Match $match
      * @return string
      */

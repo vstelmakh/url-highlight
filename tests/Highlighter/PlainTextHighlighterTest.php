@@ -1,23 +1,29 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Tests;
+namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Highlighter;
+use VStelmakh\UrlHighlight\Highlighter\PlainTextHighlighter;
 use VStelmakh\UrlHighlight\Match;
 use VStelmakh\UrlHighlight\Matcher;
 
-class HighlighterTest extends TestCase
+class PlainTextHighlighterTest extends TestCase
 {
     /**
      * @var Matcher&MockObject
      */
     private $matcher;
 
+    /**
+     * @var PlainTextHighlighter
+     */
+    private $highlighter;
+
     public function setUp(): void
     {
         $this->matcher = $this->createMock(Matcher::class);
+        $this->highlighter = new PlainTextHighlighter($this->matcher, 'http');
     }
 
     /**
@@ -25,15 +31,13 @@ class HighlighterTest extends TestCase
      */
     public function testHighlightUrls(string $input, string $matcherResult, string $expected): void
     {
-        $highlighter = new Highlighter($this->matcher, 'http');
-
         $this->matcher
             ->expects($this->once())
             ->method('replaceCallback')
-            ->with($this->equalTo($input), $this->identicalTo([$highlighter, 'getMatchAsHighlight']))
+            ->with($this->equalTo($input), $this->identicalTo([$this->highlighter, 'getMatchAsHighlight']))
             ->willReturn($matcherResult);
 
-        $actual = $highlighter->highlightUrls($input);
+        $actual = $this->highlighter->highlightUrls($input);
         $this->assertSame($expected, $actual);
     }
 
@@ -79,8 +83,7 @@ class HighlighterTest extends TestCase
             $match->method($methodName)->willReturn($returnValue);
         }
 
-        $highlighter = new Highlighter($this->matcher, 'http');
-        $actual = $highlighter->getMatchAsHighlight($match);
+        $actual = $this->highlighter->getMatchAsHighlight($match);
         $this->assertSame($expected, $actual);
     }
 

@@ -3,7 +3,7 @@
 namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VStelmakh\UrlHighlight\Highlighter\HtmlEntityHighlighter;
+use VStelmakh\UrlHighlight\Highlighter\HtmlSpecialCharsHighlighter;
 use PHPUnit\Framework\TestCase;
 use VStelmakh\UrlHighlight\Match;
 use VStelmakh\UrlHighlight\Matcher;
@@ -16,14 +16,14 @@ class HtmlEntityHighlighterTest extends TestCase
     private $matcher;
 
     /**
-     * @var HtmlEntityHighlighter
+     * @var HtmlSpecialCharsHighlighter
      */
     private $highlighter;
 
     public function setUp(): void
     {
         $this->matcher = $this->createMock(Matcher::class);
-        $this->highlighter = new HtmlEntityHighlighter($this->matcher, 'http');
+        $this->highlighter = new HtmlSpecialCharsHighlighter($this->matcher, 'http');
     }
 
     /**

@@ -155,6 +155,50 @@ class UrlHighlightTest extends TestCase
     }
 
     /**
+     * @dataProvider optionsHighlightTypeDataProvider
+     *
+     * @param string $highlightType
+     * @param string $input
+     * @param string $expected
+     */
+    public function testOptionsHighlightType(string $highlightType, string $input, string $expected): void
+    {
+        if ($highlightType === 'unsupported_type') {
+            $this->expectException(\RuntimeException::class);
+        }
+
+        $options = ['highlight_type' => $highlightType];
+        $urlHighlight = new UrlHighlight($options);
+
+        $actual = $urlHighlight->highlightUrls($input);
+        $this->assertSame($expected, $actual);
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function optionsHighlightTypeDataProvider(): array
+    {
+        return [
+            [
+                UrlHighlight::HIGHLIGHT_TYPE_PLAIN_TEXT,
+                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
+                '&lt;a href=&quot;<a href="http://example.com&quot;&gt;example.com&lt;/a&gt">http://example.com&quot;&gt;example.com&lt;/a&gt</a>;',
+            ],
+            [
+                UrlHighlight::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS,
+                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
+                '&lt;a href=&quot;<a href="http://example.com">http://example.com</a>&quot;&gt;<a href="http://example.com">example.com</a>&lt;/a&gt;',
+            ],
+            [
+                'unsupported_type',
+                '',
+                '',
+            ],
+        ];
+    }
+
+    /**
      * @dataProvider optionsDefaultSchemeDataProvider
      *
      * @param string $defaultScheme
