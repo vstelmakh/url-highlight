@@ -2,6 +2,8 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
+use VStelmakh\UrlHighlight\Match;
+
 /**
  * @internal
  */
@@ -14,6 +16,18 @@ abstract class AbstractHighlighter
      * @return string
      */
     abstract public function highlightUrls(string $string): string;
+
+    /**
+     * Create new highlight builder instance
+     *
+     * @param Match $match
+     * @param string $defaultScheme
+     * @return HighlightBuilder
+     */
+    protected function getHighlightBuilder(Match $match, string $defaultScheme): HighlightBuilder
+    {
+        return new HighlightBuilder($match, $defaultScheme);
+    }
 
     /**
      * Filter a tags in html attributes

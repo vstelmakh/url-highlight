@@ -52,7 +52,11 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
                 $this->getCharVariationsRegex($charAfter)
             );
             $regexes[] = $regex; // TODO: filter duplicate regexes
-            $replacements[] = $this->getMatchReplacement($match);
+            $replacements[] = $this->getHighlightBuilder($match, $this->defaultScheme)
+                ->setPrefix('$1')
+                ->setText('$2')
+                ->setSuffix('$3')
+                ->getHighlight();
         }
 
         // TODO: add filters
@@ -123,19 +127,5 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
         }
 
         return implode('|', $variations);
-    }
-
-    /**
-     * TODO: move to abstract
-     *
-     * @param Match $match
-     * @return string
-     */
-    private function getMatchReplacement(Match $match): string
-    {
-        $scheme = $match->getScheme() === null ? $this->defaultScheme . '://' : '';
-        $fullMatch = $match->getFullMatch();
-        $fullMatchSafeQuotes = str_replace('"', '%22', $fullMatch);
-        return sprintf('$1<a href="%s">$2</a>$3', $scheme . $fullMatchSafeQuotes);
     }
 }

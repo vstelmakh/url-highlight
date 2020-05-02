@@ -42,15 +42,12 @@ class PlainTextHighlighter extends AbstractHighlighter
 
     /**
      * Convert match to highlighted string
-     * TODO: move to abstract or add double quote escape
      *
      * @param Match $match
      * @return string
      */
     public function getMatchAsHighlight(Match $match): string
     {
-        $scheme = $match->getScheme() === null ? $this->defaultScheme . '://' : '';
-        $fullMatch = $match->getFullMatch();
-        return sprintf('<a href="%s%s">%s</a>', $scheme, $fullMatch, $fullMatch);
+        return $this->getHighlightBuilder($match, $this->defaultScheme)->getHighlight();
     }
 }
