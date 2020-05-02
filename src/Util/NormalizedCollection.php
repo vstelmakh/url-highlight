@@ -12,14 +12,14 @@ class NormalizedCollection
     /**
      * @var array&string[]
      */
-    private $values;
+    private $values = [];
 
     /**
      * @param array&string[] $values
      */
-    public function __construct(array $values)
+    public function __construct(array $values = [])
     {
-        $this->values = $this->getNormalizedMap($values);
+        $this->setFromArray($values);
     }
 
     /**
@@ -28,6 +28,15 @@ class NormalizedCollection
     public function toArray(): array
     {
         return array_values($this->values);
+    }
+
+    /**
+     * @param string $value
+     */
+    public function add(string $value): void
+    {
+        $value = $this->normalize($value);
+        $this->values[$value] = $value;
     }
 
     /**
@@ -50,16 +59,13 @@ class NormalizedCollection
 
     /**
      * @param array&string[] $array
-     * @return array&string[]
+     * @return void
      */
-    private function getNormalizedMap(array $array): array
+    private function setFromArray(array $array): void
     {
-        $result = [];
         foreach ($array as $value) {
-            $value = $this->normalize($value);
-            $result[$value] = $value;
+            $this->add($value);
         }
-        return $result;
     }
 
     /**

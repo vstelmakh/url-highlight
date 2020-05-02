@@ -32,6 +32,33 @@ class NormalizedCollectionTest extends TestCase
     }
 
     /**
+     * @dataProvider addDataProvider
+     *
+     * @param array&string[] $values
+     * @param array&string[] $expected
+     */
+    public function testAdd(array $values, array $expected): void
+    {
+        $normalizedCollection = new NormalizedCollection([]);
+        foreach ($values as $value) {
+            $normalizedCollection->add($value);
+        }
+        $actual = $normalizedCollection->toArray();
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function addDataProvider(): array
+    {
+        return [
+            [[], []],
+            [['value_1', 'value_2', 'vaLUE_1'], ['value_1', 'value_2']],
+        ];
+    }
+
+    /**
      * @dataProvider containsDataProvider
      *
      * @param array|string[] $values
