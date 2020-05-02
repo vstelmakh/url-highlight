@@ -9,9 +9,9 @@
 
 **Url highlight** - PHP library to parse urls from string input. Works with complex urls and edge cases.  
 
-Current features:
+Features:
+- Replace urls in string by html tags (make clickable). For html escaped string see [highlight_type](#configuration)
 - Match urls without scheme by top-level domain
-- Replace urls in string by html tags
 - Extract urls from string
 - Check if string is url
 
