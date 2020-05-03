@@ -37,7 +37,7 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
      */
     public function highlightUrls(string $string): string
     {
-        $decodedString = html_entity_decode($string, ENT_QUOTES + ENT_HTML401);
+        $decodedString = html_entity_decode($string, ENT_QUOTES + ENT_HTML5);
         $replacementsMap = new NormalizedMap();
 
         $matches = $this->matcher->matchAll($decodedString);
@@ -126,7 +126,7 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
     {
         $variations = [preg_quote($char, '/')];
 
-        $encodedChar = htmlentities($char, ENT_QUOTES + ENT_HTML401);
+        $encodedChar = htmlentities($char, ENT_QUOTES + ENT_HTML5);
         if ($encodedChar !== $char) {
             $variations[] = preg_quote($encodedChar, '/');
         }
