@@ -14,14 +14,14 @@ class UrlHighlight
     public const HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS = 'html_special_chars';
 
     /**
+     * @var string
+     */
+    private $defaultScheme;
+
+    /**
      * @var Matcher
      */
     private $matcher;
-
-    /**
-     * @var AbstractHighlighter
-     */
-    private $highlighter;
 
     /**
      * Available options:
@@ -29,12 +29,6 @@ class UrlHighlight
      *  - match_by_tld (bool): if true, will map matches without scheme by top level domain
      *      (example.com will be recognized as url). For full list of valid top level
      *      domains see: Domains::TOP_LEVEL_DOMAINS (default true).
-     *
-     *  - highlight_type (string): define how to process input text. Allowed types: plain_text, html_special_chars.
-     *      Use class constants to specify type, see UrlHighlight::HIGHLIGHT_TYPE_*
-     *      - plain_text: simply find and replace urls by html links. (default).
-     *      - html_special_chars: expect text to be html entities encoded. Works with both, plain text
-     *          and html escaped string. Perform more regex operations than plain_text.
      *
      *  - default_scheme (string): scheme to use when highlighting urls without scheme (default 'http').
      *
@@ -48,15 +42,14 @@ class UrlHighlight
     {
         $options = array_merge([
             'match_by_tld' => true,
-            'highlight_type' => self::HIGHLIGHT_TYPE_PLAIN_TEXT,
             'default_scheme' => 'http',
             'scheme_blacklist' => [],
             'scheme_whitelist' => [],
         ], $options);
 
+        $this->defaultScheme = (string) $options['default_scheme'];
         $matchValidator = new MatchValidator($options['match_by_tld'], $options['scheme_blacklist'], $options['scheme_whitelist']);
         $this->matcher = new Matcher($matchValidator);
-        $this->highlighter = $this->getHighlighterByType($options['highlight_type'], $options['default_scheme']);
     }
 
     /**
@@ -90,11 +83,17 @@ class UrlHighlight
      * Parse string and replace urls with html links
      *
      * @param string $string
+     * @param string $highlighterType define how to process input text. Allowed types: plain_text, html_special_chars.
+     *     - plain_text: simply find and replace urls by html links. (default).
+     *     - html_special_chars: expect text to be html entities encoded. Works with both, plain text
+     *         and html escaped string. Perform more regex operations than plain_text.
+     *     Use class constants to specify type, see UrlHighlight::HIGHLIGHT_TYPE_*
      * @return string
      */
-    public function highlightUrls(string $string): string
+    public function highlightUrls(string $string, string $highlighterType = self::HIGHLIGHT_TYPE_PLAIN_TEXT): string
     {
-        return $this->highlighter->highlightUrls($string);
+        $highlighter = $this->getHighlighterByType($highlighterType, $this->defaultScheme);
+        return $highlighter->highlightUrls($string);
     }
 
     /**

@@ -70,13 +70,22 @@ class UrlHighlightTest extends TestCase
      *
      * @dataProvider highlightUrlsDataProvider
      *
+     * @param string $highlightType
      * @param string $string
      * @param string $expected
      */
-    public function testHighlightUrls(string $string, string $expected): void
+    public function testHighlightUrls(?string $highlightType, string $string, string $expected): void
     {
         $urlHighlight = new UrlHighlight();
-        $actual = $urlHighlight->highlightUrls($string);
+
+        if ($highlightType === 'unsupported_type') {
+            $this->expectException(\InvalidArgumentException::class);
+        }
+
+        $actual = $highlightType
+            ? $urlHighlight->highlightUrls($string, $highlightType)
+            : $urlHighlight->highlightUrls($string);
+
         $this->assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
@@ -87,20 +96,39 @@ class UrlHighlightTest extends TestCase
     {
         return [
             [
+                null,
                 'Example text before http://example.com and after.',
                 'Example text before <a href="http://example.com">http://example.com</a> and after.',
             ],
             [
+                UrlHighlight::HIGHLIGHT_TYPE_PLAIN_TEXT,
                 'With html <p>http://example.com</p>',
                 'With html <p><a href="http://example.com">http://example.com</a></p>',
             ],
             [
+                UrlHighlight::HIGHLIGHT_TYPE_PLAIN_TEXT,
                 'Example text before example.com and after.',
                 'Example text before <a href="http://example.com">example.com</a> and after.',
             ],
             [
+                UrlHighlight::HIGHLIGHT_TYPE_PLAIN_TEXT,
                 'With html <p>example.com</p>',
                 'With html <p><a href="http://example.com">example.com</a></p>',
+            ],
+            [
+                UrlHighlight::HIGHLIGHT_TYPE_PLAIN_TEXT,
+                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
+                '&lt;a href=&quot;<a href="http://example.com&quot;&gt;example.com&lt;/a&gt">http://example.com&quot;&gt;example.com&lt;/a&gt</a>;',
+            ],
+            [
+                UrlHighlight::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS,
+                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
+                '&lt;a href=&quot;<a href="http://example.com">http://example.com</a>&quot;&gt;<a href="http://example.com">example.com</a>&lt;/a&gt;',
+            ],
+            [
+                'unsupported_type',
+                '',
+                '',
             ],
         ];
     }
@@ -150,50 +178,6 @@ class UrlHighlightTest extends TestCase
                     'getUrls' => [],
                     'highlightUrls' => 'example.com',
                 ]
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider optionsHighlightTypeDataProvider
-     *
-     * @param string $highlightType
-     * @param string $input
-     * @param string $expected
-     */
-    public function testOptionsHighlightType(string $highlightType, string $input, string $expected): void
-    {
-        if ($highlightType === 'unsupported_type') {
-            $this->expectException(\InvalidArgumentException::class);
-        }
-
-        $options = ['highlight_type' => $highlightType];
-        $urlHighlight = new UrlHighlight($options);
-
-        $actual = $urlHighlight->highlightUrls($input);
-        $this->assertSame($expected, $actual);
-    }
-
-    /**
-     * @return array|array[]
-     */
-    public function optionsHighlightTypeDataProvider(): array
-    {
-        return [
-            [
-                UrlHighlight::HIGHLIGHT_TYPE_PLAIN_TEXT,
-                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
-                '&lt;a href=&quot;<a href="http://example.com&quot;&gt;example.com&lt;/a&gt">http://example.com&quot;&gt;example.com&lt;/a&gt</a>;',
-            ],
-            [
-                UrlHighlight::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS,
-                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
-                '&lt;a href=&quot;<a href="http://example.com">http://example.com</a>&quot;&gt;<a href="http://example.com">example.com</a>&lt;/a&gt;',
-            ],
-            [
-                'unsupported_type',
-                '',
-                '',
             ],
         ];
     }
