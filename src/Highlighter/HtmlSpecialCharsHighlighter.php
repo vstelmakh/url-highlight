@@ -4,8 +4,8 @@ namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Match;
 use VStelmakh\UrlHighlight\Matcher;
-use VStelmakh\UrlHighlight\Util\NormalizedCollection;
-use VStelmakh\UrlHighlight\Util\NormalizedMap;
+use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
+use VStelmakh\UrlHighlight\Util\CaseInsensitiveMap;
 
 /**
  * @internal
@@ -39,7 +39,7 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
     public function highlightUrls(string $string): string
     {
         $decodedString = html_entity_decode($string, ENT_QUOTES + ENT_HTML5);
-        $replacementsMap = new NormalizedMap();
+        $replacementsMap = new CaseInsensitiveMap();
 
         $matches = $this->matcher->matchAll($decodedString);
         foreach ($matches as $match) {
@@ -129,7 +129,7 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
             return '';
         }
 
-        $variations = new NormalizedCollection([preg_quote($char, '/')]);
+        $variations = new CaseInsensitiveSet([preg_quote($char, '/')]);
 
         $encodedChar = htmlspecialchars($char, ENT_QUOTES + ENT_HTML5);
         $variations->add(preg_quote($encodedChar, '/'));

@@ -2,10 +2,10 @@
 
 namespace VStelmakh\UrlHighlight\Tests\Util;
 
-use VStelmakh\UrlHighlight\Util\NormalizedCollection;
+use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 use PHPUnit\Framework\TestCase;
 
-class NormalizedCollectionTest extends TestCase
+class CaseInsensitiveSetTest extends TestCase
 {
     /**
      * @dataProvider toArrayDataProvider
@@ -15,7 +15,7 @@ class NormalizedCollectionTest extends TestCase
      */
     public function testToArray(array $values, array $expected): void
     {
-        $normalizedCollection = new NormalizedCollection($values);
+        $normalizedCollection = new CaseInsensitiveSet($values);
         $actual = $normalizedCollection->toArray();
         $this->assertEquals($expected, $actual);
     }
@@ -39,7 +39,7 @@ class NormalizedCollectionTest extends TestCase
      */
     public function testAdd(array $values, array $expected): void
     {
-        $normalizedCollection = new NormalizedCollection([]);
+        $normalizedCollection = new CaseInsensitiveSet([]);
         foreach ($values as $value) {
             $normalizedCollection->add($value);
         }
@@ -67,7 +67,7 @@ class NormalizedCollectionTest extends TestCase
      */
     public function testContains(array $values, string $value, bool $expected): void
     {
-        $normalizedCollection = new NormalizedCollection($values);
+        $normalizedCollection = new CaseInsensitiveSet($values);
         $actual = $normalizedCollection->contains($value);
         $this->assertEquals($expected, $actual, 'Dataset: ' . json_encode(func_get_args()));
     }
@@ -87,7 +87,6 @@ class NormalizedCollectionTest extends TestCase
             [['value'], 'valUE', true],
             [['valUE'], 'VAlue', true],
             [['valUE', 'other value', 'VALUE'], 'value', true],
-            [[' valUE '], 'value', true],
         ];
     }
 
@@ -99,7 +98,7 @@ class NormalizedCollectionTest extends TestCase
      */
     public function testIsEmpty(array $values, bool $expected): void
     {
-        $normalizedCollection = new NormalizedCollection($values);
+        $normalizedCollection = new CaseInsensitiveSet($values);
         $actual = $normalizedCollection->isEmpty();
         $this->assertEquals($expected, $actual, 'Dataset: ' . json_encode(func_get_args()));
     }

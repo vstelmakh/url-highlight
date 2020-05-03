@@ -2,7 +2,7 @@
 
 namespace VStelmakh\UrlHighlight;
 
-use VStelmakh\UrlHighlight\Util\NormalizedCollection;
+use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 
 /**
  * @internal
@@ -15,12 +15,12 @@ class MatchValidator
     private $matchByTLD;
 
     /**
-     * @var NormalizedCollection
+     * @var CaseInsensitiveSet
      */
     private $schemeBlacklist;
 
     /**
-     * @var NormalizedCollection
+     * @var CaseInsensitiveSet
      */
     private $schemeWhitelist;
 
@@ -32,8 +32,8 @@ class MatchValidator
     public function __construct(bool $matchByTLD, array $schemeBlacklist, array $schemeWhitelist)
     {
         $this->matchByTLD = $matchByTLD;
-        $this->schemeBlacklist = new NormalizedCollection($schemeBlacklist);
-        $this->schemeWhitelist = new NormalizedCollection($schemeWhitelist);
+        $this->schemeBlacklist = new CaseInsensitiveSet($schemeBlacklist);
+        $this->schemeWhitelist = new CaseInsensitiveSet($schemeWhitelist);
     }
 
     /**

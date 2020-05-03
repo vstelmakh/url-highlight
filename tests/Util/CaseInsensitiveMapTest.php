@@ -2,10 +2,10 @@
 
 namespace VStelmakh\UrlHighlight\Tests\Util;
 
-use VStelmakh\UrlHighlight\Util\NormalizedMap;
+use VStelmakh\UrlHighlight\Util\CaseInsensitiveMap;
 use PHPUnit\Framework\TestCase;
 
-class NormalizedMapTest extends TestCase
+class CaseInsensitiveMapTest extends TestCase
 {
     /**
      * @dataProvider setDataProvider
@@ -15,7 +15,7 @@ class NormalizedMapTest extends TestCase
      */
     public function testSet(array $values, array $expected): void
     {
-        $normalizedMap = new NormalizedMap([]);
+        $normalizedMap = new CaseInsensitiveMap([]);
         foreach ($values as $key => $value) {
             $normalizedMap->set($key, $value);
         }
@@ -42,7 +42,7 @@ class NormalizedMapTest extends TestCase
      */
     public function testGetKeys(array $values, array $expected): void
     {
-        $normalizedMap = new NormalizedMap($values);
+        $normalizedMap = new CaseInsensitiveMap($values);
         $actual = $normalizedMap->getKeys();
         $this->assertEquals($expected, $actual);
     }
@@ -66,7 +66,7 @@ class NormalizedMapTest extends TestCase
      */
     public function testGetValues(array $values, array $expected): void
     {
-        $normalizedMap = new NormalizedMap($values);
+        $normalizedMap = new CaseInsensitiveMap($values);
         $actual = $normalizedMap->getValues();
         $this->assertEquals($expected, $actual);
     }
@@ -90,7 +90,7 @@ class NormalizedMapTest extends TestCase
      */
     public function testToArray(array $values, array $expected): void
     {
-        $normalizedMap = new NormalizedMap($values);
+        $normalizedMap = new CaseInsensitiveMap($values);
         $actual = $normalizedMap->toArray();
         $this->assertEquals($expected, $actual);
     }

@@ -7,7 +7,7 @@ namespace VStelmakh\UrlHighlight\Util;
  *
  * @internal
  */
-class NormalizedMap
+class CaseInsensitiveMap
 {
     /**
      * @var array&string[]
@@ -72,6 +72,6 @@ class NormalizedMap
      */
     private function normalize(string $string): string
     {
-        return mb_strtolower(trim($string)); // TODO: remove trim
+        return mb_strtolower($string);
     }
 }
