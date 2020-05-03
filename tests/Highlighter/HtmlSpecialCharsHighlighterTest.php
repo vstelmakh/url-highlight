@@ -91,6 +91,11 @@ class HtmlSpecialCharsHighlighterTest extends TestCase
                 ],
                 'Hello ★, <a id="example" class="link" href="http://example.com" title="Example">http://example.com</a>.',
             ],
+            'encoded, numeric character reference' => [
+                '&#x22;http://example.com&#x22;',
+                [new Match('http://example.com', 'http', null, null, null, 1)],
+                '&#x22;<a href="http://example.com">http://example.com</a>&#x22;',
+            ],
         ];
     }
 }

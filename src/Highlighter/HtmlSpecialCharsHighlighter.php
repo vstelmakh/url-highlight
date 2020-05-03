@@ -101,7 +101,7 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
     }
 
     /**
-     * Replace possible html encoded chars with char variations regex
+     * Replace html special chars with char variations regex
      *
      * @param Match $match
      * @return string
@@ -118,20 +118,35 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
     }
 
     /**
-     * TODO: add char code support
+     * Return regex to match char or html entity or numeric character reference
      *
      * @param string $char
      * @return string
      */
     private function getCharVariationsRegex(string $char): string
     {
+        if (empty($char)) {
+            return '';
+        }
+
         $variations = new NormalizedCollection([preg_quote($char, '/')]);
+
         $encodedChar = htmlspecialchars($char, ENT_QUOTES + ENT_HTML5);
         $variations->add(preg_quote($encodedChar, '/'));
+
+        $charCodeDec = \mb_ord($char);
+        $variations->add('&#0*' . $charCodeDec . ';');
+
+        $cahrCodeHex = dechex($charCodeDec);
+        $variations->add('&#x0*' . $cahrCodeHex . ';');
+
         return implode('|', $variations->toArray());
     }
 
     /**
+     * Iteratively filter highlight inside highlight until input will be clear.
+     * This could happen because on preg replace next regex could match replacement from previous one.
+     *
      * @param string $string
      * @return string
      */

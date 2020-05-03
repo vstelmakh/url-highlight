@@ -72,6 +72,6 @@ class NormalizedMap
      */
     private function normalize(string $string): string
     {
-        return mb_strtolower(trim($string));
+        return mb_strtolower(trim($string)); // TODO: remove trim
     }
 }
