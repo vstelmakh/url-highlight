@@ -4,6 +4,7 @@ namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Match;
 use VStelmakh\UrlHighlight\Matcher;
+use VStelmakh\UrlHighlight\Util\NormalizedCollection;
 use VStelmakh\UrlHighlight\Util\NormalizedMap;
 
 /**
@@ -124,14 +125,10 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
      */
     private function getCharVariationsRegex(string $char): string
     {
-        $variations = [preg_quote($char, '/')];
-
-        $encodedChar = htmlentities($char, ENT_QUOTES + ENT_HTML5);
-        if ($encodedChar !== $char) {
-            $variations[] = preg_quote($encodedChar, '/');
-        }
-
-        return implode('|', $variations);
+        $variations = new NormalizedCollection([preg_quote($char, '/')]);
+        $encodedChar = htmlspecialchars($char, ENT_QUOTES + ENT_HTML5);
+        $variations->add(preg_quote($encodedChar, '/'));
+        return implode('|', $variations->toArray());
     }
 
     /**
