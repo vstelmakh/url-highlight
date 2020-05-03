@@ -14,7 +14,7 @@
     "require": {
         "php": "^7.1",
         "ext-mbstring": "*",
-        "symfony/polyfill-php72": "^1.15"
+        "symfony/polyfill-php72": "^1.10"
     },
     "require-dev" : {
         "ext-json": "*",
