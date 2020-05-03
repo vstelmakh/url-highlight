@@ -5,6 +5,8 @@ namespace VStelmakh\UrlHighlight;
 use VStelmakh\UrlHighlight\Highlighter\AbstractHighlighter;
 use VStelmakh\UrlHighlight\Highlighter\HtmlSpecialCharsHighlighter;
 use VStelmakh\UrlHighlight\Highlighter\PlainTextHighlighter;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
+use VStelmakh\UrlHighlight\Matcher\MatchValidator;
 
 class UrlHighlight
 {

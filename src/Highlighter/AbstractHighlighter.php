@@ -2,7 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Match;
+use VStelmakh\UrlHighlight\Matcher\Match;
 
 /**
  * @internal

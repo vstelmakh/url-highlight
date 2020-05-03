@@ -1,12 +1,12 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Tests;
+namespace VStelmakh\UrlHighlight\Tests\Matcher;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VStelmakh\UrlHighlight\Match;
-use VStelmakh\UrlHighlight\Matcher;
+use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\MatchValidator;
+use VStelmakh\UrlHighlight\Matcher\MatchValidator;
 
 class MatcherTest extends TestCase
 {

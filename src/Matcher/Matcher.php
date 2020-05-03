@@ -1,6 +1,6 @@
 <?php
 
-namespace VStelmakh\UrlHighlight;
+namespace VStelmakh\UrlHighlight\Matcher;
 
 /**
  * @internal

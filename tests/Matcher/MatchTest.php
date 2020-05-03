@@ -1,8 +1,8 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Tests;
+namespace VStelmakh\UrlHighlight\Tests\Matcher;
 
-use VStelmakh\UrlHighlight\Match;
+use VStelmakh\UrlHighlight\Matcher\Match;
 use PHPUnit\Framework\TestCase;
 
 class MatchTest extends TestCase

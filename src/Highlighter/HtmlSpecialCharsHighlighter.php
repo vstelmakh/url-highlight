@@ -2,8 +2,8 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Match;
-use VStelmakh\UrlHighlight\Matcher;
+use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 use VStelmakh\UrlHighlight\Util\CaseInsensitiveMap;
 

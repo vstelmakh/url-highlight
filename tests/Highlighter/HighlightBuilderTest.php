@@ -4,7 +4,7 @@ namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use VStelmakh\UrlHighlight\Highlighter\HighlightBuilder;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Match;
+use VStelmakh\UrlHighlight\Matcher\Match;
 
 class HighlightBuilderTest extends TestCase
 {

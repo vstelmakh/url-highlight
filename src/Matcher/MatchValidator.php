@@ -1,7 +1,8 @@
 <?php
 
-namespace VStelmakh\UrlHighlight;
+namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Domains;
 use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 
 /**

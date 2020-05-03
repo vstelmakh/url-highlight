@@ -1,9 +1,9 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Tests;
+namespace VStelmakh\UrlHighlight\Tests\Matcher;
 
-use VStelmakh\UrlHighlight\Match;
-use VStelmakh\UrlHighlight\MatchValidator;
+use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\MatchValidator;
 use PHPUnit\Framework\TestCase;
 
 class MatchValidatorTest extends TestCase

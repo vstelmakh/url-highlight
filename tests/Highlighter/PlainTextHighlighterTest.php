@@ -5,8 +5,8 @@ namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use VStelmakh\UrlHighlight\Highlighter\PlainTextHighlighter;
-use VStelmakh\UrlHighlight\Match;
-use VStelmakh\UrlHighlight\Matcher;
+use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
 
 class PlainTextHighlighterTest extends TestCase
 {
