@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use VStelmakh\UrlHighlight\Match;
 use VStelmakh\UrlHighlight\Matcher;
 
-class HtmlEntityHighlighterTest extends TestCase
+class HtmlSpecialCharsHighlighterTest extends TestCase
 {
     /**
      * @var Matcher&MockObject
@@ -82,6 +82,14 @@ class HtmlEntityHighlighterTest extends TestCase
                 'Just a text',
                 [],
                 'Just a text',
+            ],
+            'already highlighted' => [
+                'Hello ★, <a id="example" class="link" href="http://example.com" title="Example">http://example.com</a>.',
+                [
+                    new Match('http://example.com', 'http', null, null, null, 46),
+                    new Match('http://example.com', 'http', null, null, null, 82),
+                ],
+                'Hello ★, <a id="example" class="link" href="http://example.com" title="Example">http://example.com</a>.',
             ],
         ];
     }

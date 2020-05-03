@@ -63,8 +63,9 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
 
         $regexes = $replacementsMap->getKeys();
         $replacements = $replacementsMap->getValues();
-        return preg_replace($regexes, $replacements, $string) ?? $string;
-        // TODO: add filters
+        $result = preg_replace($regexes, $replacements, $string) ?? $string;
+        $result = $this->filterHighlight($result);
+        return $result;
     }
 
     /**
@@ -131,5 +132,20 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
         }
 
         return implode('|', $variations);
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    private function filterHighlight(string $string): string
+    {
+        do {
+            $stringBeforeFilter = $string;
+            $string = $this->filterHighlightInTagAttributes($string);
+            $string = $this->filterHighlightInLinks($string);
+        } while ($stringBeforeFilter !== $string);
+
+        return $string;
     }
 }
