@@ -10,7 +10,7 @@
 **Url highlight** - PHP library to parse urls from string input. Works with complex urls and edge cases.  
 
 Features:
-- Replace urls in string by html tags (make clickable). For html escaped string see [highlight_type](#replace-urls-in-string-by-html-tags-make-clickable)
+- Replace urls in string by html tags (make clickable). For html escaped string see [highlight type](#replace-urls-in-string-by-html-tags-make-clickable)
 - Match urls without scheme by top-level domain
 - Extract urls from string
 - Check if string is url
@@ -76,10 +76,11 @@ $urlHighlight->highlightUrls('Hello, http://example.com.');
 // return: 'Hello, <a href="http://example.com">http://example.com</a>.'
 ```
 
-Provide second argument to define how to process input text. Allowed types: `plain_text` and `html_special_chars`:    
+Provide second argument to define **highlight type** and how to process input text. Allowed types:  
 - `plain_text` a simple find and replace urls by html links (default).
 - `html_special_chars` expect text to be html entities encoded. Works with both, plain text
     and html escaped string. Perform more regex operations than plain_text.
+
 Use class constants to specify type, see `UrlHighlight::HIGHLIGHT_TYPE_*`  
 ```php
 $htmlEscaped = '&lt;a href=&quot;http://example.com&quot;&gt;Example&lt;/a&gt;';
