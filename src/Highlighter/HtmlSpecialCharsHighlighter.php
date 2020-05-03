@@ -4,6 +4,7 @@ namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Match;
 use VStelmakh\UrlHighlight\Matcher;
+use VStelmakh\UrlHighlight\Util\NormalizedMap;
 
 /**
  * @internal
@@ -37,8 +38,7 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
     public function highlightUrls(string $string): string
     {
         $decodedString = html_entity_decode($string, ENT_QUOTES + ENT_HTML401);
-        $regexes = [];
-        $replacements = [];
+        $replacementsMap = new NormalizedMap();
 
         $matches = $this->matcher->matchAll($decodedString);
         foreach ($matches as $match) {
@@ -51,16 +51,20 @@ class HtmlSpecialCharsHighlighter extends AbstractHighlighter
                 $this->getFullMatchRegex($match),
                 $this->getCharVariationsRegex($charAfter)
             );
-            $regexes[] = $regex; // TODO: filter duplicate regexes
-            $replacements[] = $this->getHighlightBuilder($match, $this->defaultScheme)
+
+            $replacement = $this->getHighlightBuilder($match, $this->defaultScheme)
                 ->setPrefix('$1')
                 ->setText('$2')
                 ->setSuffix('$3')
                 ->getHighlight();
+
+            $replacementsMap->set($regex, $replacement);
         }
 
-        // TODO: add filters
+        $regexes = $replacementsMap->getKeys();
+        $replacements = $replacementsMap->getValues();
         return preg_replace($regexes, $replacements, $string) ?? $string;
+        // TODO: add filters
     }
 
     /**
