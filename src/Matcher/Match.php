@@ -5,7 +5,7 @@ namespace VStelmakh\UrlHighlight\Matcher;
 /**
  * @internal
  */
-class Match
+class Match implements MatchInterface
 {
     /**
      * @var string

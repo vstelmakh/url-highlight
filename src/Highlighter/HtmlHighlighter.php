@@ -2,31 +2,44 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\MatchInterface;
 
-/**
- * @internal
- */
-abstract class AbstractHighlighter
+class HtmlHighlighter implements HighlighterInterface
 {
     /**
-     * Parse string and replace urls with html links
-     *
+     * @var string
+     */
+    private $defaultScheme;
+
+    public function __construct(string $defaultScheme)
+    {
+        $this->defaultScheme = $defaultScheme;
+    }
+
+    /**
+     * @param MatchInterface $match
+     * @param string|null $displayText
+     * @return string
+     */
+    public function getHighlight(MatchInterface $match, ?string $displayText = null): string
+    {
+        $fullMatch = $match->getFullMatch();
+        $scheme = empty($match->getScheme()) ? $this->defaultScheme . '://' : '';
+        $href = $scheme . $fullMatch;
+        $hrefSafeQuotes = str_replace('"', '%22', $href);
+        $text = $displayText ?? $fullMatch;
+        return sprintf('<a href="%s">%s</a>', $hrefSafeQuotes, $text);
+    }
+
+    /**
      * @param string $string
      * @return string
      */
-    abstract public function highlightUrls(string $string): string;
-
-    /**
-     * Create new highlight builder instance
-     *
-     * @param Match $match
-     * @param string $defaultScheme
-     * @return HighlightBuilder
-     */
-    protected function getHighlightBuilder(Match $match, string $defaultScheme): HighlightBuilder
+    public function filterOverhighlight(string $string): string
     {
-        return new HighlightBuilder($match, $defaultScheme);
+        $string = $this->filterHighlightInTagAttributes($string);
+        $string = $this->filterHighlightInLinks($string);
+        return $string;
     }
 
     /**
@@ -37,7 +50,7 @@ abstract class AbstractHighlighter
      * @param string $string
      * @return string
      */
-    protected function filterHighlightInTagAttributes(string $string): string
+    private function filterHighlightInTagAttributes(string $string): string
     {
         $regex = '/
             (
@@ -62,7 +75,7 @@ abstract class AbstractHighlighter
      * @param string $string
      * @return string
      */
-    protected function filterHighlightInLinks(string $string): string
+    private function filterHighlightInLinks(string $string): string
     {
         $regex = '/
             (<a[^>]*>)                 # parent tag start "<a"

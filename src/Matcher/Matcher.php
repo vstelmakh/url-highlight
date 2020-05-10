@@ -5,7 +5,7 @@ namespace VStelmakh\UrlHighlight\Matcher;
 /**
  * @internal
  */
-class Matcher
+class Matcher implements MatcherInterface
 {
     /**
      * @var MatchValidator
@@ -23,7 +23,7 @@ class Matcher
      * @param string $string
      * @return Match|null
      */
-    public function match(string $string): ?Match
+    public function match(string $string): ?MatchInterface
     {
         $urlRegex = $this->getUrlRegex(true);
         preg_match($urlRegex, $string, $rawMatch, PREG_OFFSET_CAPTURE);
@@ -38,7 +38,7 @@ class Matcher
      * Get all valid url regex matches from string
      *
      * @param string $string
-     * @return array|Match[]
+     * @return array&Match[]
      */
     public function matchAll(string $string): array
     {

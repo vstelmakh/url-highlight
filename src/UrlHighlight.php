@@ -2,26 +2,25 @@
 
 namespace VStelmakh\UrlHighlight;
 
-use VStelmakh\UrlHighlight\Highlighter\AbstractHighlighter;
-use VStelmakh\UrlHighlight\Highlighter\HtmlSpecialCharsHighlighter;
-use VStelmakh\UrlHighlight\Highlighter\PlainTextHighlighter;
+use VStelmakh\UrlHighlight\Encoder\EncoderInterface;
+use VStelmakh\UrlHighlight\Highlighter\HighlighterInterface;
+use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
+use VStelmakh\UrlHighlight\Matcher\EncodedMatcher;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
+use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
 use VStelmakh\UrlHighlight\Matcher\MatchValidator;
 
 class UrlHighlight
 {
-    public const HIGHLIGHT_TYPE_PLAIN_TEXT = 'plain_text';
-    public const HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS = 'html_special_chars';
-
     /**
-     * @var string
-     */
-    private $defaultScheme;
-
-    /**
-     * @var Matcher
+     * @var MatcherInterface
      */
     private $matcher;
+
+    /**
+     * @var HighlighterInterface
+     */
+    private $highlighter;
 
     /**
      * Available options:
@@ -37,8 +36,10 @@ class UrlHighlight
      *  - scheme_whitelist (string[]): array of schemes explicitly allowed to be recognized as url (default []).
      *
      * @param array|mixed[] $options
+     * @param HighlighterInterface|null $highlighter
+     * @param EncoderInterface|null $encoder
      */
-    public function __construct(array $options = [])
+    public function __construct(array $options = [], ?HighlighterInterface $highlighter = null, ?EncoderInterface $encoder = null)
     {
         $options = array_merge([
             'match_by_tld' => true,
@@ -47,13 +48,15 @@ class UrlHighlight
             'scheme_whitelist' => [],
         ], $options);
 
-        $this->defaultScheme = (string) $options['default_scheme'];
         $matchValidator = new MatchValidator($options['match_by_tld'], $options['scheme_blacklist'], $options['scheme_whitelist']);
-        $this->matcher = new Matcher($matchValidator);
+        $matcher = new Matcher($matchValidator);
+        $this->matcher = $encoder ? new EncodedMatcher($matcher, $encoder) : $matcher;
+        $this->highlighter = $highlighter ?? new HtmlHighlighter($options['default_scheme']);
     }
 
     /**
-     * Check if string is valid url
+     * Check if string is valid url.
+     * If encoder provided - string will be decoded, than check performed.
      *
      * @param string $string
      * @return bool
@@ -64,7 +67,8 @@ class UrlHighlight
     }
 
     /**
-     * Parse string and return array of urls found
+     * Parse string and return array of urls found.
+     * If encoder provided - will return decoded urls.
      *
      * @param string $string
      * @return array|string[]
@@ -80,40 +84,16 @@ class UrlHighlight
     }
 
     /**
-     * Parse string and replace urls with html links
+     * Parse string and replace urls with highlighted links
+     * e.g. http://example.com -> <a href="http://example.com">http://example.com</a>
      *
      * @param string $string
-     * @param string $highlighterType define how to process input text. Allowed types: plain_text, html_special_chars.
-     *     - plain_text: simply find and replace urls by html links. (default).
-     *     - html_special_chars: expect text to be html entities encoded. Works with both, plain text
-     *         and html escaped string. Perform more regex operations than plain_text.
-     *     Use class constants to specify type, see UrlHighlight::HIGHLIGHT_TYPE_*
      * @return string
      */
-    public function highlightUrls(string $string, string $highlighterType = self::HIGHLIGHT_TYPE_PLAIN_TEXT): string
+    public function highlightUrls(string $string): string
     {
-        $highlighter = $this->getHighlighterByType($highlighterType, $this->defaultScheme);
-        return $highlighter->highlightUrls($string);
-    }
-
-    /**
-     * @param string $type
-     * @param string $defaultScheme
-     * @return AbstractHighlighter
-     */
-    private function getHighlighterByType(string $type, string $defaultScheme): AbstractHighlighter
-    {
-        switch ($type) {
-            case self::HIGHLIGHT_TYPE_PLAIN_TEXT:
-                return new PlainTextHighlighter($this->matcher, $defaultScheme);
-            case self::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS:
-                return new HtmlSpecialCharsHighlighter($this->matcher, $defaultScheme);
-            default:
-                throw new \InvalidArgumentException(sprintf(
-                    'Unsupported highlighter type provided "%s". Supported types [%s].',
-                    $type,
-                    implode(', ', [self::HIGHLIGHT_TYPE_PLAIN_TEXT, self::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS])
-                ));
-        }
+        $string = $this->matcher->replaceCallback($string, [$this->highlighter, 'getHighlight']);
+        $string = $this->highlighter->filterOverhighlight($string);
+        return $string;
     }
 }
