@@ -4,6 +4,10 @@ namespace VStelmakh\UrlHighlight\Encoder;
 
 use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 
+/**
+ * Could be used when input string expected to be html entity encoded
+ * Use HtmlSpecialcharsEncoder for html escaped string (less regex operations)
+ */
 class HtmlEntitiesEncoder implements EncoderInterface
 {
     /**

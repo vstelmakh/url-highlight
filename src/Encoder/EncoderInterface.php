@@ -2,6 +2,9 @@
 
 namespace VStelmakh\UrlHighlight\Encoder;
 
+/**
+ * Use this interface to create custom encoders
+ */
 interface EncoderInterface
 {
     /**

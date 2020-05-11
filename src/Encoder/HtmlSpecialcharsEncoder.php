@@ -2,6 +2,9 @@
 
 namespace VStelmakh\UrlHighlight\Encoder;
 
+/**
+ * Could be used when input string expected to be html special chars encoded (&, ", ', <, >)
+ */
 class HtmlSpecialcharsEncoder implements EncoderInterface
 {
     private const HTML_SPECIAL_CHARS = ['&', '"', '\'', '<', '>'];
@@ -17,6 +20,8 @@ class HtmlSpecialcharsEncoder implements EncoderInterface
     }
 
     /**
+     * Decode html encoded string
+     *
      * @param string $string
      * @return string
      */
@@ -41,6 +46,8 @@ class HtmlSpecialcharsEncoder implements EncoderInterface
     }
 
     /**
+     * Return html special chars
+     *
      * @return string[]|null
      */
     public function getSupportedChars(): ?array
