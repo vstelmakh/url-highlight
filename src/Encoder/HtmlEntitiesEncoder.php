@@ -7,6 +7,8 @@ use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 class HtmlEntitiesEncoder implements EncoderInterface
 {
     /**
+     * Decode html encoded string
+     *
      * @param string $string
      * @return string
      */
@@ -43,6 +45,8 @@ class HtmlEntitiesEncoder implements EncoderInterface
     }
 
     /**
+     * Match all chars
+     *
      * @return string[]|null
      */
     public function getSupportedChars(): ?array
