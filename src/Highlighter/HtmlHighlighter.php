@@ -2,7 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Matcher\MatchInterface;
+use VStelmakh\UrlHighlight\Matcher\Match;
 
 class HtmlHighlighter implements HighlighterInterface
 {
@@ -17,13 +17,13 @@ class HtmlHighlighter implements HighlighterInterface
     }
 
     /**
-     * @param MatchInterface $match
+     * @param Match $match
      * @param string|null $displayText
      * @return string
      */
-    public function getHighlight(MatchInterface $match, ?string $displayText = null): string
+    public function getHighlight(Match $match, ?string $displayText = null): string
     {
-        $fullMatch = $match->getFullMatch();
+        $fullMatch = $match->getUrl();
         $scheme = empty($match->getScheme()) ? $this->defaultScheme . '://' : '';
         $href = $scheme . $fullMatch;
         $hrefSafeQuotes = str_replace('"', '%22', $href);

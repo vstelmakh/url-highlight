@@ -2,16 +2,16 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Matcher\MatchInterface;
+use VStelmakh\UrlHighlight\Matcher\Match;
 
 interface HighlighterInterface
 {
     /**
-     * @param MatchInterface $match
+     * @param Match $match
      * @param string|null $displayText
      * @return string
      */
-    public function getHighlight(MatchInterface $match, ?string $displayText = null): string;
+    public function getHighlight(Match $match, ?string $displayText = null): string;
 
     /**
      * @param string $string

@@ -23,7 +23,7 @@ class Matcher implements MatcherInterface
      * @param string $string
      * @return Match|null
      */
-    public function match(string $string): ?MatchInterface
+    public function match(string $string): ?Match
     {
         $urlRegex = $this->getUrlRegex(true);
         preg_match($urlRegex, $string, $rawMatch, PREG_OFFSET_CAPTURE);
@@ -64,8 +64,12 @@ class Matcher implements MatcherInterface
     public function replaceCallback(string $string, callable $callback): string
     {
         $urlRegex = $this->getUrlRegex(false);
-        $rawMatchCallback = function (array $rawMatch) use ($callback) {
-            $match = $this->createMatch($rawMatch);
+
+        $searchOffset = 0;
+        $rawMatchCallback = function (array $rawMatch) use ($string, $callback, &$searchOffset) {
+            $offset = strpos($string, $rawMatch[0], $searchOffset);
+            $searchOffset = $offset + strlen($rawMatch[0]);
+            $match = $this->createMatch($rawMatch, $offset);
             return $this->matchValidator->isValidMatch($match) ? $callback($match) : $match->getFullMatch();
         };
         return preg_replace_callback($urlRegex, $rawMatchCallback, $string) ?? $string;
@@ -126,8 +130,6 @@ class Matcher implements MatcherInterface
     }
 
     /**
-     * Offset not available for preg_replace_callback on PHP 7.1
-     *
      * @param array|mixed[] $rawMatch
      * @return Match
      */
@@ -135,27 +137,30 @@ class Matcher implements MatcherInterface
     {
         return new Match(
             $rawMatch[0][0],
+            $rawMatch[0][1],
+            $rawMatch[0][0],
             $rawMatch['scheme'][0] ?? null,
             $rawMatch['local'][0] ?? null,
             $rawMatch['host'][0] ?? null,
-            $rawMatch['tld'][0] ?? null,
-            $rawMatch[0][1]
+            $rawMatch['tld'][0] ?? null
         );
     }
 
     /**
-     * @param array|string[] $rawMatch
+     * @param array|mixed[] $rawMatch
+     * @param int $offset
      * @return Match
      */
-    private function createMatch(array $rawMatch): Match
+    private function createMatch(array $rawMatch, int $offset): Match
     {
         return new Match(
+            $rawMatch[0],
+            $offset,
             $rawMatch[0],
             $rawMatch['scheme'] ?? null,
             $rawMatch['local'] ?? null,
             $rawMatch['host'] ?? null,
-            $rawMatch['tld'] ?? null,
-            null
+            $rawMatch['tld'] ?? null
         );
     }
 }

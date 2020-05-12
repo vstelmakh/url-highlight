@@ -78,7 +78,7 @@ class UrlHighlight
         $result = [];
         $matches = $this->matcher->matchAll($string);
         foreach ($matches as $match) {
-            $result[] = $match->getFullMatch();
+            $result[] = $match->getUrl();
         }
         return $result;
     }

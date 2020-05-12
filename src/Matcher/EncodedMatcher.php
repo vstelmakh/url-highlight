@@ -30,18 +30,20 @@ class EncodedMatcher implements MatcherInterface
      * Match string by url regex
      *
      * @param string $string
-     * @return EncodedMatch|null
+     * @return Match|null
      */
-    public function match(string $string): ?MatchInterface
+    public function match(string $string): ?Match
     {
         $decodedString = $this->encoder->decode($string);
         $match = $this->matcher->match($decodedString);
-        return $match ? new EncodedMatch($decodedString, 0, $match) : null;
+        return $match ? $this->getEncodedMatch($string, 0, $match) : null;
     }
 
     /**
+     * Get all valid url regex matches from encoded string
+     *
      * @param string $string
-     * @return array&EncodedMatch[]
+     * @return array&Match[]
      */
     public function matchAll(string $string): array
     {
@@ -58,13 +60,15 @@ class EncodedMatcher implements MatcherInterface
             $encodedFullMatch = $encodedRawMatch[0][0];
             $encodedByteOffset = $encodedRawMatch[0][1];
             $nextMatchOffset = $encodedByteOffset + strlen($encodedFullMatch);
-            $encodedMatches[] = new EncodedMatch($encodedFullMatch, $encodedByteOffset, $match);
+            $encodedMatches[] = $this->getEncodedMatch($encodedFullMatch, $encodedByteOffset, $match);
         }
 
         return $encodedMatches;
     }
 
     /**
+     * Replace all valid url matches by callback from encoded string
+     *
      * @param string $string
      * @param callable $callback
      * @return string
@@ -73,11 +77,11 @@ class EncodedMatcher implements MatcherInterface
     {
         $offset = 0;
 
-        $encodedMatches = $this->matchAll($string);
-        foreach ($encodedMatches as $encodedMatch) {
-            $replacement = $callback($encodedMatch, $encodedMatch->getEncodedFullMatch());
-            $position = $encodedMatch->getEncodedByteOffset() + $offset;
-            $length = strlen($encodedMatch->getEncodedFullMatch());
+        $matches = $this->matchAll($string);
+        foreach ($matches as $match) {
+            $replacement = $callback($match, $match->getFullMatch());
+            $position = $match->getByteOffset() + $offset;
+            $length = strlen($match->getFullMatch());
             $string = substr_replace($string, $replacement, $position, $length);
             $offset += strlen($replacement) - $length;
         }
@@ -95,8 +99,8 @@ class EncodedMatcher implements MatcherInterface
     {
         $supportedChars = $this->encoder->getSupportedChars();
         return !empty($supportedChars)
-            ? $this->getFullMatchRegexBySupportedChars($match, $supportedChars)
-            : $this->getFullMatchRegexByAllChars($match);
+            ? $this->getUrlRegexBySupportedChars($match, $supportedChars)
+            : $this->getUrlRegexByAllChars($match);
     }
 
     /**
@@ -104,14 +108,14 @@ class EncodedMatcher implements MatcherInterface
      * @param array&string[] $supportedChars
      * @return string
      */
-    private function getFullMatchRegexBySupportedChars(Match $match, array $supportedChars): string
+    private function getUrlRegexBySupportedChars(Match $match, array $supportedChars): string
     {
         $replace = [];
         foreach ($supportedChars as $char) {
             $replace[] = $this->getRegexCharGroup($char);
         }
 
-        $fullMatchRegexSafe = preg_quote($match->getFullMatch(), '/');
+        $fullMatchRegexSafe = preg_quote($match->getUrl(), '/');
         return str_replace($supportedChars, $replace, $fullMatchRegexSafe);
     }
 
@@ -119,11 +123,11 @@ class EncodedMatcher implements MatcherInterface
      * @param Match $match
      * @return string
      */
-    private function getFullMatchRegexByAllChars(Match $match): string
+    private function getUrlRegexByAllChars(Match $match): string
     {
         $fullMatchRegex = '';
 
-        $fullMatchChars = Str::getChars($match->getFullMatch());
+        $fullMatchChars = Str::getChars($match->getUrl());
         foreach ($fullMatchChars as $char) {
             $fullMatchRegex .= $this->getRegexCharGroup($char);
         }
@@ -138,5 +142,24 @@ class EncodedMatcher implements MatcherInterface
     private function getRegexCharGroup(string $char): string
     {
         return '(?:' . $this->encoder->getEncodedCharRegex($char, '/') . ')';
+    }
+
+    /**
+     * @param string $fullMatch
+     * @param int $byteOffset
+     * @param Match $match
+     * @return Match
+     */
+    private function getEncodedMatch(string $fullMatch, int $byteOffset, Match $match): Match
+    {
+        return new Match(
+            $fullMatch,
+            $byteOffset,
+            $match->getUrl(),
+            $match->getScheme(),
+            $match->getLocal(),
+            $match->getHost(),
+            $match->getTld()
+        );
     }
 }

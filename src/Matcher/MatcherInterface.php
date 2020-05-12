@@ -8,18 +8,24 @@ namespace VStelmakh\UrlHighlight\Matcher;
 interface MatcherInterface
 {
     /**
+     * Match string by url regex
+     *
      * @param string $string
-     * @return MatchInterface|null
+     * @return Match|null
      */
-    public function match(string $string): ?MatchInterface;
+    public function match(string $string): ?Match;
 
     /**
+     * Get all valid url regex matches from string
+     *
      * @param string $string
-     * @return array&MatchInterface[]
+     * @return array&Match[]
      */
     public function matchAll(string $string): array;
 
     /**
+     * Replace all valid url matches by callback
+     *
      * @param string $string
      * @param callable $callback
      * @return string

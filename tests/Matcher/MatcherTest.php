@@ -163,7 +163,7 @@ class MatcherTest extends TestCase
     {
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, $matchData, true, 0);
+            $match = $this->getMatchDataAsMatch($url, 0, $matchData, true);
             $result[] = [$url, $isValid, $match];
         }
         return $result;
@@ -202,25 +202,25 @@ class MatcherTest extends TestCase
                 $isValidMap = ($matchData !== null) ? [$isValid] : [];
 
                 foreach ($enclosed as $item => $byteOffset) {
-                    $expected = [$this->getMatchDataAsMatch($url, $matchData, false, $byteOffset)];
+                    $expected = [$this->getMatchDataAsMatch($url, $byteOffset, $matchData, false)];
                     $result[] = [sprintf($item, $url), $isValidMap, $expected];
                 }
 
-                $expected = [$this->getMatchDataAsMatch($url, $matchData, false, 20)];
+                $expected = [$this->getMatchDataAsMatch($url, 20, $matchData, false)];
                 $secondMatchByteOffset = 79 + strlen($url);
                 $result[] = [
                     sprintf('Example text before %s and after. Open filename.txt at 3:00pm. For more info see http://google.com.', $url),
                     array_merge($isValidMap, [false, true]),
-                    array_merge($expected, [new Match('http://google.com', 'http', null, null, null, $secondMatchByteOffset)])
+                    array_merge($expected, [new Match('http://google.com', $secondMatchByteOffset, 'http://google.com', 'http', null, null, null)])
                 ];
 
                 foreach ($invalidPrefixChars as $prefix) {
-                    $expected = [$this->getMatchDataAsMatch($url, $matchData, false, strlen($prefix))];
+                    $expected = [$this->getMatchDataAsMatch($url, strlen($prefix), $matchData, false)];
                     $result[] = [$prefix . $url, $isValidMap, $expected];
                 }
 
                 foreach ($invalidSuffixChars as $suffix) {
-                    $expected = [$this->getMatchDataAsMatch($url, $matchData, false, 0)];
+                    $expected = [$this->getMatchDataAsMatch($url, 0, $matchData, false)];
                     $result[] = [$url . $suffix, $isValidMap, $expected];
                 }
             }
@@ -261,7 +261,7 @@ class MatcherTest extends TestCase
     {
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, $matchData, false, null);
+            $match = $this->getMatchDataAsMatch($url, 20, $matchData, false);
             $string = sprintf('Example text before %s and after.', $url);
             $output = $isValid ? 'Example text before REPLACE and after.' : $string;
             $result[] = [$string, $isValid, $match, $output];
@@ -273,10 +273,10 @@ class MatcherTest extends TestCase
      * @param string $url
      * @param array|mixed[]|null $matchData
      * @param bool $isStrict
-     * @param int|null $byteOffset
+     * @param int $byteOffset
      * @return Match|null
      */
-    private function getMatchDataAsMatch(string $url, ?array $matchData, bool $isStrict, ?int $byteOffset): ?Match
+    private function getMatchDataAsMatch(string $url, int $byteOffset, ?array $matchData, bool $isStrict): ?Match
     {
         if ($matchData === null) {
             return null;
@@ -290,8 +290,6 @@ class MatcherTest extends TestCase
             return null;
         }
 
-        $matchData[] = $byteOffset;
-
-        return new Match(...$matchData);
+        return new Match($matchData[0], $byteOffset, ...$matchData);
     }
 }
