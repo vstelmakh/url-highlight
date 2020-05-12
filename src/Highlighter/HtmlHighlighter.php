@@ -17,21 +17,23 @@ class HtmlHighlighter implements HighlighterInterface
     }
 
     /**
+     * Return html link highlight
+     * Example: <a href="http://example.com">http://example.com</a>
+     *
      * @param Match $match
-     * @param string|null $displayText
      * @return string
      */
-    public function getHighlight(Match $match, ?string $displayText = null): string
+    public function getHighlight(Match $match): string
     {
-        $fullMatch = $match->getUrl();
         $scheme = empty($match->getScheme()) ? $this->defaultScheme . '://' : '';
-        $href = $scheme . $fullMatch;
+        $href = $scheme . $match->getUrl();
         $hrefSafeQuotes = str_replace('"', '%22', $href);
-        $text = $displayText ?? $fullMatch;
-        return sprintf('<a href="%s">%s</a>', $hrefSafeQuotes, $text);
+        return sprintf('<a href="%s">%s</a>', $hrefSafeQuotes, $match->getFullMatch());
     }
 
     /**
+     * Filter highlight in tag attributes, e.g href, src... and in <a> tags text
+     *
      * @param string $string
      * @return string
      */

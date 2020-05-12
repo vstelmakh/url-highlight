@@ -7,13 +7,17 @@ use VStelmakh\UrlHighlight\Matcher\Match;
 interface HighlighterInterface
 {
     /**
+     * Return corresponding match highlight. In other words - replacement for found url match.
+     *
      * @param Match $match
-     * @param string|null $displayText
      * @return string
      */
-    public function getHighlight(Match $match, ?string $displayText = null): string;
+    public function getHighlight(Match $match): string;
 
     /**
+     * If input string contains already highlighted urls - this urls will be highlighted once more.
+     * Here it should be filtered out.
+     *
      * @param string $string
      * @return string
      */
