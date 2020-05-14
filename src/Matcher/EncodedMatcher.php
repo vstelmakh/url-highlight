@@ -20,6 +20,11 @@ class EncodedMatcher implements MatcherInterface
      */
     private $encoder;
 
+    /**
+     * @internal
+     * @param Matcher $matcher
+     * @param EncoderInterface $encoder
+     */
     public function __construct(Matcher $matcher, EncoderInterface $encoder)
     {
         $this->matcher = $matcher;

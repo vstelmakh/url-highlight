@@ -26,9 +26,10 @@ class MatchValidator
     private $schemeWhitelist;
 
     /**
+     * @internal
      * @param bool $matchByTLD
-     * @param array|string[] $schemeBlacklist
-     * @param array|string[] $schemeWhitelist
+     * @param array&string[] $schemeBlacklist
+     * @param array&string[] $schemeWhitelist
      */
     public function __construct(bool $matchByTLD, array $schemeBlacklist, array $schemeWhitelist)
     {

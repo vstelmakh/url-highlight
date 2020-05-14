@@ -11,6 +11,9 @@ class HtmlHighlighter implements HighlighterInterface
      */
     private $defaultScheme;
 
+    /**
+     * @param string $defaultScheme
+     */
     public function __construct(string $defaultScheme)
     {
         $this->defaultScheme = $defaultScheme;

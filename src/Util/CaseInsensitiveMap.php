@@ -15,6 +15,7 @@ class CaseInsensitiveMap
     private $map = [];
 
     /**
+     * @internal
      * @param mixed[]&array $values
      */
     public function __construct(array $values = [])

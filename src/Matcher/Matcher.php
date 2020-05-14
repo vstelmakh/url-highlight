@@ -12,6 +12,10 @@ class Matcher implements MatcherInterface
      */
     private $matchValidator;
 
+    /**
+     * @internal
+     * @param MatchValidator $matchValidator
+     */
     public function __construct(MatchValidator $matchValidator)
     {
         $this->matchValidator = $matchValidator;

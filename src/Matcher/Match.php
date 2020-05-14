@@ -12,8 +12,6 @@ namespace VStelmakh\UrlHighlight\Matcher;
  *     local: null
  *     host: null
  *     tld: null
- *
- * @internal
  */
 class Match
 {
@@ -52,6 +50,16 @@ class Match
      */
     private $tld;
 
+    /**
+     * @internal
+     * @param string $fullMatch
+     * @param int $byteOffset
+     * @param string $url
+     * @param string|null $scheme
+     * @param string|null $local
+     * @param string|null $host
+     * @param string|null $tld
+     */
     public function __construct(
         string $fullMatch,
         int $byteOffset,
