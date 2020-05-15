@@ -26,7 +26,7 @@ class UrlHighlight
     /**
      * By default, urls without scheme will be matched by top level domain using http scheme.
      * If you need different behavior see existent or create your own implementations of:
-     *  - ValidatorInterface - define if match is valid and should be recognized as valid url
+     *  - ValidatorInterface - define if match is valid and should be recognized as url
      *  - HighlighterInterface - define the way how url should be highlighted
      *  - EncoderInterface - define how to work with encoded input (e.g. html special chars)
      *
