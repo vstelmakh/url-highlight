@@ -174,7 +174,7 @@ class MatcherTest extends TestCase
      *
      * @param string $string
      * @param array&bool[] $isValidMap
-     * @param array&mixed[] $expected
+     * @param array|mixed[] $expected
      */
     public function testMatchAll(string $string, array $isValidMap, array $expected): void
     {
@@ -271,7 +271,7 @@ class MatcherTest extends TestCase
 
     /**
      * @param string $url
-     * @param array&mixed[]|null $matchData
+     * @param array|mixed[]|null $matchData
      * @param bool $isStrict
      * @param int $byteOffset
      * @return Match|null

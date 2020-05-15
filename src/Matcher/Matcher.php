@@ -73,7 +73,7 @@ class Matcher implements MatcherInterface
 
         $searchOffset = 0;
         $rawMatchCallback = function (array $rawMatch) use ($string, $callback, &$searchOffset) {
-            $offset = strpos($string, $rawMatch[0], $searchOffset);
+            $offset = strpos($string, $rawMatch[0], $searchOffset) ?: 0;
             $searchOffset = $offset + strlen($rawMatch[0]);
             $match = $this->createMatch($rawMatch, $offset);
             return $this->validator->isValidMatch($match) ? $callback($match) : $match->getFullMatch();
@@ -136,7 +136,7 @@ class Matcher implements MatcherInterface
     }
 
     /**
-     * @param array&mixed[] $rawMatch
+     * @param array|mixed[] $rawMatch
      * @return Match
      */
     private function createMatchOffset(array $rawMatch): Match
@@ -153,7 +153,7 @@ class Matcher implements MatcherInterface
     }
 
     /**
-     * @param array&mixed[] $rawMatch
+     * @param array|mixed[] $rawMatch
      * @param int $offset
      * @return Match
      */

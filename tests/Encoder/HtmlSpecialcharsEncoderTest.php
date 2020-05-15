@@ -21,14 +21,17 @@ class HtmlSpecialcharsEncoderTest extends TestCase
      * @dataProvider decodeDataProvider
      *
      * @param string $string
-     * @param $expected
+     * @param string $expected
      */
-    public function testDecode(string $string, $expected): void
+    public function testDecode(string $string, string $expected): void
     {
         $actual = $this->htmlSpecialcharsEncoder->decode($string);
         $this->assertSame($expected, $actual);
     }
 
+    /**
+     * @return array|array[]
+     */
     public function decodeDataProvider(): array
     {
         return [
@@ -60,6 +63,9 @@ class HtmlSpecialcharsEncoderTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
+    /**
+     * @return array|array[]
+     */
     public function getEncodedCharRegexDataProvider(): array
     {
         return [

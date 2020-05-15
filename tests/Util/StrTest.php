@@ -11,7 +11,7 @@ class StrTest extends TestCase
      * @dataProvider getCharsDataProvider
      *
      * @param string $string
-     * @param array $expected
+     * @param array|string[] $expected
      */
     public function testGetChars(string $string, array $expected): void
     {
