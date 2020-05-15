@@ -6,7 +6,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VStelmakh\UrlHighlight\Matcher\Match;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Matcher\MatchValidator;
+use VStelmakh\UrlHighlight\Validator\Validator;
 
 class MatcherTest extends TestCase
 {
@@ -121,9 +121,9 @@ class MatcherTest extends TestCase
     ];
 
     /**
-     * @var MatchValidator&MockObject
+     * @var Validator&MockObject
      */
-    private $matchValidator;
+    private $validator;
 
     /**
      * @var Matcher
@@ -132,8 +132,8 @@ class MatcherTest extends TestCase
 
     public function setUp(): void
     {
-        $this->matchValidator = $this->createMock(MatchValidator::class);
-        $this->matcher = new Matcher($this->matchValidator);
+        $this->validator = $this->createMock(Validator::class);
+        $this->matcher = new Matcher($this->validator);
     }
 
     /**
@@ -146,7 +146,7 @@ class MatcherTest extends TestCase
     public function testMatch(string $string, bool $isValid, ?Match $match): void
     {
         $matchValidatorInvokedCount = ($match === null) ? $this->never() : $this->once();
-        $this->matchValidator
+        $this->validator
             ->expects($matchValidatorInvokedCount)
             ->method('isValidMatch')
             ->willReturn($isValid);
@@ -173,12 +173,12 @@ class MatcherTest extends TestCase
      * @dataProvider matchAllDataProvider
      *
      * @param string $string
-     * @param array|bool[] $isValidMap
-     * @param array|mixed[] $expected
+     * @param array&bool[] $isValidMap
+     * @param array&mixed[] $expected
      */
     public function testMatchAll(string $string, array $isValidMap, array $expected): void
     {
-        $this->matchValidator
+        $this->validator
             ->expects($this->exactly(count($isValidMap)))
             ->method('isValidMatch')
             ->willReturnOnConsecutiveCalls(...$isValidMap);
@@ -188,7 +188,7 @@ class MatcherTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return array&array[]
      */
     public function matchAllDataProvider(): array
     {
@@ -239,7 +239,7 @@ class MatcherTest extends TestCase
     public function testReplaceCallback(string $string, bool $isValid, ?Match $expectedMatch, string $expected): void
     {
         $matchValidatorInvokedCount = ($expectedMatch === null) ? $this->never() : $this->once();
-        $this->matchValidator
+        $this->validator
             ->expects($matchValidatorInvokedCount)
             ->method('isValidMatch')
             ->willReturn($isValid);
@@ -255,7 +255,7 @@ class MatcherTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return array&array[]
      */
     public function replaceCallbackDataProvider(): array
     {
@@ -271,7 +271,7 @@ class MatcherTest extends TestCase
 
     /**
      * @param string $url
-     * @param array|mixed[]|null $matchData
+     * @param array&mixed[]|null $matchData
      * @param bool $isStrict
      * @param int $byteOffset
      * @return Match|null

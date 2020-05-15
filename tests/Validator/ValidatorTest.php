@@ -1,12 +1,12 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Tests\Matcher;
+namespace VStelmakh\UrlHighlight\Tests\Validator;
 
 use VStelmakh\UrlHighlight\Matcher\Match;
-use VStelmakh\UrlHighlight\Matcher\MatchValidator;
+use VStelmakh\UrlHighlight\Validator\Validator;
 use PHPUnit\Framework\TestCase;
 
-class MatchValidatorTest extends TestCase
+class ValidatorTest extends TestCase
 {
     /**
      * @dataProvider isValidMatchDataProvider
@@ -24,13 +24,13 @@ class MatchValidatorTest extends TestCase
         Match $match,
         bool $expected
     ): void {
-        $matchValidator = new MatchValidator($matchByTLD, $schemeBlacklist, $schemeWhitelist);
-        $actual = $matchValidator->isValidMatch($match);
+        $validator = new Validator($matchByTLD, $schemeBlacklist, $schemeWhitelist);
+        $actual = $validator->isValidMatch($match);
         $this->assertEquals($expected, $actual, 'Dataset: ' . json_encode(func_get_args()));
     }
 
     /**
-     * @return array|array[]
+     * @return array&array[]
      */
     public function isValidMatchDataProvider(): array
     {

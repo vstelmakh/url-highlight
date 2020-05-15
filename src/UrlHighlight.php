@@ -8,7 +8,8 @@ use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
 use VStelmakh\UrlHighlight\Matcher\EncodedMatcher;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
-use VStelmakh\UrlHighlight\Matcher\MatchValidator;
+use VStelmakh\UrlHighlight\Validator\Validator;
+use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
 
 class UrlHighlight
 {
@@ -23,35 +24,22 @@ class UrlHighlight
     private $highlighter;
 
     /**
-     * Available options:
+     * By default, urls without scheme will be matched by top level domain using http scheme.
+     * If you need different behavior see existent or create your own implementations of:
+     *  - ValidatorInterface - define if match is valid and should be recognized as valid url
+     *  - HighlighterInterface - define the way how url should be highlighted
+     *  - EncoderInterface - define how to work with encoded input (e.g. html special chars)
      *
-     *  - match_by_tld (bool): if true, will map matches without scheme by top level domain
-     *      (example.com will be recognized as url). For full list of valid top level
-     *      domains see: Domains::TOP_LEVEL_DOMAINS (default true).
-     *
-     *  - default_scheme (string): scheme to use when highlighting urls without scheme (default 'http').
-     *
-     *  - scheme_blacklist (string[]): array of schemes not allowed to be recognized as url (default []).
-     *
-     *  - scheme_whitelist (string[]): array of schemes explicitly allowed to be recognized as url (default []).
-     *
-     * @param array|mixed[] $options
+     * @param ValidatorInterface|null $validator
      * @param HighlighterInterface|null $highlighter
      * @param EncoderInterface|null $encoder
      */
-    public function __construct(array $options = [], ?HighlighterInterface $highlighter = null, ?EncoderInterface $encoder = null)
+    public function __construct(?ValidatorInterface $validator = null, ?HighlighterInterface $highlighter = null, ?EncoderInterface $encoder = null)
     {
-        $options = array_merge([
-            'match_by_tld' => true,
-            'default_scheme' => 'http',
-            'scheme_blacklist' => [],
-            'scheme_whitelist' => [],
-        ], $options);
-
-        $matchValidator = new MatchValidator($options['match_by_tld'], $options['scheme_blacklist'], $options['scheme_whitelist']);
-        $matcher = new Matcher($matchValidator);
+        $validator = $validator ?? new Validator(true);
+        $matcher = new Matcher($validator);
         $this->matcher = $encoder ? new EncodedMatcher($matcher, $encoder) : $matcher;
-        $this->highlighter = $highlighter ?? new HtmlHighlighter($options['default_scheme']);
+        $this->highlighter = $highlighter ?? new HtmlHighlighter('http');
     }
 
     /**
