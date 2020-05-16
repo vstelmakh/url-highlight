@@ -1,9 +1,9 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Tests;
+namespace VStelmakh\UrlHighlight\Tests\Matcher;
 
-use VStelmakh\UrlHighlight\Match;
-use VStelmakh\UrlHighlight\MatchValidator;
+use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\MatchValidator;
 use PHPUnit\Framework\TestCase;
 
 class MatchValidatorTest extends TestCase
@@ -75,6 +75,6 @@ class MatchValidatorTest extends TestCase
 
     private function getMatch(?string $scheme, ?string $local, ?string $host, ?string $tld): Match
     {
-        return new Match('', $scheme, $local, $host, $tld);
+        return new Match('', $scheme, $local, $host, $tld, null);
     }
 }

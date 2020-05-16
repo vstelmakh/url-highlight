@@ -9,9 +9,9 @@
 
 **Url highlight** - PHP library to parse urls from string input. Works with complex urls and edge cases.  
 
-Current features:
+Features:
+- Replace urls in string by html tags (make clickable). For html escaped string see [highlight type](#replace-urls-in-string-by-html-tags-make-clickable)
 - Match urls without scheme by top-level domain
-- Replace urls in string by html tags
 - Extract urls from string
 - Check if string is url
 
@@ -40,12 +40,12 @@ echo $urlHighlight->highlightUrls('Hello, http://example.com.');
 
 ## Configuration
 Additional options could be provided via constructor:
-- `match_by_tld`: if true, will map matches without scheme by top level domain
+- `match_by_tld` (bool): if true, will map matches without scheme by top level domain
     (example.com will be recognized as url). For full list of valid top level
     domains see: Domains::TOP_LEVEL_DOMAINS (default true).
-- `default_scheme`: scheme to use when highlighting urls without scheme (default 'http').
-- `scheme_blacklist`: array of schemes not allowed to be recognized as url (default []).
-- `scheme_whitelist`: array of schemes explicitly allowed to be recognized as url (default []).
+- `default_scheme` (string): scheme to use when highlighting urls without scheme (default 'http').
+- `scheme_blacklist` (string[]): array of schemes not allowed to be recognized as url (default []).
+- `scheme_whitelist` (string[]): array of schemes explicitly allowed to be recognized as url (default []).
 
 Example:
 ```php
@@ -58,20 +58,34 @@ $urlHighlight = new UrlHighlight([
 ```
 
 ## Usage
-Check if string is url:  
+#### Check if string is url
 ```php
 $urlHighlight->isUrl('http://example.com'); // return: true
 $urlHighlight->isUrl('Other string'); // return: false
 ```
 
-Parse urls from string:  
+#### Parse urls from string
 ```php
-$urlHighlight->getUrls('Hello, http://example.com.'); // return: ['http://example.com']
+$urlHighlight->getUrls('Hello, http://example.com.');
+// return: ['http://example.com']
 ```
 
-Replace urls in string by html tags:  
+#### Replace urls in string by html tags (make clickable)
 ```php
-$urlHighlight->highlightUrls('Hello, http://example.com.'); // return: 'Hello, <a href="http://example.com">http://example.com</a>.'
+$urlHighlight->highlightUrls('Hello, http://example.com.');
+// return: 'Hello, <a href="http://example.com">http://example.com</a>.'
+```
+
+Provide second argument to define **highlight type** and how to process input text. Allowed types:  
+- `plain_text` a simple find and replace urls by html links (default).
+- `html_special_chars` expect text to be html entities encoded. Works with both, plain text
+    and html escaped string. Perform more regex operations than plain_text.
+
+Use class constants to specify type, see `UrlHighlight::HIGHLIGHT_TYPE_*`  
+```php
+$htmlEscaped = '&lt;a href=&quot;http://example.com&quot;&gt;Example&lt;/a&gt;';
+$urlHighlight->highlightUrls($htmlEscaped, UrlHighlight::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS);
+// return: '&lt;a href=&quot;<a href="http://example.com">http://example.com</a>&quot;&gt;Example&lt;/a&gt;'
 ```
 
 ## Credits

@@ -1,6 +1,6 @@
 <?php
 
-namespace VStelmakh\UrlHighlight;
+namespace VStelmakh\UrlHighlight\Matcher;
 
 /**
  * @internal
@@ -26,11 +26,11 @@ class Matcher
     public function match(string $string): ?Match
     {
         $urlRegex = $this->getUrlRegex(true);
-        preg_match($urlRegex, $string, $rawMatch);
+        preg_match($urlRegex, $string, $rawMatch, PREG_OFFSET_CAPTURE);
         if (empty($rawMatch)) {
             return null;
         }
-        $match = $this->createMatch($rawMatch);
+        $match = $this->createMatchOffset($rawMatch);
         return $this->matchValidator->isValidMatch($match) ? $match : null;
     }
 
@@ -44,9 +44,9 @@ class Matcher
     {
         $result = [];
         $urlRegex = $this->getUrlRegex(false);
-        preg_match_all($urlRegex, $string, $rawMatches, PREG_SET_ORDER);
+        preg_match_all($urlRegex, $string, $rawMatches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE);
         foreach ($rawMatches as $rawMatch) {
-            $match = $this->createMatch($rawMatch);
+            $match = $this->createMatchOffset($rawMatch);
             if ($this->matchValidator->isValidMatch($match)) {
                 $result[] = $match;
             }
@@ -126,15 +126,36 @@ class Matcher
     }
 
     /**
+     * Offset not available for preg_replace_callback on PHP 7.1
+     *
+     * @param array|mixed[] $rawMatch
+     * @return Match
+     */
+    private function createMatchOffset(array $rawMatch): Match
+    {
+        return new Match(
+            $rawMatch[0][0],
+            $rawMatch['scheme'][0] ?? null,
+            $rawMatch['local'][0] ?? null,
+            $rawMatch['host'][0] ?? null,
+            $rawMatch['tld'][0] ?? null,
+            $rawMatch[0][1]
+        );
+    }
+
+    /**
      * @param array|string[] $rawMatch
      * @return Match
      */
     private function createMatch(array $rawMatch): Match
     {
-        $scheme = $rawMatch['scheme'] ?? null;
-        $local = $rawMatch['local'] ?? null;
-        $host = $rawMatch['host'] ?? null;
-        $tld = $rawMatch['tld'] ?? null;
-        return new Match($rawMatch[0], $scheme, $local, $host, $tld);
+        return new Match(
+            $rawMatch[0],
+            $rawMatch['scheme'] ?? null,
+            $rawMatch['local'] ?? null,
+            $rawMatch['host'] ?? null,
+            $rawMatch['tld'] ?? null,
+            null
+        );
     }
 }

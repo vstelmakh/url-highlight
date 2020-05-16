@@ -1,6 +1,9 @@
 <?php
 
-namespace VStelmakh\UrlHighlight;
+namespace VStelmakh\UrlHighlight\Matcher;
+
+use VStelmakh\UrlHighlight\Domains;
+use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 
 /**
  * @internal
@@ -13,12 +16,12 @@ class MatchValidator
     private $matchByTLD;
 
     /**
-     * @var NormalizedCollection
+     * @var CaseInsensitiveSet
      */
     private $schemeBlacklist;
 
     /**
-     * @var NormalizedCollection
+     * @var CaseInsensitiveSet
      */
     private $schemeWhitelist;
 
@@ -30,8 +33,8 @@ class MatchValidator
     public function __construct(bool $matchByTLD, array $schemeBlacklist, array $schemeWhitelist)
     {
         $this->matchByTLD = $matchByTLD;
-        $this->schemeBlacklist = new NormalizedCollection($schemeBlacklist);
-        $this->schemeWhitelist = new NormalizedCollection($schemeWhitelist);
+        $this->schemeBlacklist = new CaseInsensitiveSet($schemeBlacklist);
+        $this->schemeWhitelist = new CaseInsensitiveSet($schemeWhitelist);
     }
 
     /**
@@ -66,8 +69,8 @@ class MatchValidator
      */
     private function isAllowedScheme(string $scheme): bool
     {
-        $isAllowedByBlacklist = !$this->schemeBlacklist->isContains($scheme);
-        $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->isContains($scheme);
+        $isAllowedByBlacklist = !$this->schemeBlacklist->contains($scheme);
+        $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->contains($scheme);
         return $isAllowedByBlacklist && $isAllowedByWhitelist;
     }
 

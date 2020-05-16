@@ -2,30 +2,39 @@
 
 namespace VStelmakh\UrlHighlight;
 
+use VStelmakh\UrlHighlight\Highlighter\AbstractHighlighter;
+use VStelmakh\UrlHighlight\Highlighter\HtmlSpecialCharsHighlighter;
+use VStelmakh\UrlHighlight\Highlighter\PlainTextHighlighter;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
+use VStelmakh\UrlHighlight\Matcher\MatchValidator;
+
 class UrlHighlight
 {
+    public const HIGHLIGHT_TYPE_PLAIN_TEXT = 'plain_text';
+    public const HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS = 'html_special_chars';
+
+    /**
+     * @var string
+     */
+    private $defaultScheme;
+
     /**
      * @var Matcher
      */
     private $matcher;
 
     /**
-     * @var Highlighter
-     */
-    private $highlighter;
-
-    /**
      * Available options:
      *
-     *  - match_by_tld: if true, will map matches without scheme by top level domain
+     *  - match_by_tld (bool): if true, will map matches without scheme by top level domain
      *      (example.com will be recognized as url). For full list of valid top level
      *      domains see: Domains::TOP_LEVEL_DOMAINS (default true).
      *
-     *  - default_scheme: scheme to use when highlighting urls without scheme (default 'http').
+     *  - default_scheme (string): scheme to use when highlighting urls without scheme (default 'http').
      *
-     *  - scheme_blacklist: array of schemes not allowed to be recognized as url (default []).
+     *  - scheme_blacklist (string[]): array of schemes not allowed to be recognized as url (default []).
      *
-     *  - scheme_whitelist: array of schemes explicitly allowed to be recognized as url (default []).
+     *  - scheme_whitelist (string[]): array of schemes explicitly allowed to be recognized as url (default []).
      *
      * @param array|mixed[] $options
      */
@@ -38,9 +47,9 @@ class UrlHighlight
             'scheme_whitelist' => [],
         ], $options);
 
+        $this->defaultScheme = (string) $options['default_scheme'];
         $matchValidator = new MatchValidator($options['match_by_tld'], $options['scheme_blacklist'], $options['scheme_whitelist']);
         $this->matcher = new Matcher($matchValidator);
-        $this->highlighter = new Highlighter($this->matcher, $options['default_scheme']);
     }
 
     /**
@@ -74,10 +83,37 @@ class UrlHighlight
      * Parse string and replace urls with html links
      *
      * @param string $string
+     * @param string $highlighterType define how to process input text. Allowed types: plain_text, html_special_chars.
+     *     - plain_text: simply find and replace urls by html links. (default).
+     *     - html_special_chars: expect text to be html entities encoded. Works with both, plain text
+     *         and html escaped string. Perform more regex operations than plain_text.
+     *     Use class constants to specify type, see UrlHighlight::HIGHLIGHT_TYPE_*
      * @return string
      */
-    public function highlightUrls(string $string): string
+    public function highlightUrls(string $string, string $highlighterType = self::HIGHLIGHT_TYPE_PLAIN_TEXT): string
     {
-        return $this->highlighter->highlightUrls($string);
+        $highlighter = $this->getHighlighterByType($highlighterType, $this->defaultScheme);
+        return $highlighter->highlightUrls($string);
+    }
+
+    /**
+     * @param string $type
+     * @param string $defaultScheme
+     * @return AbstractHighlighter
+     */
+    private function getHighlighterByType(string $type, string $defaultScheme): AbstractHighlighter
+    {
+        switch ($type) {
+            case self::HIGHLIGHT_TYPE_PLAIN_TEXT:
+                return new PlainTextHighlighter($this->matcher, $defaultScheme);
+            case self::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS:
+                return new HtmlSpecialCharsHighlighter($this->matcher, $defaultScheme);
+            default:
+                throw new \InvalidArgumentException(sprintf(
+                    'Unsupported highlighter type provided "%s". Supported types [%s].',
+                    $type,
+                    implode(', ', [self::HIGHLIGHT_TYPE_PLAIN_TEXT, self::HIGHLIGHT_TYPE_HTML_SPECIAL_CHARS])
+                ));
+        }
     }
 }
