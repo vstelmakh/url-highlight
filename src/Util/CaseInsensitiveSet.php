@@ -15,6 +15,7 @@ class CaseInsensitiveSet
     private $values = [];
 
     /**
+     * @internal
      * @param array&string[] $values
      */
     public function __construct(array $values = [])

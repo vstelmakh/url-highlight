@@ -2,19 +2,25 @@
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
+
 /**
  * @internal
  */
-class Matcher
+class Matcher implements MatcherInterface
 {
     /**
-     * @var MatchValidator
+     * @var ValidatorInterface
      */
-    private $matchValidator;
+    private $validator;
 
-    public function __construct(MatchValidator $matchValidator)
+    /**
+     * @internal
+     * @param ValidatorInterface $validator
+     */
+    public function __construct(ValidatorInterface $validator)
     {
-        $this->matchValidator = $matchValidator;
+        $this->validator = $validator;
     }
 
     /**
@@ -31,14 +37,14 @@ class Matcher
             return null;
         }
         $match = $this->createMatchOffset($rawMatch);
-        return $this->matchValidator->isValidMatch($match) ? $match : null;
+        return $this->validator->isValidMatch($match) ? $match : null;
     }
 
     /**
      * Get all valid url regex matches from string
      *
      * @param string $string
-     * @return array|Match[]
+     * @return array&Match[]
      */
     public function matchAll(string $string): array
     {
@@ -47,7 +53,7 @@ class Matcher
         preg_match_all($urlRegex, $string, $rawMatches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE);
         foreach ($rawMatches as $rawMatch) {
             $match = $this->createMatchOffset($rawMatch);
-            if ($this->matchValidator->isValidMatch($match)) {
+            if ($this->validator->isValidMatch($match)) {
                 $result[] = $match;
             }
         }
@@ -64,9 +70,13 @@ class Matcher
     public function replaceCallback(string $string, callable $callback): string
     {
         $urlRegex = $this->getUrlRegex(false);
-        $rawMatchCallback = function (array $rawMatch) use ($callback) {
-            $match = $this->createMatch($rawMatch);
-            return $this->matchValidator->isValidMatch($match) ? $callback($match) : $match->getFullMatch();
+
+        $searchOffset = 0;
+        $rawMatchCallback = function (array $rawMatch) use ($string, $callback, &$searchOffset) {
+            $offset = strpos($string, $rawMatch[0], $searchOffset) ?: 0;
+            $searchOffset = $offset + strlen($rawMatch[0]);
+            $match = $this->createMatch($rawMatch, $offset);
+            return $this->validator->isValidMatch($match) ? $callback($match) : $match->getFullMatch();
         };
         return preg_replace_callback($urlRegex, $rawMatchCallback, $string) ?? $string;
     }
@@ -126,8 +136,6 @@ class Matcher
     }
 
     /**
-     * Offset not available for preg_replace_callback on PHP 7.1
-     *
      * @param array|mixed[] $rawMatch
      * @return Match
      */
@@ -135,27 +143,30 @@ class Matcher
     {
         return new Match(
             $rawMatch[0][0],
+            $rawMatch[0][1],
+            $rawMatch[0][0],
             $rawMatch['scheme'][0] ?? null,
             $rawMatch['local'][0] ?? null,
             $rawMatch['host'][0] ?? null,
-            $rawMatch['tld'][0] ?? null,
-            $rawMatch[0][1]
+            $rawMatch['tld'][0] ?? null
         );
     }
 
     /**
-     * @param array|string[] $rawMatch
+     * @param array|mixed[] $rawMatch
+     * @param int $offset
      * @return Match
      */
-    private function createMatch(array $rawMatch): Match
+    private function createMatch(array $rawMatch, int $offset): Match
     {
         return new Match(
+            $rawMatch[0],
+            $offset,
             $rawMatch[0],
             $rawMatch['scheme'] ?? null,
             $rawMatch['local'] ?? null,
             $rawMatch['host'] ?? null,
-            $rawMatch['tld'] ?? null,
-            null
+            $rawMatch['tld'] ?? null
         );
     }
 }

@@ -1,14 +1,12 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Matcher;
+namespace VStelmakh\UrlHighlight\Validator;
 
 use VStelmakh\UrlHighlight\Domains;
+use VStelmakh\UrlHighlight\Matcher\Match;
 use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 
-/**
- * @internal
- */
-class MatchValidator
+class Validator implements ValidatorInterface
 {
     /**
      * @var bool
@@ -27,10 +25,10 @@ class MatchValidator
 
     /**
      * @param bool $matchByTLD
-     * @param array|string[] $schemeBlacklist
-     * @param array|string[] $schemeWhitelist
+     * @param array&string[] $schemeBlacklist
+     * @param array&string[] $schemeWhitelist
      */
-    public function __construct(bool $matchByTLD, array $schemeBlacklist, array $schemeWhitelist)
+    public function __construct(bool $matchByTLD = true, array $schemeBlacklist = [], array $schemeWhitelist = [])
     {
         $this->matchByTLD = $matchByTLD;
         $this->schemeBlacklist = new CaseInsensitiveSet($schemeBlacklist);
