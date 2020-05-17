@@ -121,7 +121,7 @@ Encoder should be used to handle encoded input properly. For example HTML escape
 like: `http://example.com?a=1&quot;` or `http://example.com?a=1&amp;b=2` which will be wrongly matched as URL.
 
 By default, there is no encoder used. There are 2 encoders bundled with library:
-- HtmlEntitiesEncoder - to work with HTML entities encoded string (any character HTML entity encoded)
+- HtmlEntitiesEncoder - to work with HTML entities encoded string (any character expected to be HTML entity encoded)
 - HtmlSpecialcharsEncoder - to work with HTML escaped string (only `&` `"` `'` `<` `>` expected to be encoded)
 
 Encoder usage example:
@@ -133,6 +133,9 @@ use VStelmakh\UrlHighlight\UrlHighlight;
 
 $encoder = new HtmlSpecialcharsEncoder();
 $urlHighlight = new UrlHighlight(null, null, $encoder);
+
+$urlHighlight->highlightUrls('&lt;a href=&quot;http://example.com&quot;&gt;Example&lt;/a&gt;');
+// return: '&lt;a href=&quot;<a href="http://example.com">http://example.com</a>&quot;&gt;Example&lt;/a&gt;'
 ```
 If you need custom behavior - create and use your own encoder implementing [EncoderInterface](./src/Encoder/EncoderInterface.php).  
 Keep in mind - using **encoder require more regex operations and could have performance impact**.
