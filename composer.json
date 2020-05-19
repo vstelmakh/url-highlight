@@ -1,7 +1,7 @@
 {
     "name": "vstelmakh/url-highlight",
-    "description": "Library to parse urls from text input",
-    "keywords": ["url", "parser", "html"],
+    "description": "Library to parse urls from string input",
+    "keywords": ["url", "parser", "html", "extract", "clickable"],
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/vstelmakh/url-highlight",
@@ -13,7 +13,8 @@
     ],
     "require": {
         "php": "^7.1",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "symfony/polyfill-php72": "^1.10"
     },
     "require-dev" : {
         "ext-json": "*",

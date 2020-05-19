@@ -2,14 +2,16 @@
 
 namespace VStelmakh\UrlHighlight\Tests;
 
+use VStelmakh\UrlHighlight\Encoder\EncoderInterface;
+use VStelmakh\UrlHighlight\Encoder\HtmlSpecialcharsEncoder;
+use VStelmakh\UrlHighlight\Highlighter\HighlighterInterface;
 use VStelmakh\UrlHighlight\UrlHighlight;
 use PHPUnit\Framework\TestCase;
+use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
 
 class UrlHighlightTest extends TestCase
 {
     /**
-     * Generic test. For full test cases see MatcherTest::testMatch
-     *
      * @dataProvider isUrlDataProvider
      *
      * @param string $string
@@ -23,23 +25,22 @@ class UrlHighlightTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return array&array[]
      */
     public function isUrlDataProvider(): array
     {
         return [
             ['http://example.com', true],
+            ['example.com', true],
             ['not url', false],
         ];
     }
 
     /**
-     * Generic test. For full test cases see MatcherTest::testMatchAll
-     *
      * @dataProvider getUrlsDataProvider
      *
      * @param string $string
-     * @param array|array[] $expected
+     * @param array&array[] $expected
      */
     public function testGetUrls(string $string, array $expected): void
     {
@@ -49,14 +50,14 @@ class UrlHighlightTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return array&array[]
      */
     public function getUrlsDataProvider(): array
     {
         return [
             [
-                'Example text before http://example.com/app.php/some/path/index.html and after. Open filename.txt at 3:00pm. For more info see https://google.com.',
-                ['http://example.com/app.php/some/path/index.html', 'https://google.com'],
+                'Example text before http://example.com/app.php/some/path/index.html and after. Open filename.txt at 3:00pm. For more info see google.com.',
+                ['http://example.com/app.php/some/path/index.html', 'google.com'],
             ],
             [
                 'not url',
@@ -66,244 +67,83 @@ class UrlHighlightTest extends TestCase
     }
 
     /**
-     * Generic test. For full test cases see HighlighterTest::testHighlightUrls
-     *
      * @dataProvider highlightUrlsDataProvider
      *
+     * @param EncoderInterface|null $encoder
      * @param string $string
      * @param string $expected
      */
-    public function testHighlightUrls(string $string, string $expected): void
+    public function testHighlightUrls(?EncoderInterface $encoder, string $string, string $expected): void
     {
-        $urlHighlight = new UrlHighlight();
+        $urlHighlight = new UrlHighlight(null, null, $encoder);
+
         $actual = $urlHighlight->highlightUrls($string);
-        $this->assertEquals($expected, $actual, 'Input: ' . $string);
+        $this->assertEquals($expected, $actual);
     }
 
     /**
-     * @return array|array[]
+     * @return array&array[]
      */
     public function highlightUrlsDataProvider(): array
     {
         return [
             [
+                null,
                 'Example text before http://example.com and after.',
                 'Example text before <a href="http://example.com">http://example.com</a> and after.',
             ],
             [
+                null,
                 'With html <p>http://example.com</p>',
                 'With html <p><a href="http://example.com">http://example.com</a></p>',
             ],
             [
+                null,
                 'Example text before example.com and after.',
                 'Example text before <a href="http://example.com">example.com</a> and after.',
             ],
             [
+                null,
                 'With html <p>example.com</p>',
                 'With html <p><a href="http://example.com">example.com</a></p>',
             ],
-        ];
-    }
-
-    /**
-     * @dataProvider optionsMatchByTldDataProvider
-     *
-     * @param bool $matchByTld
-     * @param string $input
-     * @param array|mixed[] $expectations
-     */
-    public function testOptionsMatchByTld(bool $matchByTld, string $input, array $expectations): void
-    {
-        $options = ['match_by_tld' => $matchByTld];
-        $urlHighlight = new UrlHighlight($options);
-
-        $isUrl = $urlHighlight->isUrl($input);
-        $this->assertEquals($expectations['isUrl'], $isUrl, 'Options: ' . json_encode($options));
-
-        $urls = $urlHighlight->getUrls($input);
-        $this->assertEquals($expectations['getUrls'], $urls, 'Options: ' . json_encode($options));
-
-        $highlight = $urlHighlight->highlightUrls($input);
-        $this->assertEquals($expectations['highlightUrls'], $highlight, 'Options: ' . json_encode($options));
-    }
-
-    /**
-     * @return array|array[]
-     */
-    public function optionsMatchByTldDataProvider(): array
-    {
-        return [
             [
-                true,
-                'example.com',
-                [
-                    'isUrl' => true,
-                    'getUrls' => ['example.com'],
-                    'highlightUrls' => '<a href="http://example.com">example.com</a>',
-                ]
+                null,
+                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
+                '&lt;a href=&quot;<a href="http://example.com&quot;&gt;example.com&lt;/a&gt">http://example.com&quot;&gt;example.com&lt;/a&gt</a>;',
             ],
             [
-                false,
-                'example.com',
-                [
-                    'isUrl' => false,
-                    'getUrls' => [],
-                    'highlightUrls' => 'example.com',
-                ]
+                new HtmlSpecialcharsEncoder(),
+                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
+                '&lt;a href=&quot;<a href="http://example.com">http://example.com</a>&quot;&gt;<a href="http://example.com">example.com</a>&lt;/a&gt;',
             ],
         ];
     }
 
-    /**
-     * @dataProvider optionsDefaultSchemeDataProvider
-     *
-     * @param string $defaultScheme
-     * @param string $input
-     * @param array|mixed[] $expectations
-     */
-    public function testOptionsDefaultScheme(string $defaultScheme, string $input, array $expectations): void
+    public function testDependencies(): void
     {
-        $options = ['default_scheme' => $defaultScheme];
-        $urlHighlight = new UrlHighlight($options);
+        $string = 'http://example.com';
 
-        $highlight = $urlHighlight->highlightUrls($input);
-        $this->assertEquals($expectations['highlightUrls'], $highlight, 'Options: ' . json_encode($options));
-    }
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator
+            ->expects($this->atLeastOnce())
+            ->method('isValidMatch')
+            ->willReturn(true);
 
-    /**
-     * @return array|array[]
-     */
-    public function optionsDefaultSchemeDataProvider(): array
-    {
-        return [
-            [
-                'http',
-                'example.com',
-                [
-                    'highlightUrls' => '<a href="http://example.com">example.com</a>',
-                ]
-            ],
-            [
-                'https',
-                'example.com',
-                [
-                    'highlightUrls' => '<a href="https://example.com">example.com</a>',
-                ]
-            ],
-            [
-                'ftp',
-                'example.com',
-                [
-                    'highlightUrls' => '<a href="ftp://example.com">example.com</a>',
-                ]
-            ],
-        ];
-    }
+        $highlighter = $this->createMock(HighlighterInterface::class);
+        $highlighter
+            ->expects($this->atLeastOnce())
+            ->method('getHighlight');
 
-    /**
-     * @dataProvider optionsSchemeBlacklistDataProvider
-     *
-     * @param array|string[] $schemeBlacklist
-     * @param string $input
-     * @param array|mixed[] $expectations
-     */
-    public function testOptionsSchemeBlacklist(array $schemeBlacklist, string $input, array $expectations): void
-    {
-        $options = ['scheme_blacklist' => $schemeBlacklist];
-        $urlHighlight = new UrlHighlight($options);
+        $encoder = $this->createMock(EncoderInterface::class);
+        $encoder
+            ->expects($this->atLeastOnce())
+            ->method('decode')
+            ->willReturn($string);
 
-        $isUrl = $urlHighlight->isUrl($input);
-        $this->assertEquals($expectations['isUrl'], $isUrl, 'Options: ' . json_encode($options));
-
-        $urls = $urlHighlight->getUrls($input);
-        $this->assertEquals($expectations['getUrls'], $urls, 'Options: ' . json_encode($options));
-
-        $highlight = $urlHighlight->highlightUrls($input);
-        $this->assertEquals($expectations['highlightUrls'], $highlight, 'Options: ' . json_encode($options));
-    }
-
-    /**
-     * @return array|array[]
-     */
-    public function optionsSchemeBlacklistDataProvider(): array
-    {
-        return [
-            [
-                [],
-                'http://example.com',
-                [
-                    'isUrl' => true,
-                    'getUrls' => ['http://example.com'],
-                    'highlightUrls' => '<a href="http://example.com">http://example.com</a>',
-                ]
-            ],
-            [
-                ['http'],
-                'http://example.com',
-                [
-                    'isUrl' => false,
-                    'getUrls' => [],
-                    'highlightUrls' => 'http://example.com',
-                ]
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider optionsSchemeWhitelistDataProvider
-     *
-     * @param array|string[] $schemeWhitelist
-     * @param string $input
-     * @param array|mixed[] $expectations
-     */
-    public function testOptionsSchemeWhitelist(array $schemeWhitelist, string $input, array $expectations): void
-    {
-        $options = ['scheme_whitelist' => $schemeWhitelist];
-        $urlHighlight = new UrlHighlight($options);
-
-        $isUrl = $urlHighlight->isUrl($input);
-        $this->assertEquals($expectations['isUrl'], $isUrl, 'Options: ' . json_encode($options));
-
-        $urls = $urlHighlight->getUrls($input);
-        $this->assertEquals($expectations['getUrls'], $urls, 'Options: ' . json_encode($options));
-
-        $highlight = $urlHighlight->highlightUrls($input);
-        $this->assertEquals($expectations['highlightUrls'], $highlight, 'Options: ' . json_encode($options));
-    }
-
-    /**
-     * @return array|array[]
-     */
-    public function optionsSchemeWhitelistDataProvider(): array
-    {
-        return [
-            [
-                [],
-                'http://example.com',
-                [
-                    'isUrl' => true,
-                    'getUrls' => ['http://example.com'],
-                    'highlightUrls' => '<a href="http://example.com">http://example.com</a>',
-                ]
-            ],
-            [
-                ['http'],
-                'http://example.com',
-                [
-                    'isUrl' => true,
-                    'getUrls' => ['http://example.com'],
-                    'highlightUrls' => '<a href="http://example.com">http://example.com</a>',
-                ]
-            ],
-            [
-                ['https'],
-                'http://example.com',
-                [
-                    'isUrl' => false,
-                    'getUrls' => [],
-                    'highlightUrls' => 'http://example.com',
-                ]
-            ],
-        ];
+        $urlHighlight = new UrlHighlight($validator, $highlighter, $encoder);
+        $urlHighlight->isUrl($string);
+        $urlHighlight->getUrls($string);
+        $urlHighlight->highlightUrls($string);
     }
 }

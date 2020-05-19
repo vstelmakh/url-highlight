@@ -2,6 +2,9 @@
 
 namespace VStelmakh\UrlHighlight;
 
+/**
+ * @internal
+ */
 interface Domains
 {
     /**

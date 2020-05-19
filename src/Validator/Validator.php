@@ -1,11 +1,12 @@
 <?php
 
-namespace VStelmakh\UrlHighlight;
+namespace VStelmakh\UrlHighlight\Validator;
 
-/**
- * @internal
- */
-class MatchValidator
+use VStelmakh\UrlHighlight\Domains;
+use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
+
+class Validator implements ValidatorInterface
 {
     /**
      * @var bool
@@ -13,25 +14,25 @@ class MatchValidator
     private $matchByTLD;
 
     /**
-     * @var NormalizedCollection
+     * @var CaseInsensitiveSet
      */
     private $schemeBlacklist;
 
     /**
-     * @var NormalizedCollection
+     * @var CaseInsensitiveSet
      */
     private $schemeWhitelist;
 
     /**
      * @param bool $matchByTLD
-     * @param array|string[] $schemeBlacklist
-     * @param array|string[] $schemeWhitelist
+     * @param array&string[] $schemeBlacklist
+     * @param array&string[] $schemeWhitelist
      */
-    public function __construct(bool $matchByTLD, array $schemeBlacklist, array $schemeWhitelist)
+    public function __construct(bool $matchByTLD = true, array $schemeBlacklist = [], array $schemeWhitelist = [])
     {
         $this->matchByTLD = $matchByTLD;
-        $this->schemeBlacklist = new NormalizedCollection($schemeBlacklist);
-        $this->schemeWhitelist = new NormalizedCollection($schemeWhitelist);
+        $this->schemeBlacklist = new CaseInsensitiveSet($schemeBlacklist);
+        $this->schemeWhitelist = new CaseInsensitiveSet($schemeWhitelist);
     }
 
     /**
@@ -66,8 +67,8 @@ class MatchValidator
      */
     private function isAllowedScheme(string $scheme): bool
     {
-        $isAllowedByBlacklist = !$this->schemeBlacklist->isContains($scheme);
-        $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->isContains($scheme);
+        $isAllowedByBlacklist = !$this->schemeBlacklist->contains($scheme);
+        $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->contains($scheme);
         return $isAllowedByBlacklist && $isAllowedByWhitelist;
     }
 

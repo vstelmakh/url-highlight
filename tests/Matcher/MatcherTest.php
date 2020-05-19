@@ -1,12 +1,12 @@
 <?php
 
-namespace VStelmakh\UrlHighlight\Tests;
+namespace VStelmakh\UrlHighlight\Tests\Matcher;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VStelmakh\UrlHighlight\Match;
-use VStelmakh\UrlHighlight\Matcher;
+use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\MatchValidator;
+use VStelmakh\UrlHighlight\Validator\Validator;
 
 class MatcherTest extends TestCase
 {
@@ -121,9 +121,9 @@ class MatcherTest extends TestCase
     ];
 
     /**
-     * @var MatchValidator&MockObject
+     * @var Validator&MockObject
      */
-    private $matchValidator;
+    private $validator;
 
     /**
      * @var Matcher
@@ -132,8 +132,8 @@ class MatcherTest extends TestCase
 
     public function setUp(): void
     {
-        $this->matchValidator = $this->createMock(MatchValidator::class);
-        $this->matcher = new Matcher($this->matchValidator);
+        $this->validator = $this->createMock(Validator::class);
+        $this->matcher = new Matcher($this->validator);
     }
 
     /**
@@ -146,7 +146,7 @@ class MatcherTest extends TestCase
     public function testMatch(string $string, bool $isValid, ?Match $match): void
     {
         $matchValidatorInvokedCount = ($match === null) ? $this->never() : $this->once();
-        $this->matchValidator
+        $this->validator
             ->expects($matchValidatorInvokedCount)
             ->method('isValidMatch')
             ->willReturn($isValid);
@@ -163,7 +163,7 @@ class MatcherTest extends TestCase
     {
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, $matchData, true);
+            $match = $this->getMatchDataAsMatch($url, 0, $matchData, true);
             $result[] = [$url, $isValid, $match];
         }
         return $result;
@@ -173,12 +173,12 @@ class MatcherTest extends TestCase
      * @dataProvider matchAllDataProvider
      *
      * @param string $string
-     * @param array|bool[] $isValidMap
+     * @param array&bool[] $isValidMap
      * @param array|mixed[] $expected
      */
     public function testMatchAll(string $string, array $isValidMap, array $expected): void
     {
-        $this->matchValidator
+        $this->validator
             ->expects($this->exactly(count($isValidMap)))
             ->method('isValidMatch')
             ->willReturnOnConsecutiveCalls(...$isValidMap);
@@ -188,35 +188,39 @@ class MatcherTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return array&array[]
      */
     public function matchAllDataProvider(): array
     {
-        $enclosed = ['\'%s\'', '"%s"', '(%s)', '{%s}', '[%s]', '<%s>', 'Example text before %s and after.', 'Text with <%s> (including brackets).'];
+        $enclosed = ['\'%s\'' => 1, '"%s"' => 1, '(%s)' => 1, '{%s}' => 1, '[%s]' => 1, '<%s>' => 1, 'Example text before %s and after.' => 20, 'Text with <%s> (including brackets).' => 11];
         $invalidPrefixChars = ['`', '~', '!', '#', '$', '%', '^', '&', '*', '(', ')', '_', '=', '+', '[', ']', '{', '}', ';', '\'', '"', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’', '/', '\\', '|', ':', '@', '-', '.'];
         $invalidSuffixChars = ['`', '!', '(', ')', '[', ']', '{', '}', ';', ':', '\'', '"', '.', ',', '<', '>', '?', '«', '»', '“', '”', '‘', '’'];
 
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, $matchData, false);
-            $isValidMap = ($matchData !== null) ? [$isValid] : [];
-            $expected = $isValid ? [$match] : [];
-
             if ($isValid) {
-                foreach ($enclosed as $item) {
+                $isValidMap = ($matchData !== null) ? [$isValid] : [];
+
+                foreach ($enclosed as $item => $byteOffset) {
+                    $expected = [$this->getMatchDataAsMatch($url, $byteOffset, $matchData, false)];
                     $result[] = [sprintf($item, $url), $isValidMap, $expected];
                 }
+
+                $expected = [$this->getMatchDataAsMatch($url, 20, $matchData, false)];
+                $secondMatchByteOffset = 79 + strlen($url);
                 $result[] = [
                     sprintf('Example text before %s and after. Open filename.txt at 3:00pm. For more info see http://google.com.', $url),
                     array_merge($isValidMap, [false, true]),
-                    array_merge($expected, [new Match('http://google.com', 'http', null, null, null)])
+                    array_merge($expected, [new Match('http://google.com', $secondMatchByteOffset, 'http://google.com', 'http', null, null, null)])
                 ];
 
                 foreach ($invalidPrefixChars as $prefix) {
+                    $expected = [$this->getMatchDataAsMatch($url, strlen($prefix), $matchData, false)];
                     $result[] = [$prefix . $url, $isValidMap, $expected];
                 }
 
                 foreach ($invalidSuffixChars as $suffix) {
+                    $expected = [$this->getMatchDataAsMatch($url, 0, $matchData, false)];
                     $result[] = [$url . $suffix, $isValidMap, $expected];
                 }
             }
@@ -235,7 +239,7 @@ class MatcherTest extends TestCase
     public function testReplaceCallback(string $string, bool $isValid, ?Match $expectedMatch, string $expected): void
     {
         $matchValidatorInvokedCount = ($expectedMatch === null) ? $this->never() : $this->once();
-        $this->matchValidator
+        $this->validator
             ->expects($matchValidatorInvokedCount)
             ->method('isValidMatch')
             ->willReturn($isValid);
@@ -251,13 +255,13 @@ class MatcherTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return array&array[]
      */
     public function replaceCallbackDataProvider(): array
     {
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, $matchData, false);
+            $match = $this->getMatchDataAsMatch($url, 20, $matchData, false);
             $string = sprintf('Example text before %s and after.', $url);
             $output = $isValid ? 'Example text before REPLACE and after.' : $string;
             $result[] = [$string, $isValid, $match, $output];
@@ -269,9 +273,10 @@ class MatcherTest extends TestCase
      * @param string $url
      * @param array|mixed[]|null $matchData
      * @param bool $isStrict
+     * @param int $byteOffset
      * @return Match|null
      */
-    private function getMatchDataAsMatch(string $url, ?array $matchData, bool $isStrict): ?Match
+    private function getMatchDataAsMatch(string $url, int $byteOffset, ?array $matchData, bool $isStrict): ?Match
     {
         if ($matchData === null) {
             return null;
@@ -285,6 +290,6 @@ class MatcherTest extends TestCase
             return null;
         }
 
-        return new Match(...$matchData);
+        return new Match($matchData[0], $byteOffset, ...$matchData);
     }
 }

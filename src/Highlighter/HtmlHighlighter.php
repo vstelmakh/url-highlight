@@ -1,53 +1,50 @@
 <?php
 
-namespace VStelmakh\UrlHighlight;
+namespace VStelmakh\UrlHighlight\Highlighter;
 
-/**
- * @internal
- */
-class Highlighter
+use VStelmakh\UrlHighlight\Matcher\Match;
+
+class HtmlHighlighter implements HighlighterInterface
 {
-    /**
-     * @var Matcher
-     */
-    private $matcher;
-
     /**
      * @var string
      */
     private $defaultScheme;
 
-    public function __construct(Matcher $matcher, string $defaultScheme)
+    /**
+     * @param string $defaultScheme
+     */
+    public function __construct(string $defaultScheme)
     {
-        $this->matcher = $matcher;
         $this->defaultScheme = $defaultScheme;
     }
 
     /**
-     * Parse string and replace urls with html links
-     *
-     * @param string $string
-     * @return string
-     */
-    public function highlightUrls(string $string): string
-    {
-        $result = $this->matcher->replaceCallback($string, [$this, 'getMatchAsHighlight']);
-        $result = $this->filterHighlightInTagAttributes($result);
-        $result = $this->filterHighlightInLinks($result);
-        return $result;
-    }
-
-    /**
-     * Convert match to highlighted string
+     * Return html link highlight
+     * Example: <a href="http://example.com">http://example.com</a>
      *
      * @param Match $match
      * @return string
      */
-    public function getMatchAsHighlight(Match $match): string
+    public function getHighlight(Match $match): string
     {
-        $scheme = $match->getScheme() === null ? $this->defaultScheme . '://' : '';
-        $fullMatch = $match->getFullMatch();
-        return sprintf('<a href="%s%s">%s</a>', $scheme, $fullMatch, $fullMatch);
+        $scheme = empty($match->getScheme()) ? $this->defaultScheme . '://' : '';
+        $href = $scheme . $match->getUrl();
+        $hrefSafeQuotes = str_replace('"', '%22', $href);
+        return sprintf('<a href="%s">%s</a>', $hrefSafeQuotes, $match->getFullMatch());
+    }
+
+    /**
+     * Filter highlight in tag attributes, e.g href, src... and in <a> tags text
+     *
+     * @param string $string
+     * @return string
+     */
+    public function filterOverhighlight(string $string): string
+    {
+        $string = $this->filterHighlightInTagAttributes($string);
+        $string = $this->filterHighlightInLinks($string);
+        return $string;
     }
 
     /**
