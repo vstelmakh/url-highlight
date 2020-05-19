@@ -2,7 +2,7 @@
 All notable changes to this project documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
-### v2.0.0 (unreleased)
+### v2.0.0 (2020-05-19)
 - Replaced array configuration by specific interfaces: Validator, Highlighter, Encoder **\[BC break\]**
 - Added support for html escaped input
 - Fixed html highlight when href for urls contains `"` (double quote)
