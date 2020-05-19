@@ -25,6 +25,7 @@ class StrTest extends TestCase
     public function getCharsDataProvider(): array
     {
         return [
+            ['', []],
             ['hello', ['h', 'e', 'l', 'l', 'o']],
             ['привіт', ['п', 'р', 'и', 'в', 'і', 'т']],
             ['你好', ['你', '好']],
