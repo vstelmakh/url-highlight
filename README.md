@@ -92,7 +92,7 @@ use VStelmakh\UrlHighlight\UrlHighlight;
 use VStelmakh\UrlHighlight\Validator\Validator;
 
 $validator = new Validator(
-    true, // (bool) - if should use top level domain to match urls without scheme
+    true, // bool - if should use top level domain to match urls without scheme
     [],   // string[] - array of blacklisted schemes
     []    // string[] - array of whitelisted schemes
 );
@@ -110,7 +110,8 @@ use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
 $highlighter = new HtmlHighlighter(
-    'http' // (string) - scheme to use for urls matched by top level domain
+    'http', // string - scheme to use for urls matched by top level domain
+    []      // string[] - key/value map of tag attributes, e.g. ['rel' => 'nofollow', 'class' => 'light']
 );
 $urlHighlight = new UrlHighlight(null, $highlighter);
 ```
