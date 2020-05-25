@@ -22,12 +22,16 @@ class HtmlHighlighterTest extends TestCase
         string $url,
         ?string $scheme,
         array $attributes,
-        string $expected
+        ?string $expected
     ): void {
         $match = $this->createMock(Match::class);
         $match->method('getFullMatch')->willReturn($fullMatch);
         $match->method('getUrl')->willReturn($url);
         $match->method('getScheme')->willReturn($scheme);
+
+        if ($expected === null) {
+            $this->expectException(\InvalidArgumentException::class);
+        }
 
         $htmlHighlighter = new HtmlHighlighter('http', $attributes);
         $actual = $htmlHighlighter->getHighlight($match);
@@ -44,6 +48,7 @@ class HtmlHighlighterTest extends TestCase
             ['example.com', 'example.com', null, [], '<a href="http://example.com">example.com</a>'],
             ['http://example.com?a=&quot;1&quot;&amp;b=2', 'http://example.com?a="1"&b=2', 'http', [], '<a href="http://example.com?a=%221%22&b=2">http://example.com?a=&quot;1&quot;&amp;b=2</a>'],
             ['http://example.com', 'http://example.com', 'http', ['rel' => 'nofollow', 'title' => '"quotes"'], '<a href="http://example.com" rel="nofollow" title="&quot;quotes&quot;">http://example.com</a>'],
+            ['http://example.com', 'http://example.com', 'http', ['"quotes"' => 'value'], null],
         ];
     }
 

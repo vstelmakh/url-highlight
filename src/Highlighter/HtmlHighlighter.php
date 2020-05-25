@@ -68,7 +68,11 @@ class HtmlHighlighter implements HighlighterInterface
             $isValidAttributeName = !preg_match_all('/[\t\n\f \/>"\'=]/', $key, $matches);
             if (!$isValidAttributeName) {
                 $invalidChars = array_unique($matches[0]);
-                // TODO: throw exception
+                throw new \InvalidArgumentException(sprintf(
+                    'Attribute name %s contains invalid characters: %s',
+                    json_encode($key),
+                    json_encode(implode(', ', $invalidChars))
+                ));
             }
 
             $valueSafeQuotes = str_replace('"', '&quot;', $value);
