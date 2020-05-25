@@ -12,11 +12,18 @@ class HtmlHighlighter implements HighlighterInterface
     private $defaultScheme;
 
     /**
-     * @param string $defaultScheme
+     * @var string $attributes
      */
-    public function __construct(string $defaultScheme)
+    private $attributes;
+
+    /**
+     * @param string $defaultScheme Used to build href for urls matched without scheme
+     * @param array&string[] $attributes Key/value map of tag attributes
+     */
+    public function __construct(string $defaultScheme, array $attributes = [])
     {
         $this->defaultScheme = $defaultScheme;
+        $this->attributes = $this->buildAttributes($attributes);
     }
 
     /**
@@ -31,7 +38,7 @@ class HtmlHighlighter implements HighlighterInterface
         $scheme = empty($match->getScheme()) ? $this->defaultScheme . '://' : '';
         $href = $scheme . $match->getUrl();
         $hrefSafeQuotes = str_replace('"', '%22', $href);
-        return sprintf('<a href="%s">%s</a>', $hrefSafeQuotes, $match->getFullMatch());
+        return sprintf('<a href="%s"%s>%s</a>', $hrefSafeQuotes, $this->attributes, $match->getFullMatch());
     }
 
     /**
@@ -45,6 +52,33 @@ class HtmlHighlighter implements HighlighterInterface
         $string = $this->filterHighlightInTagAttributes($string);
         $string = $this->filterHighlightInLinks($string);
         return $string;
+    }
+
+    /**
+     * Convert attributes array to attributes string
+     *
+     * @param array&string[] $attributes
+     * @return string
+     */
+    private function buildAttributes(array $attributes): string
+    {
+        $result = [];
+        foreach ($attributes as $key => $value) {
+            // According to html5 parser spec: https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
+            $isValidAttributeName = !preg_match_all('/[\t\n\f \/>"\'=]/', $key, $matches);
+            if (!$isValidAttributeName) {
+                $invalidChars = array_unique($matches[0]);
+                throw new \InvalidArgumentException(sprintf(
+                    'Attribute name %s contains invalid characters: %s',
+                    json_encode($key),
+                    json_encode(implode(', ', $invalidChars))
+                ));
+            }
+
+            $valueSafeQuotes = str_replace('"', '&quot;', $value);
+            $result[] = sprintf('%s="%s"', $key, $valueSafeQuotes);
+        }
+        return empty($result) ? '' : ' ' . implode(' ', $result);
     }
 
     /**
