@@ -102,8 +102,10 @@ If you need custom behavior - create and use your own validator implementing [Va
 
 ### Highlighter
 There are 2 highlighters bundled with the library:
-- `HtmlHighlighter` - converts matches to html tags. Example: `http://example.com` &rarr; `<a href="http://example.com">http://example.com</a>`
-- `MarkdownHighlighter` - converts matches to markdown format. Example: `http://example.com` &rarr; `[http://example.com](http://example.com)`
+- `HtmlHighlighter` - converts matches to html tags.  
+    Example: `http://example.com` &rarr; `<a href="http://example.com">http://example.com</a>`
+- `MarkdownHighlighter` - converts matches to markdown format.  
+    Example: `http://example.com` &rarr; `[http://example.com](http://example.com)`
 
 By default, `HtmlHighlighter` is used, with settings listed below.  
 
