@@ -101,8 +101,15 @@ $urlHighlight = new UrlHighlight($validator);
 If you need custom behavior - create and use your own validator implementing [ValidatorInterface](./src/Validator/ValidatorInterface.php).  
 
 ### Highlighter
-There is one highlighter bundled with the library. Which is used by default with settings listed below.  
-Create highlighter instance to define different properties:
+There are 2 highlighters bundled with the library:
+- `HtmlHighlighter` - converts matches to html tags.  
+    Example: `http://example.com` &rarr; `<a href="http://example.com">http://example.com</a>`
+- `MarkdownHighlighter` - converts matches to markdown format.  
+    Example: `http://example.com` &rarr; `[http://example.com](http://example.com)`
+
+By default, `HtmlHighlighter` is used, with settings listed below.  
+
+Highlighter usage example:  
 
 ```php
 <?php
@@ -122,8 +129,8 @@ Encoder should be used to handle encoded input properly. For example HTML escape
 like: `http://example.com?a=1&quot;` or `http://example.com?a=1&amp;b=2` which will be wrongly matched as URL.
 
 By default, there is no encoder used. There are 2 encoders bundled with library:
-- HtmlEntitiesEncoder - to work with HTML entities encoded string (any character expected to be HTML entity encoded)
-- HtmlSpecialcharsEncoder - to work with HTML escaped string (only `&` `"` `'` `<` `>` expected to be encoded)
+- `HtmlEntitiesEncoder` - to work with HTML entities encoded string (any character expected to be HTML entity encoded)
+- `HtmlSpecialcharsEncoder` - to work with HTML escaped string (only `&` `"` `'` `<` `>` expected to be encoded)
 
 Encoder usage example:
 
