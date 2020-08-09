@@ -8,9 +8,20 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php: ['7.1', '7.4']
+                composer: ['--prefer-lowest', '']
         steps:
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, json, mbstring, libxml
+                  coverage: xdebug
+
             - name: Git checkout
-              uses: actions/checkout@v1
+              uses: actions/checkout@v2
 
             - name: Validate composer.json and composer.lock
               run: composer validate
@@ -24,24 +35,24 @@ jobs:
               run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v1
+              uses: actions/cache@v2
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{steps.date.outputs.date}}-${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-                  restore-keys: ${{steps.date.outputs.date}}-${{ runner.os }}-composer-
+                  key: ${{steps.date.outputs.date}}-${{ runner.os }}-${{ matrix.php }}${{ matrix.composer }}-composer-${{ hashFiles('**/composer.json') }}
+                  restore-keys: ${{steps.date.outputs.date}}-${{ runner.os }}-${{ matrix.php }}${{ matrix.composer }}-composer-
 
             - name: Update Composer dependencies
-              run: composer update --prefer-dist --no-progress --no-suggest --no-interaction
+              run: composer update ${{ matrix.composer }} --prefer-dist --no-progress --no-suggest --no-interaction
 
             - name: Run PHP Code Sniffer
               run: composer run-script test:phpcs
               if: success()
 
-            - name: Run PHP Stan
+            - name: Run PHPStan
               run: composer run-script test:phpstan
               if: success() || failure()
 
-            - name: Run PHP Unit with coverage
+            - name: Run PHPUnit with coverage
               run: composer run-script test:phpunit-coverage
               if: success() || failure()
 
