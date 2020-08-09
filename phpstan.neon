@@ -3,3 +3,21 @@ parameters:
     paths:
         - src
         - tests
+
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        -   # remove after drop phpunit <= 8.1 support
+            message: '#Property .+ does not accept PHPUnit\\Framework\\MockObject\\MockObject\.#'
+            path: %rootDir%/../../../tests/*Test.php
+
+        -   # remove after drop phpunit <= 8.1 support
+            message: '#Parameter \#\d+ .+ of (class|method) .+ expects .+ PHPUnit\\Framework\\MockObject\\MockObject given\.#'
+            path: %rootDir%/../../../tests/*Test.php
+
+        -   # remove after drop phpunit <= 8.1 support
+            message: '#Method .+ should return .+ but returns PHPUnit\\Framework\\MockObject\\MockObject\.#'
+            path: %rootDir%/../../../tests/*Test.php
+
+        -   # remove after drop phpunit <= 8.1 support
+            message: '#Parameter \#\d+ .+ of method .+ expects callable\(\).+ array.+ given\.#'
+            path: %rootDir%/../../../tests/*Test.php
