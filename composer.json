@@ -18,9 +18,10 @@
         "symfony/polyfill-php72": "^1.10"
     },
     "require-dev" : {
-        "phpunit/phpunit": "^8.5",
+        "phpunit/phpunit": "^7.5.3 || ^8 || >=9.0 <9.3",
         "phpstan/phpstan": "^0.12",
-        "squizlabs/php_codesniffer": "^3.5"
+        "squizlabs/php_codesniffer": "^3.5",
+        "vstelmakh/covelyzer": "^0.1"
     },
     "autoload": {
         "psr-4": {
@@ -36,16 +37,25 @@
         "test:phpcs": "vendor/bin/phpcs -n",
         "test:phpstan": "vendor/bin/phpstan analyse --ansi --no-progress",
         "test:phpunit": "vendor/bin/phpunit --colors=always",
+
+        "test:phpunit-coverage": [
+            "@test:phpunit --dump-xdebug-filter var/xdebug-filter.php",
+            "@test:phpunit --prepend var/xdebug-filter.php --coverage-clover var/coverage.xml"
+        ],
+        "test:covelyzer": "vendor/bin/covelyzer var/coverage.xml --ansi",
+
         "test:all": [
             "@test:phpcs",
             "@test:phpstan",
-            "@test:phpunit"
+            "@test:phpunit-coverage",
+            "@test:covelyzer"
         ]
     },
     "scripts-descriptions": {
         "test:phpcs": "Run PHP Code Sniffer",
-        "test:phpstan": "Run PHP Stan",
-        "test:phpunit": "Run PHP Unit",
+        "test:phpstan": "Run PHPStan",
+        "test:phpunit": "Run PHPUnit",
+        "test:phpunit-coverage": "Run PHPUnit with coverage",
         "test:all": "Run all code analysis and tests"
     }
 }

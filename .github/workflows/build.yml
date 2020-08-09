@@ -1,44 +1,61 @@
 name: build
 
 on:
-  push:
+    push:
+    schedule:
+        - cron: '0 12 * * 0'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v1
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php: ['7.1', '7.4']
+                composer: ['--prefer-lowest', '']
+        steps:
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, json, mbstring, libxml
+                  coverage: xdebug
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate
+            - name: Git checkout
+              uses: actions/checkout@v2
 
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+            - name: Validate composer.json and composer.lock
+              run: composer validate
 
-      - name: Get Composer cache dir
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+            - name: Get current date
+              id: date
+              run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{steps.date.outputs.date}}-${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{steps.date.outputs.date}}-${{ runner.os }}-composer-
+            - name: Get Composer cache dir
+              id: composer-cache
+              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-      - name: Update Composer dependencies
-        run: composer update --prefer-dist --no-progress --no-suggest --no-interaction
+            - name: Cache Composer dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{steps.date.outputs.date}}-${{ runner.os }}-${{ matrix.php }}${{ matrix.composer }}-composer-${{ hashFiles('**/composer.json') }}
+                  restore-keys: ${{steps.date.outputs.date}}-${{ runner.os }}-${{ matrix.php }}${{ matrix.composer }}-composer-
 
-      - name: Run PHP Code Sniffer
-        run: composer run-script test:phpcs
-        if: success()
+            - name: Update Composer dependencies
+              run: composer update ${{ matrix.composer }} --prefer-dist --no-progress --no-suggest --no-interaction
 
-      - name: Run PHP Stan
-        run: composer run-script test:phpstan
-        if: success() || failure()
+            - name: Run PHP Code Sniffer
+              run: composer run-script test:phpcs
+              if: success()
 
-      - name: Run PHP Unit
-        run: composer run-script test:phpunit
-        if: success() || failure()
+            - name: Run PHPStan
+              run: composer run-script test:phpstan
+              if: success() || failure()
+
+            - name: Run PHPUnit with coverage
+              run: composer run-script test:phpunit-coverage
+              if: success() || failure()
+
+            - name: Run Covelyzer
+              run: composer run-script test:covelyzer
+              if: success() || failure()
