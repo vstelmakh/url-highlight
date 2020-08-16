@@ -2,6 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Filter\BalancedFilter;
 use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
 
 /**
@@ -15,12 +16,18 @@ class Matcher implements MatcherInterface
     private $validator;
 
     /**
+     * @var BalancedFilter
+     */
+    private $balancedFilter;
+
+    /**
      * @internal
      * @param ValidatorInterface $validator
      */
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
+        $this->balancedFilter = new BalancedFilter();
     }
 
     /**
@@ -90,7 +97,7 @@ class Matcher implements MatcherInterface
         $prefix = $strict ? '^' : '';
         $suffix = $strict ? '$' : '';
 
-        return '/' . $prefix . '                                                 
+        return '/' . $prefix . '
             (?:                                                        # scheme or possible host
                 (?:                                                        # scheme
                     (?<scheme>[a-z][\w-]+):\/{2}                               # scheme ending with :\/\/
@@ -118,19 +125,11 @@ class Matcher implements MatcherInterface
                     \.(?<tld>\w{2,63})                                         # tld length (captured only if match by host) 
                 )
                 (?:\/|:\d)?                                                # end with slash or port
-            )  
+            )
             (?:                                                        # port, path, query, fragment (one or none)
                 (?<=[\/:\d])                                               # prefixed with slash or port
-                (?:                                                        # one or more:
-                    [^\s()<>]+                                                 # run of non-space, non-()<>
-                    |                                                          # or
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
-                )*           
-                (?:                                                        # end with:
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
-                    |                                                          # or
-                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                            # not a space or punctuation chars
-                )
+                [^\s<>]*
+                [^\s<>({\[`!;:\'".,?«»“”‘’]                                # not a space or punctuation chars
             )?
         ' . $suffix . '/ixuJ';
     }
@@ -141,10 +140,12 @@ class Matcher implements MatcherInterface
      */
     private function createMatchOffset(array $rawMatch): Match
     {
+        $fullMatch = $this->balancedFilter->filter($rawMatch[0][0]);
+
         return new Match(
-            $rawMatch[0][0],
+            $fullMatch,
             $rawMatch[0][1],
-            $rawMatch[0][0],
+            $fullMatch,
             $rawMatch['scheme'][0] ?? null,
             $rawMatch['local'][0] ?? null,
             $rawMatch['host'][0] ?? null,
@@ -159,10 +160,12 @@ class Matcher implements MatcherInterface
      */
     private function createMatch(array $rawMatch, int $offset): Match
     {
+        $fullMatch = $this->balancedFilter->filter($rawMatch[0]);
+
         return new Match(
-            $rawMatch[0],
+            $fullMatch,
             $offset,
-            $rawMatch[0],
+            $fullMatch,
             $rawMatch['scheme'] ?? null,
             $rawMatch['local'] ?? null,
             $rawMatch['host'] ?? null,
