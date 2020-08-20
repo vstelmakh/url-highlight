@@ -62,6 +62,15 @@ class EncodedMatcher implements MatcherInterface
             $regex = sprintf('/%s/iu', $this->getEncodedMatchRegex($match));
             preg_match($regex, $string, $encodedRawMatch, PREG_OFFSET_CAPTURE, $nextMatchOffset);
 
+            // @codeCoverageIgnoreStart
+            if (empty($encodedRawMatch)) {
+                // Encoded match not found. Could happen because of encoder was able to decode,
+                //   but not building proper regex to look for encoded url.
+                // TODO: throw exception?
+                continue;
+            }
+            // @codeCoverageIgnoreEnd
+
             $encodedFullMatch = $encodedRawMatch[0][0];
             $encodedByteOffset = $encodedRawMatch[0][1];
             $nextMatchOffset = $encodedByteOffset + strlen($encodedFullMatch);
