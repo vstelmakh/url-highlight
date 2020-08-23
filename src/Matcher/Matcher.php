@@ -2,6 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Filter\BalancedFilter;
 use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
 
 /**
@@ -15,12 +16,18 @@ class Matcher implements MatcherInterface
     private $validator;
 
     /**
+     * @var BalancedFilter
+     */
+    private $balancedFilter;
+
+    /**
      * @internal
      * @param ValidatorInterface $validator
      */
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
+        $this->balancedFilter = new BalancedFilter();
     }
 
     /**
@@ -36,7 +43,7 @@ class Matcher implements MatcherInterface
         if (empty($rawMatch)) {
             return null;
         }
-        $match = $this->createMatchOffset($rawMatch);
+        $match = $this->createMatch($rawMatch);
         return $this->validator->isValidMatch($match) ? $match : null;
     }
 
@@ -52,33 +59,12 @@ class Matcher implements MatcherInterface
         $urlRegex = $this->getUrlRegex(false);
         preg_match_all($urlRegex, $string, $rawMatches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE);
         foreach ($rawMatches as $rawMatch) {
-            $match = $this->createMatchOffset($rawMatch);
+            $match = $this->createMatch($rawMatch);
             if ($this->validator->isValidMatch($match)) {
                 $result[] = $match;
             }
         }
         return $result;
-    }
-
-    /**
-     * Replace all valid url matches by callback
-     *
-     * @param string $string
-     * @param callable $callback
-     * @return string
-     */
-    public function replaceCallback(string $string, callable $callback): string
-    {
-        $urlRegex = $this->getUrlRegex(false);
-
-        $searchOffset = 0;
-        $rawMatchCallback = function (array $rawMatch) use ($string, $callback, &$searchOffset) {
-            $offset = strpos($string, $rawMatch[0], $searchOffset) ?: 0;
-            $searchOffset = $offset + strlen($rawMatch[0]);
-            $match = $this->createMatch($rawMatch, $offset);
-            return $this->validator->isValidMatch($match) ? $callback($match) : $match->getFullMatch();
-        };
-        return preg_replace_callback($urlRegex, $rawMatchCallback, $string) ?? $string;
     }
 
     /**
@@ -90,7 +76,7 @@ class Matcher implements MatcherInterface
         $prefix = $strict ? '^' : '';
         $suffix = $strict ? '$' : '';
 
-        return '/' . $prefix . '                                                 
+        return '/' . $prefix . '
             (?:                                                        # scheme or possible host
                 (?:                                                        # scheme
                     (?<scheme>[a-z][\w-]+):\/{2}                               # scheme ending with :\/\/
@@ -118,19 +104,11 @@ class Matcher implements MatcherInterface
                     \.(?<tld>\w{2,63})                                         # tld length (captured only if match by host) 
                 )
                 (?:\/|:\d)?                                                # end with slash or port
-            )  
+            )
             (?:                                                        # port, path, query, fragment (one or none)
                 (?<=[\/:\d])                                               # prefixed with slash or port
-                (?:                                                        # one or more:
-                    [^\s()<>]+                                                 # run of non-space, non-()<>
-                    |                                                          # or
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
-                )*           
-                (?:                                                        # end with:
-                    \((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)                         # balanced brackets (up to 2 levels)
-                    |                                                          # or
-                    [^\s`!()\[\]{};:\'".,<>?«»“”‘’]                            # not a space or punctuation chars
-                )
+                [^\s<>]*
+                [^\s<>({\[`!;:\'".,?«»“”‘’]                                # not a space or punctuation chars
             )?
         ' . $suffix . '/ixuJ';
     }
@@ -139,34 +117,18 @@ class Matcher implements MatcherInterface
      * @param array|mixed[] $rawMatch
      * @return Match
      */
-    private function createMatchOffset(array $rawMatch): Match
+    private function createMatch(array $rawMatch): Match
     {
+        $fullMatch = $this->balancedFilter->filter($rawMatch[0][0]);
+
         return new Match(
-            $rawMatch[0][0],
+            $fullMatch,
             $rawMatch[0][1],
-            $rawMatch[0][0],
+            $fullMatch,
             $rawMatch['scheme'][0] ?? null,
             $rawMatch['local'][0] ?? null,
             $rawMatch['host'][0] ?? null,
             $rawMatch['tld'][0] ?? null
-        );
-    }
-
-    /**
-     * @param array|mixed[] $rawMatch
-     * @param int $offset
-     * @return Match
-     */
-    private function createMatch(array $rawMatch, int $offset): Match
-    {
-        return new Match(
-            $rawMatch[0],
-            $offset,
-            $rawMatch[0],
-            $rawMatch['scheme'] ?? null,
-            $rawMatch['local'] ?? null,
-            $rawMatch['host'] ?? null,
-            $rawMatch['tld'] ?? null
         );
     }
 }

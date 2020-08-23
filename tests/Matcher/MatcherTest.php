@@ -94,6 +94,11 @@ class MatcherTest extends TestCase
             true,
             [null, null, 'user:password', 'subdomain.example-example.com', 'com']
         ],
+        [
+            'http://elk.example.com/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:\'deve-*\',interval:auto,query:(query_string:(analyze_wildcard:!t,query:\'*\')),sort:!(\'@timestamp\',desc))',
+            true,
+            [null, 'http', null, null, null]
+        ],
 
         // Not url
         ['6:00am', false, null],
@@ -145,7 +150,7 @@ class MatcherTest extends TestCase
      */
     public function testMatch(string $string, bool $isValid, ?Match $match): void
     {
-        $matchValidatorInvokedCount = ($match === null) ? $this->never() : $this->once();
+        $matchValidatorInvokedCount = ($match === null) ? self::never() : self::once();
         $this->validator
             ->expects($matchValidatorInvokedCount)
             ->method('isValidMatch')
@@ -153,7 +158,7 @@ class MatcherTest extends TestCase
 
         $expected = ($isValid && $match !== null) ? $match : null;
         $actual = $this->matcher->match($string);
-        $this->assertEquals($expected, $actual, 'Dataset: ' . json_encode(['string' => $string, 'isValid' => $isValid, 'match' => $match]));
+        self::assertEquals($expected, $actual, 'Dataset: ' . json_encode(['string' => $string, 'isValid' => $isValid, 'match' => $match]));
     }
 
     /**
@@ -179,12 +184,12 @@ class MatcherTest extends TestCase
     public function testMatchAll(string $string, array $isValidMap, array $expected): void
     {
         $this->validator
-            ->expects($this->exactly(count($isValidMap)))
+            ->expects(self::exactly(count($isValidMap)))
             ->method('isValidMatch')
             ->willReturnOnConsecutiveCalls(...$isValidMap);
 
         $actual = $this->matcher->matchAll($string);
-        $this->assertEquals($expected, $actual, 'Dataset: ' . $string);
+        self::assertEquals($expected, $actual, 'Dataset: ' . $string);
     }
 
     /**
@@ -224,47 +229,6 @@ class MatcherTest extends TestCase
                     $result[] = [$url . $suffix, $isValidMap, $expected];
                 }
             }
-        }
-        return $result;
-    }
-
-    /**
-     * @dataProvider replaceCallbackDataProvider
-     *
-     * @param string $string
-     * @param bool $isValid
-     * @param Match|null $expectedMatch
-     * @param string $expected
-     */
-    public function testReplaceCallback(string $string, bool $isValid, ?Match $expectedMatch, string $expected): void
-    {
-        $matchValidatorInvokedCount = ($expectedMatch === null) ? $this->never() : $this->once();
-        $this->validator
-            ->expects($matchValidatorInvokedCount)
-            ->method('isValidMatch')
-            ->willReturn($isValid);
-
-
-        $callable = function (Match $match) use ($expectedMatch) {
-            $this->assertEquals($expectedMatch, $match);
-            return 'REPLACE';
-        };
-
-        $actual = $this->matcher->replaceCallback($string, $callable);
-        $this->assertEquals($expected, $actual);
-    }
-
-    /**
-     * @return array&array[]
-     */
-    public function replaceCallbackDataProvider(): array
-    {
-        $result = [];
-        foreach (self::URLS as [$url, $isValid, $matchData]) {
-            $match = $this->getMatchDataAsMatch($url, 20, $matchData, false);
-            $string = sprintf('Example text before %s and after.', $url);
-            $output = $isValid ? 'Example text before REPLACE and after.' : $string;
-            $result[] = [$string, $isValid, $match, $output];
         }
         return $result;
     }

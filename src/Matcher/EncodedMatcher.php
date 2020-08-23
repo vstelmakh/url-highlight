@@ -81,29 +81,6 @@ class EncodedMatcher implements MatcherInterface
     }
 
     /**
-     * Replace all valid url matches by callback from encoded string
-     *
-     * @param string $string
-     * @param callable $callback
-     * @return string
-     */
-    public function replaceCallback(string $string, callable $callback): string
-    {
-        $offset = 0;
-
-        $matches = $this->matchAll($string);
-        foreach ($matches as $match) {
-            $replacement = $callback($match, $match->getFullMatch());
-            $position = $match->getByteOffset() + $offset;
-            $length = strlen($match->getFullMatch());
-            $string = substr_replace($string, $replacement, $position, $length);
-            $offset += strlen($replacement) - $length;
-        }
-
-        return $string;
-    }
-
-    /**
      * Replace html special chars with char variations regex
      *
      * @param Match $match

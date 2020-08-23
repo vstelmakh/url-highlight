@@ -21,7 +21,7 @@ class UrlHighlightTest extends TestCase
     {
         $urlHighlight = new UrlHighlight();
         $actual = $urlHighlight->isUrl($string);
-        $this->assertEquals($expected, $actual, 'Expected ' . ($expected ? '"true"' : '"false"') . ' for: ' . $string);
+        self::assertEquals($expected, $actual, 'Expected ' . ($expected ? '"true"' : '"false"') . ' for: ' . $string);
     }
 
     /**
@@ -46,7 +46,7 @@ class UrlHighlightTest extends TestCase
     {
         $urlHighlight = new UrlHighlight();
         $actual = $urlHighlight->getUrls($string);
-        $this->assertEquals($expected, $actual, 'Input: ' . $string);
+        self::assertEquals($expected, $actual, 'Input: ' . $string);
     }
 
     /**
@@ -78,7 +78,7 @@ class UrlHighlightTest extends TestCase
         $urlHighlight = new UrlHighlight(null, null, $encoder);
 
         $actual = $urlHighlight->highlightUrls($string);
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     /**
@@ -126,18 +126,18 @@ class UrlHighlightTest extends TestCase
 
         $validator = $this->createMock(ValidatorInterface::class);
         $validator
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('isValidMatch')
             ->willReturn(true);
 
         $highlighter = $this->createMock(HighlighterInterface::class);
         $highlighter
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('getHighlight');
 
         $encoder = $this->createMock(EncoderInterface::class);
         $encoder
-            ->expects($this->atLeastOnce())
+            ->expects(self::atLeastOnce())
             ->method('decode')
             ->willReturn($string);
 
