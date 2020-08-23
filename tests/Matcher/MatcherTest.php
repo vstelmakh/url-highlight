@@ -94,6 +94,11 @@ class MatcherTest extends TestCase
             true,
             [null, null, 'user:password', 'subdomain.example-example.com', 'com']
         ],
+        [
+            'http://elk.example.com/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:\'deve-*\',interval:auto,query:(query_string:(analyze_wildcard:!t,query:\'*\')),sort:!(\'@timestamp\',desc))',
+            true,
+            [null, 'http', null, null, null]
+        ],
 
         // Not url
         ['6:00am', false, null],
