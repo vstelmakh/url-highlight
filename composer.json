@@ -22,7 +22,7 @@
         "phpstan/phpstan": "^0.12",
         "squizlabs/php_codesniffer": "^3.5",
         "vstelmakh/covelyzer": "^0.1",
-        "phpbench/phpbench": "^0.17.1"
+        "phpbench/phpbench": "^0.16 || ^0.17"
     },
     "autoload": {
         "psr-4": {
