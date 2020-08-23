@@ -4,7 +4,7 @@
     "reports": {
         "url_highlight": {
             "extends": "aggregate",
-            "cols": ["benchmark", "subject", "mem_peak", "mean"]
+            "cols": ["benchmark", "subject", "mem_peak", "mean", "diff"]
         }
     }
 }
