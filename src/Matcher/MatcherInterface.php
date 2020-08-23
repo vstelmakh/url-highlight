@@ -22,13 +22,4 @@ interface MatcherInterface
      * @return array&Match[]
      */
     public function matchAll(string $string): array;
-
-    /**
-     * Replace all valid url matches by callback
-     *
-     * @param string $string
-     * @param callable $callback
-     * @return string
-     */
-    public function replaceCallback(string $string, callable $callback): string;
 }
