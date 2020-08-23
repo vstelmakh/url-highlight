@@ -2,8 +2,6 @@
 
 namespace VStelmakh\UrlHighlight\Filter;
 
-use VStelmakh\UrlHighlight\Util\Str;
-
 /**
  * @internal
  */
@@ -19,21 +17,6 @@ class BalancedFilter implements FilterInterface
     ];
 
     /**
-     * Regex pattern to check if string contains any close char
-     *
-     * @var string
-     */
-    private $closeCharsPattern;
-
-    /**
-     * @internal
-     */
-    public function __construct()
-    {
-        $this->closeCharsPattern = $this->getCloseCharsPattern();
-    }
-
-    /**
      * Cut the string on first non balanced bracket occurrence.
      * Keep in mind, there is no check for correct parenthesis.
      * Check only that close chars have same amount of open chars.
@@ -42,70 +25,48 @@ class BalancedFilter implements FilterInterface
      */
     public function filter(string $string): string
     {
-        if (!$this->isApplicable($string)) {
-            return $string;
-        }
-
-        $validators = $this->getValidators();
-        return $this->applyValidators($string, $validators);
-    }
-
-    /**
-     * @return string
-     */
-    private function getCloseCharsPattern(): string
-    {
-        $closeChars = implode('', self::BALANCED_CHARS);
-        return sprintf(
-            '/[%s]/iu',
-            preg_quote($closeChars, '/')
-        );
-    }
-
-    /**
-     * Check if filter applicable to provided string
-     *
-     * @param string $string
-     * @return bool
-     */
-    private function isApplicable(string $string): bool
-    {
-        return (bool) preg_match($this->closeCharsPattern, $string);
-    }
-
-    /**
-     * @return array|BalancedFilterValidator[]
-     */
-    private function getValidators(): array
-    {
-        $validators = [];
         foreach (self::BALANCED_CHARS as $openChar => $closeChar) {
-            $validators[] = new BalancedFilterValidator($openChar, $closeChar);
+            $string = $this->filterByOpenCloseChars($string, $openChar, $closeChar);
         }
-        return $validators;
+        return $string;
     }
 
     /**
-     * Loop over all chars and check against all validators
+     * Filter by one pair of open - close chars
      *
      * @param string $string
-     * @param iterable|BalancedFilterValidator[] $filters
+     * @param string $openChar
+     * @param string $closeChar
      * @return string
      */
-    private function applyValidators(string $string, iterable $filters): string
+    private function filterByOpenCloseChars(string $string, string $openChar, string $closeChar): string
     {
-        $result = '';
-        $chars = Str::getChars($string);
+        $openMatches = $this->matchCharOffset($string, $openChar);
+        $closeMatches = $this->matchCharOffset($string, $closeChar);
 
-        foreach ($chars as $char) {
-            foreach ($filters as $filter) {
-                if (!$filter->isValidChar($char)) {
-                    return $result;
-                }
+        foreach ($closeMatches as $key => $closeMatch) {
+            $closeOffset = $closeMatch[1];
+            $openOffset = isset($openMatches[$key]) ? $openMatches[$key][1] : null;
+
+            if ($openOffset === null || $openOffset > $closeOffset) {
+                return substr($string, 0, $closeOffset);
             }
-            $result .= $char;
         }
 
-        return $result;
+        return $string;
+    }
+
+    /**
+     * Return array of matches by provided char with offset
+     *
+     * @param string $string
+     * @param string $char
+     * @return array&array[] [0 => (string) char, 1 => (int) offset]
+     */
+    private function matchCharOffset(string $string, string $char): array
+    {
+        $regex = sprintf('/%s/u', preg_quote($char, '/'));
+        preg_match_all($regex, $string, $matches, PREG_PATTERN_ORDER + PREG_OFFSET_CAPTURE);
+        return $matches[0];
     }
 }
