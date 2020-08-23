@@ -36,7 +36,7 @@ class HtmlEntitiesEncoder implements EncoderInterface
 
         $variations = new CaseInsensitiveSet([preg_quote($char, $delimiter)]);
 
-        $encodedChar = htmlspecialchars($char, ENT_QUOTES + ENT_HTML5);
+        $encodedChar = htmlentities($char, ENT_QUOTES + ENT_HTML5);
         $variations->add(preg_quote($encodedChar, $delimiter));
 
         $charCodeDec = \mb_ord($char);

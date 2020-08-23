@@ -2,6 +2,10 @@
 All notable changes to this project documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
+### v2.2.0 (unreleased)
+- Fixed html entity encoder regex builder (not all html entities were encoded)
+- Added fallback to encoded matcher to skip match if encoder not able to encode
+
 ### v2.1.0 (2020-07-28)
 - Added html highlighter tag attributes
 - Added markdown highlighter

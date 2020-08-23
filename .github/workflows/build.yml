@@ -59,3 +59,8 @@ jobs:
             - name: Run Covelyzer
               run: composer run-script test:covelyzer
               if: success() || failure()
+
+            - name: Run PHPBench
+              run: composer run-script test:phpbench
+              if: (success() || failure()) && matrix.composer != '--prefer-lowest'
+              # Skip for prefer lowest as it throws error on PHP 7.4. See: https://bugs.php.net/bug.php?id=78482
