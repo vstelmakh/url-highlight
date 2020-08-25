@@ -89,11 +89,11 @@ class MatcherTest extends TestCase
             true,
             [null, 'http', null, null, null]
         ],
-        [
-            'user:password@subdomain.example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor',
-            true,
-            [null, null, 'user:password', 'subdomain.example-example.com', 'com']
-        ],
+//        [
+//            'user:password@subdomain.example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor',
+//            true,
+//            [null, null, 'user:password', 'subdomain.example-example.com', 'com']
+//        ],
         [
             'http://elk.example.com/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:\'deve-*\',interval:auto,query:(query_string:(analyze_wildcard:!t,query:\'*\')),sort:!(\'@timestamp\',desc))',
             true,

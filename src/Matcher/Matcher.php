@@ -86,9 +86,9 @@ class Matcher implements MatcherInterface
                 (?=[^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.\-])    # followed by valid host character
                 |                                                          # or
                 (?:                                                        # possible local part (email)
-                    (?=[^:\.\-])                                               # start with not :-.
-                    (?<local>[^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|]{1,64})
-                    (?<=[^:\.\-])                                              # end with not :-.
+                    (?=[^\.])                                                  # start with not .
+                    (?<local>[a-z0-9~!#$%^&*\-_+=|?\.]{1,64})                  # email local, allowed chars 
+                    (?<=[^\.])                                                 # end with not .
                     @                                                          # at
                 )?
                 (?<host>                                                   # host (captured only if scheme missing)
