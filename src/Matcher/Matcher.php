@@ -83,32 +83,32 @@ class Matcher implements MatcherInterface
                     |                                                          # or
                     (?<scheme>mailto):                                         # mailto
                 )
-                (?=[^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.\-])    # followed by valid host character
+                (?=[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}])                       # followed by valid host character
                 |                                                          # or
                 (?:                                                        # possible local part (email)
-                    (?=[^\.])                                                  # start with not .
+                    (?=[^\.])                                                  # start with not: .
                     (?<local>[a-z0-9~!#$%^&*\-_+=|?\.]{1,64})                  # email local, allowed chars 
-                    (?<=[^\.])                                                 # end with not .
+                    (?<=[^\.])                                                 # end with not: .
                     @                                                          # at
                 )?
                 (?<host>                                                   # host (captured only if scheme missing)
-                    (?=[^\-])                                                  # label start, not -
-                    [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # label not allowed chars (most common)
-                    (?<=[^\-])                                                 # label end, not -
-                    (?:                                                        # sub domain (one or more)
+                    (?=[^\-])                                                  # label start, not: -
+                    (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
+                    (?<=[^\-])                                                 # label end, not: -
+                    (?:                                                        # more label parts
                         \.
-                        (?=[^\-])                                                  # sub-domain start, not -
-                        [^\s`~!@#$%^&*()_=+\[\]{};\'",<>?«»“”‘’\/\\\|:\.]+         # sub-domain, not allowed chars (most common)
-                        (?<=[^\-])                                                 # sub-domain end, not -
+                        (?=[^\-])                                                  # label start, not: -
+                        (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
+                        (?<=[^\-])                                                 # label end, not: -
                     )*                                                             
                     \.(?<tld>\w{2,63})                                         # tld length (captured only if match by host) 
                 )
                 (?:\/|:\d)?                                                # end with slash or port
             )
-            (?:                                                        # port, path, query, fragment (one or none)
-                (?<=[\/:\d])                                               # prefixed with slash or port
-                [^\s<>]*
-                [^\s<>({\[`!;:\'".,?«»“”‘’]                                # not a space or punctuation chars
+            (?:                                                        # port, path, query, fragment
+                (?<=[\/:\d])                                           # prefixed with slash or port
+                [^\s<>]*                                               # any chars except whitespace and <>
+                [^\s<>({\[`!;:\'".,?«»“”‘’]                            # not a space or some punctuation chars
             )?
         ' . $suffix . '/ixuJ';
     }
