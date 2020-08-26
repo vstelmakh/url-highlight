@@ -15,50 +15,50 @@ class MatcherTest extends TestCase
      */
     private const URLS = [
         // Simple
-        ['http://a', true, [null, 'http', null, null, null]],
-        ['http://b.de', true, [null, 'http', null, null, null]],
-        ['http://example.com', true, [null, 'http', null, null, null]],
-        ['http://example.com/', true, [null, 'http', null, null, null]],
-        ['http://example.com/path', true, [null, 'http', null, null, null]],
-        ['http://example.com/path/', true, [null, 'http', null, null, null]],
-        ['http://example.com/index.html', true, [null, 'http', null, null, null]],
-        ['http://example.com/app.php/some/path', true, [null, 'http', null, null, null]],
-        ['http://example.com/app.php/some/path/index.html', true, [null, 'http', null, null, null]],
-        ['http://www.example.com', true, [null, 'http', null, null, null]],
-        ['http://subdomain.example.com', true, [null, 'http', null, null, null]],
-        ['http://example-example.com', true, [null, 'http', null, null, null]],
-        ['http://sub-domain.ex-ample.com', true, [null, 'http', null, null, null]],
-        ['http://user:password@www.example.com/some/path?var1=1&var2=abc#anchor', true, [null, 'http', null, null, null]],
+        ['http://a', true, [null, 'http', null, 'a', null]],
+        ['http://b.de', true, [null, 'http', null, 'b.de', 'de']],
+        ['http://example.com', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/path', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/path/', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/index.html', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/app.php/some/path', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/app.php/some/path/index.html', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://www.example.com', true, [null, 'http', null, 'www.example.com', 'com']],
+        ['http://subdomain.example.com', true, [null, 'http', null, 'subdomain.example.com', 'com']],
+        ['http://example-example.com', true, [null, 'http', null, 'example-example.com', 'com']],
+        ['http://sub-domain.ex-ample.com', true, [null, 'http', null, 'sub-domain.ex-ample.com', 'com']],
+        ['http://user:password@www.example.com/some/path?var1=1&var2=abc#anchor', true, [null, 'http', null, 'www.example.com', 'com']],
 
         // Special chars
-        ['http://example.com/with,commas,in,url', true, [null, 'http', null, null, null]],
-        ['http://example.com/with/%50,co_mm@$,in,url', true, [null, 'http', null, null, null]],
+        ['http://example.com/with,commas,in,url', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/with/%50,co_mm@$,in,url', true, [null, 'http', null, 'example.com', 'com']],
 
         // Brackets
-        ['http://example.com/path_with_(brackets)', true, [null, 'http', null, null, null]],
-        ['http://example.com/path_with_(brackets)_another_(brackets_2)', true, [null, 'http', null, null, null]],
-        ['http://example.com/path_with_(brackets)/another_(brackets_2)', true, [null, 'http', null, null, null]],
-        ['http://example.com/path_with_(brackets)/another_(another(inside))', true, [null, 'http', null, null, null]],
-        ['http://example.com/path_with_(brackets)#anchor-1', true, [null, 'http', null, null, null]],
-        ['http://example.com/path_with_(brackets)_continue#anchor-1', true, [null, 'http', null, null, null]],
-        ['http://example.com/unicode_(★)_in_brackets', true, [null, 'http', null, null, null]],
-        ['http://example.com/(brackets)?var=value', true, [null, 'http', null, null, null]],
+        ['http://example.com/path_with_(brackets)', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/path_with_(brackets)_another_(brackets_2)', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/path_with_(brackets)/another_(brackets_2)', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/path_with_(brackets)/another_(another(inside))', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/path_with_(brackets)#anchor-1', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/path_with_(brackets)_continue#anchor-1', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/unicode_(★)_in_brackets', true, [null, 'http', null, 'example.com', 'com']],
+        ['http://example.com/(brackets)?var=value', true, [null, 'http', null, 'example.com', 'com']],
 
         // Unicode
-        ['http://★unicode.com/path', true, [null, 'http', null, null, null]],
-        ['http://➡★.com/互联网', true, [null, 'http', null, null, null]],
-        ['http://➡-★.com/互联网', true, [null, 'http', null, null, null]],
-        ['http://www.a.tk/互联网', true, [null, 'http', null, null, null]],
-        ['http://互联网.ch', true, [null, 'http', null, null, null]],
-        ['http://互联网.ch/互联网', true, [null, 'http', null, null, null]],
-        ['http://україна.укр/привіт/світ', true, [null, 'http', null, null, null]],
+        ['http://★unicode.com/path', true, [null, 'http', null, '★unicode.com', 'com']],
+        ['http://➡★.com/互联网', true, [null, 'http', null, '➡★.com', 'com']],
+        ['http://➡-★.com/互联网', true, [null, 'http', null, '➡-★.com', 'com']],
+        ['http://www.a.tk/互联网', true, [null, 'http', null, 'www.a.tk', 'tk']],
+        ['http://互联网.ch', true, [null, 'http', null, '互联网.ch', 'ch']],
+        ['http://互联网.ch/互联网', true, [null, 'http', null, '互联网.ch', 'ch']],
+        ['http://україна.укр/привіт/світ', true, [null, 'http', null, 'україна.укр', 'укр']],
 
         // Other scheme
-        ['https://example.com', true, [null, 'https', null, null, null]],
-        ['mailto:name@example.com', true, [null, 'mailto', null, null, null]],
-        ['ftp://localhost', true, [null, 'ftp', null, null, null]],
-        ['custom://example-CUSTOM', true, [null, 'custom', null, null, null]],
-        ['message://3d330e4f340905078926r6a4ba78dkf3fd71420c1af6fj@mail.example.com%3e', true, [null, 'message', null, null, null]],
+        ['https://example.com', true, [null, 'https', null, 'example.com', 'com']],
+        ['mailto:name@example.com', true, [null, 'mailto', null, 'example.com', 'com']],
+        ['ftp://localhost', true, [null, 'ftp', null, 'localhost', null]],
+        ['custom://example-CUSTOM', true, [null, 'custom', null, 'example-CUSTOM', null]],
+        ['message://3d330e4f340905078926r6a4ba78dkf3fd71420c1af6fj@mail.example.com', true, [null, 'message', null, 'mail.example.com', 'com']],
 
         // No scheme
         ['b.de', true, [null, null, null, 'b.de', 'de']],
@@ -87,17 +87,17 @@ class MatcherTest extends TestCase
         [
             'http://user:password@subdomain.example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor',
             true,
-            [null, 'http', null, null, null]
+            [null, 'http', null, 'subdomain.example-example.com', 'com']
         ],
-//        [
-//            'user:password@subdomain.example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor',
-//            true,
-//            [null, null, 'user:password', 'subdomain.example-example.com', 'com']
-//        ],
+        [
+            'user:password@subdomain.example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor',
+            true,
+            [null, null, null, 'subdomain.example-example.com', 'com']
+        ],
         [
             'http://elk.example.com/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:\'deve-*\',interval:auto,query:(query_string:(analyze_wildcard:!t,query:\'*\')),sort:!(\'@timestamp\',desc))',
             true,
-            [null, 'http', null, null, null]
+            [null, 'http', null, 'elk.example.com', 'com']
         ],
 
         // Not url
@@ -216,7 +216,7 @@ class MatcherTest extends TestCase
                 $result[] = [
                     sprintf('Example text before %s and after. Open filename.txt at 3:00pm. For more info see http://google.com.', $url),
                     array_merge($isValidMap, [false, true]),
-                    array_merge($expected, [new Match('http://google.com', $secondMatchByteOffset, 'http://google.com', 'http', null, null, null)])
+                    array_merge($expected, [new Match('http://google.com', $secondMatchByteOffset, 'http://google.com', 'http', null, 'google.com', 'com')])
                 ];
 
                 foreach ($invalidPrefixChars as $prefix) {

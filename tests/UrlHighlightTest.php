@@ -109,13 +109,13 @@ class UrlHighlightTest extends TestCase
             ],
             [
                 null,
-                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
-                '&lt;a href=&quot;<a href="http://example.com&quot;&gt;example.com&lt;/a&gt">http://example.com&quot;&gt;example.com&lt;/a&gt</a>;',
+                '&lt;a href=&quot;http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt;',
+                '&lt;a href=&quot;<a href="http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt">http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt</a>;',
             ],
             [
                 new HtmlSpecialcharsEncoder(),
-                '&lt;a href=&quot;http://example.com&quot;&gt;example.com&lt;/a&gt;',
-                '&lt;a href=&quot;<a href="http://example.com">http://example.com</a>&quot;&gt;<a href="http://example.com">example.com</a>&lt;/a&gt;',
+                '&lt;a href=&quot;http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt;',
+                '&lt;a href=&quot;<a href="http://example.com?q=query">http://example.com?q=query</a>&quot;&gt;<a href="http://example.com?q=query">example.com?q=query</a>&lt;/a&gt;',
             ],
         ];
     }
