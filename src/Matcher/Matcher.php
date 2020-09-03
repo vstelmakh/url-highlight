@@ -77,8 +77,8 @@ class Matcher implements MatcherInterface
         $suffix = $strict ? '$' : '';
 
         return '/' . $prefix . '
-            (?:                                                        # scheme
-                (?<scheme>[a-z][\w\-]+):\/{2}                               # scheme ending with :\/\/
+            (?|                                                        # scheme
+                (?<scheme>[a-z][\w\-]+):\/{2}                              # scheme ending with :\/\/
                 |                                                          # or
                 (?<scheme>mailto):                                         # mailto
             )?
@@ -92,28 +92,32 @@ class Matcher implements MatcherInterface
                 @                                                          # at
             )?
             (?=[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}])                   # followed by valid host char
-            (?<host>                                                   # host
-                (?<=\/{2}|@)                                               # prefixed with \/\/ or @
-                (?=[^\-])                                                  # label start, not: -
-                (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
-                (?<=[^\-])                                                 # label end, not: -
-                (?:                                                        # more label parts
-                    \.
-                    (?=[^\-])                                                  # label start, not: -
-                    (?<tld>(?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63})   # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
-                    (?<=[^\-])                                                 # label end, not: -
-                )*
-                |                                                          # or host with tld (no scheme or userinfo)
-                (?=[^\-])                                                  # label start, not: -
-                (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
-                (?<=[^\-])                                                 # label end, not: -
-                (?:                                                        # more label parts
-                    \.
+            (?|                                                        # host
+                (?<host>                                                   # host prefixed by scheme or userinfo (less strict)
+                    (?<=\/{2}|@)                                               # prefixed with \/\/ or @
                     (?=[^\-])                                                  # label start, not: -
                     (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
                     (?<=[^\-])                                                 # label end, not: -
-                )*                                                             
-                \.(?<tld>\w{2,63})                                         # tld
+                    (?:                                                        # more label parts
+                        \.
+                        (?=[^\-])                                                  # label start, not: -
+                        (?<tld>(?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63})   # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
+                        (?<=[^\-])                                                 # label end, not: -
+                    )*
+                )
+                |                                                          # or
+                (?<host>                                                   # host with tld (no scheme or userinfo)
+                    (?=[^\-])                                                  # label start, not: -
+                    (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
+                    (?<=[^\-])                                                 # label end, not: -
+                    (?:                                                        # more label parts
+                        \.
+                        (?=[^\-])                                                  # label start, not: -
+                        (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
+                        (?<=[^\-])                                                 # label end, not: -
+                    )*                                                             
+                    \.(?<tld>\w{2,63})                                         # tld
+                )
             )
             (?:\:(?<port>\d+))?                                        # port
             (?<path>                                                   # path, query, fragment
