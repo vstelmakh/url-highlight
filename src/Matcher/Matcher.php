@@ -135,15 +135,18 @@ class Matcher implements MatcherInterface
     private function createMatch(array $rawMatch): Match
     {
         $fullMatch = $this->balancedFilter->filter($rawMatch[0][0]);
+        $path = $this->balancedFilter->filter($rawMatch['path'][0] ?? '');
 
         return new Match(
             $fullMatch,
             $rawMatch[0][1],
             $fullMatch,
             $rawMatch['scheme'][0] ?? null,
-            $rawMatch['local'][0] ?? null,
+            $rawMatch['userinfo'][0] ?? null,
             $rawMatch['host'][0] ?? null,
-            $rawMatch['tld'][0] ?? null
+            $rawMatch['tld'][0] ?? null,
+            $rawMatch['port'][0] ?? null,
+            $path
         );
     }
 }

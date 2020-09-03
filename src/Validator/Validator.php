@@ -48,7 +48,7 @@ class Validator implements ValidatorInterface
             return $this->isAllowedScheme($scheme);
         }
 
-        $local = $match->getLocal();
+        $local = $match->getUserinfo();
         if ($local) {
             return false; // TODO: email, not valid for now
         }

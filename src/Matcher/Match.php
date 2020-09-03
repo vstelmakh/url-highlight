@@ -2,17 +2,6 @@
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
-/**
- * Data in this class don't represent exact url parts. Could contain null values,
- * as data filled in depends on regex match. If method return null - means match was done by some other parameter.
- * E.g. http://example.com matched via scheme and will be mapped as:
- *     fullMatch: http://example.com
- *     url: http://example.com
- *     scheme: http
- *     local: null
- *     host: null
- *     tld: null
- */
 class Match
 {
     /**
@@ -38,7 +27,7 @@ class Match
     /**
      * @var string|null
      */
-    private $local;
+    private $userinfo;
 
     /**
      * @var string|null
@@ -51,31 +40,47 @@ class Match
     private $tld;
 
     /**
-     * @internal
+     * @var int|null
+     */
+    private $port;
+
+    /**
+     * @var string|null
+     */
+    private $path;
+
+    /**
      * @param string $fullMatch
      * @param int $byteOffset
      * @param string $url
      * @param string|null $scheme
-     * @param string|null $local
+     * @param string|null $userinfo
      * @param string|null $host
      * @param string|null $tld
+     * @param string|null $port
+     * @param string|null $path
+     * @internal
      */
     public function __construct(
         string $fullMatch,
         int $byteOffset,
         string $url,
         ?string $scheme,
-        ?string $local,
+        ?string $userinfo,
         ?string $host,
-        ?string $tld
+        ?string $tld,
+        ?string $port,
+        ?string $path
     ) {
         $this->fullMatch = $fullMatch;
         $this->byteOffset = $byteOffset;
         $this->url = $url;
-        $this->scheme = $this->getNotEmptyStringOrNull($scheme);
-        $this->local = $this->getNotEmptyStringOrNull($local);
-        $this->host = $this->getNotEmptyStringOrNull($host);
-        $this->tld = $this->getNotEmptyStringOrNull($tld);
+        $this->scheme = $this->getStringOrNull($scheme);
+        $this->userinfo = $this->getStringOrNull($userinfo);
+        $this->host = $this->getStringOrNull($host);
+        $this->tld = $this->getStringOrNull($tld);
+        $this->port = $this->getIntOrNull($port);
+        $this->path = $this->getStringOrNull($path);
     }
 
     /**
@@ -124,9 +129,9 @@ class Match
      *
      * @return string|null
      */
-    public function getLocal(): ?string
+    public function getUserinfo(): ?string
     {
-        return $this->local;
+        return $this->userinfo;
     }
 
     /**
@@ -150,11 +155,49 @@ class Match
     }
 
     /**
+     * Example match: example.com:80 -> 80
+     *
+     * @return int|null
+     */
+    public function getPort(): ?int
+    {
+        return $this->port;
+    }
+
+    /**
+     * Example match: example.com/path/to?q=hello -> /path/to?q=hello
+     *
+     * @return string|null
+     */
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    /**
      * @param string|null $string
      * @return string|null
      */
-    private function getNotEmptyStringOrNull(?string $string): ?string
+    private function getStringOrNull(?string $string): ?string
     {
-        return ($string !== null && $string !== '') ? $string : null;
+        return $this->isEmpty($string) ? null : $string;
+    }
+
+    /**
+     * @param string|null $string
+     * @return int|null
+     */
+    private function getIntOrNull(?string $string): ?int
+    {
+        return $this->isEmpty($string) ? null : (int) $string;
+    }
+
+    /**
+     * @param string|null $string
+     * @return bool
+     */
+    private function isEmpty(?string $string): bool
+    {
+        return $string === null || $string === '';
     }
 }

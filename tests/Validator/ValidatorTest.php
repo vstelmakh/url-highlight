@@ -26,7 +26,7 @@ class ValidatorTest extends TestCase
     ): void {
         $validator = new Validator($matchByTLD, $schemeBlacklist, $schemeWhitelist);
         $actual = $validator->isValidMatch($match);
-        $this->assertEquals($expected, $actual, 'Dataset: ' . json_encode(func_get_args()));
+        self::assertEquals($expected, $actual, 'Dataset: ' . json_encode(func_get_args()));
     }
 
     /**
@@ -75,6 +75,6 @@ class ValidatorTest extends TestCase
 
     private function getMatch(?string $scheme, ?string $local, ?string $host, ?string $tld): Match
     {
-        return new Match('', 0, '', $scheme, $local, $host, $tld);
+        return new Match('', 0, '', $scheme, $local, $host, $tld, null, null);
     }
 }

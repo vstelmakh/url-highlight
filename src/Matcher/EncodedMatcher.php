@@ -148,9 +148,11 @@ class EncodedMatcher implements MatcherInterface
             $byteOffset,
             $match->getUrl(),
             $match->getScheme(),
-            $match->getLocal(),
+            $match->getUserinfo(),
             $match->getHost(),
-            $match->getTld()
+            $match->getTld(),
+            (string) $match->getPort(),
+            $match->getPath()
         );
     }
 }

@@ -68,8 +68,8 @@ class EncodedMatcherTest extends TestCase
             [
                 'http://example&period;com?a=1&amp;b=2',
                 'http://example.com?a=1&b=2',
-                new Match('http://example.com?a=1&b=2', 0, 'http://example.com?a=1&b=2', 'http', null, null, null),
-                new Match('http://example&period;com?a=1&amp;b=2', 0, 'http://example.com?a=1&b=2', 'http', null, null, null),
+                new Match('http://example.com?a=1&b=2', 0, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
+                new Match('http://example&period;com?a=1&amp;b=2', 0, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
             ],
             [
                 '&lgt;http://example&period;com?a=1&amp;b=2',
@@ -149,12 +149,12 @@ class EncodedMatcherTest extends TestCase
                 '<a href="http://example.com">example.com</a>',
                 null,
                 [
-                    new Match('http://example.com', 9, 'http://example.com', 'http', null, null, null),
-                    new Match('example.com', 29, 'example.com', null, null, 'example.com', 'com'),
+                    new Match('http://example.com', 9, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                    new Match('example.com', 29, 'example.com', null, null, 'example.com', 'com', null, null),
                 ],
                 [
-                    new Match('http://example&period;com', 24, 'http://example.com', 'http', null, null, null),
-                    new Match('example&#x2E;com', 59, 'example.com', null, null, 'example.com', 'com'),
+                    new Match('http://example&period;com', 24, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                    new Match('example&#x2E;com', 59, 'example.com', null, null, 'example.com', 'com', null, null),
                 ],
             ],
             [
@@ -162,10 +162,10 @@ class EncodedMatcherTest extends TestCase
                 '<a href="http://example.com?a=1&b=2">Example</a>',
                 ['<', '>', '"', '&'],
                 [
-                    new Match('http://example.com?a=1&b=2', 9, 'http://example.com?a=1&b=2', 'http', null, null, null),
+                    new Match('http://example.com?a=1&b=2', 9, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
                 ],
                 [
-                    new Match('http://example.com?a=1&amp;b=2', 17, 'http://example.com?a=1&b=2', 'http', null, null, null),
+                    new Match('http://example.com?a=1&amp;b=2', 17, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
                 ],
             ],
         ];
