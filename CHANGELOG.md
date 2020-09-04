@@ -2,11 +2,13 @@
 All notable changes to this project documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
-### v2.2.0 (unreleased)
+### v2.2.0 (2020-09-04)
 - Fixed match complex urls with brackets (e.g. ELK urls)
-- Improved matcher performance (4x faster)
+- Improved matcher performance (~3x faster)
 - Fixed html entity encoder regex builder (not all html entities were encoded)
 - Added fallback to encoded matcher to skip match if encoder not able to encode
+- Improved url match regex to cover more cases
+- Added match emails by default in validator
 
 ### v2.1.0 (2020-07-28)
 - Added html highlighter tag attributes
