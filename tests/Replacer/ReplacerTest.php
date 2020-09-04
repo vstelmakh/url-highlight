@@ -59,15 +59,15 @@ class ReplacerTest extends TestCase
             [
                 'Hello ★, follow the link: http://example.com.',
                 [
-                    new Match('http://example.com', 28, 'http://example.com', 'http', null, null, null),
+                    new Match('http://example.com', 28, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
                 ],
                 sprintf('Hello ★, follow the link: %s.', self::REPLACE)
             ],
             [
                 'Hello ★, follow the link: http://example.com/互联网. Привіт світ (example.com).',
                 [
-                    new Match('http://example.com/互联网', 28, 'http://example.com/互联网', 'http', null, null, null),
-                    new Match('example.com', 81, 'example.com', null, null, 'example.com', 'com'),
+                    new Match('http://example.com/互联网', 28, 'http://example.com/互联网', 'http', null, 'example.com', 'com', null, '/互联网'),
+                    new Match('example.com', 81, 'example.com', null, null, 'example.com', 'com', null, null),
                 ],
                 sprintf('Hello ★, follow the link: %s. Привіт світ (%s).', self::REPLACE, self::REPLACE)
             ],

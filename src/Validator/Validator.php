@@ -24,15 +24,26 @@ class Validator implements ValidatorInterface
     private $schemeWhitelist;
 
     /**
+     * @var bool
+     */
+    private $matchEmails;
+
+    /**
      * @param bool $matchByTLD
      * @param array&string[] $schemeBlacklist
      * @param array&string[] $schemeWhitelist
+     * @param bool $matchEmails
      */
-    public function __construct(bool $matchByTLD = true, array $schemeBlacklist = [], array $schemeWhitelist = [])
-    {
+    public function __construct(
+        bool $matchByTLD = true,
+        array $schemeBlacklist = [],
+        array $schemeWhitelist = [],
+        bool $matchEmails = true
+    ) {
         $this->matchByTLD = $matchByTLD;
         $this->schemeBlacklist = new CaseInsensitiveSet($schemeBlacklist);
         $this->schemeWhitelist = new CaseInsensitiveSet($schemeWhitelist);
+        $this->matchEmails = $matchEmails;
     }
 
     /**
@@ -44,21 +55,31 @@ class Validator implements ValidatorInterface
     public function isValidMatch(Match $match): bool
     {
         $scheme = $match->getScheme();
-        if ($scheme) {
+        if (!empty($scheme) && $scheme !== 'mailto') {
             return $this->isAllowedScheme($scheme);
         }
 
-        $local = $match->getLocal();
-        if ($local) {
-            return false; // TODO: email, not valid for now
+        if (!$this->matchEmails && $this->isEmail($match)) {
+            return false;
         }
 
         $tld = $match->getTld();
-        if ($tld && $this->matchByTLD) {
+        if (!empty($tld) && $this->matchByTLD) {
             return $this->isValidTopLevelDomain($tld);
         }
 
         return false;
+    }
+
+    /**
+     * @param Match $match
+     * @return bool
+     */
+    private function isEmail(Match $match): bool
+    {
+        $scheme = $match->getScheme();
+        $userinfo = $match->getUserinfo();
+        return (empty($scheme) && !empty($userinfo)) || $scheme === 'mailto';
     }
 
     /**

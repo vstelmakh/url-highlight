@@ -2,10 +2,10 @@
 
 namespace VStelmakh\UrlHighlight\Tests\Util;
 
-use VStelmakh\UrlHighlight\Util\Str;
+use VStelmakh\UrlHighlight\Util\StringHelper;
 use PHPUnit\Framework\TestCase;
 
-class StrTest extends TestCase
+class StringHelperTest extends TestCase
 {
     /**
      * @dataProvider getCharsDataProvider
@@ -15,8 +15,8 @@ class StrTest extends TestCase
      */
     public function testGetChars(string $string, array $expected): void
     {
-        $actual = Str::getChars($string);
-        $this->assertSame($expected, $actual);
+        $actual = StringHelper::getChars($string);
+        self::assertSame($expected, $actual);
     }
 
     /**

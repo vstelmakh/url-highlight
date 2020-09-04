@@ -3,6 +3,7 @@
 namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Util\LinkHelper;
 
 class HtmlHighlighter implements HighlighterInterface
 {
@@ -35,10 +36,9 @@ class HtmlHighlighter implements HighlighterInterface
      */
     public function getHighlight(Match $match): string
     {
-        $scheme = empty($match->getScheme()) ? $this->defaultScheme . '://' : '';
-        $href = $scheme . $match->getUrl();
-        $hrefSafeQuotes = str_replace('"', '%22', $href);
-        return sprintf('<a href="%s"%s>%s</a>', $hrefSafeQuotes, $this->attributes, $match->getFullMatch());
+        $link = LinkHelper::getLink($match, $this->defaultScheme);
+        $linkSafeQuotes = str_replace('"', '%22', $link);
+        return sprintf('<a href="%s"%s>%s</a>', $linkSafeQuotes, $this->attributes, $match->getFullMatch());
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Util\LinkHelper;
 
 class MarkdownHighlighter implements HighlighterInterface
 {
@@ -28,8 +29,7 @@ class MarkdownHighlighter implements HighlighterInterface
      */
     public function getHighlight(Match $match): string
     {
-        $scheme = empty($match->getScheme()) ? $this->defaultScheme . '://' : '';
-        $link = $scheme . $match->getUrl();
+        $link = LinkHelper::getLink($match, $this->defaultScheme);
         $fullMatchSafeBrackets = str_replace(['[', ']'], ['\\[', '\\]'], $match->getFullMatch());
         $linkSafeBrackets = str_replace(['(', ')'], ['%28', '%29'], $link);
         return sprintf('[%s](%s)', $fullMatchSafeBrackets, $linkSafeBrackets);

@@ -3,7 +3,7 @@
 namespace VStelmakh\UrlHighlight\Matcher;
 
 use VStelmakh\UrlHighlight\Encoder\EncoderInterface;
-use VStelmakh\UrlHighlight\Util\Str;
+use VStelmakh\UrlHighlight\Util\StringHelper;
 
 /**
  * @internal
@@ -118,7 +118,7 @@ class EncodedMatcher implements MatcherInterface
     {
         $fullMatchRegex = '';
 
-        $fullMatchChars = Str::getChars($match->getUrl());
+        $fullMatchChars = StringHelper::getChars($match->getUrl());
         foreach ($fullMatchChars as $char) {
             $fullMatchRegex .= $this->getRegexCharGroup($char);
         }
@@ -148,9 +148,11 @@ class EncodedMatcher implements MatcherInterface
             $byteOffset,
             $match->getUrl(),
             $match->getScheme(),
-            $match->getLocal(),
+            $match->getUserinfo(),
             $match->getHost(),
-            $match->getTld()
+            $match->getTld(),
+            (string) $match->getPort(),
+            $match->getPath()
         );
     }
 }

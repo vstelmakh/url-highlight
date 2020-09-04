@@ -9,50 +9,64 @@ class MatchTest extends TestCase
 {
     public function testGetFullMatch(): void
     {
-        $match = new Match('http://example.com', 0, 'http://example.com', null, null, null, null);
+        $match = new Match('http://example.com', 0, 'http://example.com', null, null, null, null, null, null);
         $result = $match->getUrl();
-        $this->assertSame('http://example.com', $result);
+        self::assertSame('http://example.com', $result);
     }
 
     public function testGetByteOffset(): void
     {
-        $match = new Match('', 29, '', null, null, null, null);
+        $match = new Match('', 29, '', null, null, null, null, null, null);
         $result = $match->getByteOffset();
-        $this->assertSame(29, $result);
+        self::assertSame(29, $result);
     }
 
     public function testGetUrl(): void
     {
-        $match = new Match('http://example.com?a=1&amp;b=2', 0, 'http://example.com?a=1&b=2', null, null, null, null);
+        $match = new Match('http://example.com?a=1&amp;b=2', 0, 'http://example.com?a=1&b=2', null, null, null, null, null, null);
         $result = $match->getUrl();
-        $this->assertSame('http://example.com?a=1&b=2', $result);
+        self::assertSame('http://example.com?a=1&b=2', $result);
     }
 
     public function testGetScheme(): void
     {
-        $match = new Match('', 0, '', 'http', null, null, null);
+        $match = new Match('', 0, '', 'http', null, null, null, null, null);
         $result = $match->getScheme();
-        $this->assertSame('http', $result);
+        self::assertSame('http', $result);
     }
 
-    public function testGetLocal(): void
+    public function testGetUserinfo(): void
     {
-        $match = new Match('', 0, '', null, 'user:password', null, null);
-        $result = $match->getLocal();
-        $this->assertSame('user:password', $result);
+        $match = new Match('', 0, '', null, 'user:password', null, null, null, null);
+        $result = $match->getUserinfo();
+        self::assertSame('user:password', $result);
     }
 
     public function testGetHost(): void
     {
-        $match = new Match('', 0, '', null, null, 'example.com', null);
+        $match = new Match('', 0, '', null, null, 'example.com', null, null, null);
         $result = $match->getHost();
-        $this->assertSame('example.com', $result);
+        self::assertSame('example.com', $result);
     }
 
     public function testGetTld(): void
     {
-        $match = new Match('', 0, '', null, null, null, 'com');
+        $match = new Match('', 0, '', null, null, null, 'com', null, null);
         $result = $match->getTld();
-        $this->assertSame('com', $result);
+        self::assertSame('com', $result);
+    }
+
+    public function testGetPort(): void
+    {
+        $match = new Match('', 0, '', null, null, null, null, '80', null);
+        $result = $match->getPort();
+        self::assertSame(80, $result);
+    }
+
+    public function testGetPath(): void
+    {
+        $match = new Match('', 0, '', null, null, null, null, null, 'path/to/page.html');
+        $result = $match->getPath();
+        self::assertSame('path/to/page.html', $result);
     }
 }
