@@ -11,25 +11,14 @@ class MarkdownHighlighterTest extends TestCase
     /**
      * @dataProvider getHighlightDataProvider
      *
-     * @param string $fullMatch
-     * @param string $url
-     * @param string|null $scheme
-     * @param string $expected
+     * @param Match $match
+     * @param string|null $expected
      */
-    public function testGetHighlight(
-        string $fullMatch,
-        string $url,
-        ?string $scheme,
-        ?string $expected
-    ): void {
-        $match = $this->createMock(Match::class);
-        $match->method('getFullMatch')->willReturn($fullMatch);
-        $match->method('getUrl')->willReturn($url);
-        $match->method('getScheme')->willReturn($scheme);
-
+    public function testGetHighlight(Match $match, ?string $expected): void
+    {
         $markdownHighlighter = new MarkdownHighlighter('http');
         $actual = $markdownHighlighter->getHighlight($match);
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
     /**
@@ -38,10 +27,30 @@ class MarkdownHighlighterTest extends TestCase
     public function getHighlightDataProvider(): array
     {
         return [
-            ['http://example.com', 'http://example.com', 'http', '[http://example.com](http://example.com)'],
-            ['example.com', 'example.com', null, '[example.com](http://example.com)'],
-            ['http://example.com/brackets[is]here', 'http://example.com/brackets[is]here', 'http', '[http://example.com/brackets\[is\]here](http://example.com/brackets[is]here)'],
-            ['http://example.com/brackets(is)here', 'http://example.com/brackets(is)here', 'http', '[http://example.com/brackets(is)here](http://example.com/brackets%28is%29here)'],
+            [
+                new Match('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                '[http://example.com](http://example.com)',
+            ],
+            [
+                new Match('example.com', 0, 'example.com', null, null, 'example.com', 'com', null, null),
+                '[example.com](http://example.com)',
+            ],
+            [
+                new Match('mailto:user@example.com', 0, 'mailto:user@example.com', 'mailto', 'user', 'example.com', 'com', null, null),
+                '[mailto:user@example.com](mailto:user@example.com)',
+            ],
+            [
+                new Match('user@example.com', 0, 'user@example.com', null, 'user', 'example.com', 'com', null, null),
+                '[user@example.com](mailto:user@example.com)',
+            ],
+            [
+                new Match('http://example.com/brackets[is]here', 0, 'http://example.com/brackets[is]here', 'http', null, 'example.com', 'com', null, '/brackets[is]here'),
+                '[http://example.com/brackets\[is\]here](http://example.com/brackets[is]here)',
+            ],
+            [
+                new Match('http://example.com/brackets(is)here', 0, 'http://example.com/brackets(is)here', 'http', null, 'example.com', 'com', null, '/brackets(is)here'),
+                '[http://example.com/brackets(is)here](http://example.com/brackets%28is%29here)',
+            ],
         ];
     }
 
@@ -55,7 +64,7 @@ class MarkdownHighlighterTest extends TestCase
     {
         $htmlHighlighter = new MarkdownHighlighter('http');
         $actual = $htmlHighlighter->filterOverhighlight($string);
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
     /**

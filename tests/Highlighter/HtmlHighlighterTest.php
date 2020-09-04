@@ -11,31 +11,19 @@ class HtmlHighlighterTest extends TestCase
     /**
      * @dataProvider getHighlightDataProvider
      *
-     * @param string $fullMatch
-     * @param string $url
-     * @param string|null $scheme
+     * @param Match $match
      * @param array&string[] $attributes
-     * @param string $expected
+     * @param string|null $expected
      */
-    public function testGetHighlight(
-        string $fullMatch,
-        string $url,
-        ?string $scheme,
-        array $attributes,
-        ?string $expected
-    ): void {
-        $match = $this->createMock(Match::class);
-        $match->method('getFullMatch')->willReturn($fullMatch);
-        $match->method('getUrl')->willReturn($url);
-        $match->method('getScheme')->willReturn($scheme);
-
+    public function testGetHighlight(Match $match, array $attributes, ?string $expected): void
+    {
         if ($expected === null) {
             $this->expectException(\InvalidArgumentException::class);
         }
 
         $htmlHighlighter = new HtmlHighlighter('http', $attributes);
         $actual = $htmlHighlighter->getHighlight($match);
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
     /**
@@ -44,11 +32,41 @@ class HtmlHighlighterTest extends TestCase
     public function getHighlightDataProvider(): array
     {
         return [
-            ['http://example.com', 'http://example.com', 'http', [], '<a href="http://example.com">http://example.com</a>'],
-            ['example.com', 'example.com', null, [], '<a href="http://example.com">example.com</a>'],
-            ['http://example.com?a=&quot;1&quot;&amp;b=2', 'http://example.com?a="1"&b=2', 'http', [], '<a href="http://example.com?a=%221%22&b=2">http://example.com?a=&quot;1&quot;&amp;b=2</a>'],
-            ['http://example.com', 'http://example.com', 'http', ['rel' => 'nofollow', 'title' => '"quotes"'], '<a href="http://example.com" rel="nofollow" title="&quot;quotes&quot;">http://example.com</a>'],
-            ['http://example.com', 'http://example.com', 'http', ['"quotes"' => 'value'], null],
+            [
+                new Match('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                [],
+                '<a href="http://example.com">http://example.com</a>',
+            ],
+            [
+                new Match('example.com', 0, 'example.com', null, null, 'example.com', 'com', null, null),
+                [],
+                '<a href="http://example.com">example.com</a>',
+            ],
+            [
+                new Match('mailto:user@example.com', 0, 'mailto:user@example.com', 'mailto', 'user', 'example.com', 'com', null, null),
+                [],
+                '<a href="mailto:user@example.com">mailto:user@example.com</a>',
+            ],
+            [
+                new Match('user@example.com', 0, 'user@example.com', null, 'user', 'example.com', 'com', null, null),
+                [],
+                '<a href="mailto:user@example.com">user@example.com</a>',
+            ],
+            [
+                new Match('http://example.com?a=&quot;1&quot;&amp;b=2', 0, 'http://example.com?a="1"&b=2', 'http', null, 'example.com', 'com', null, '?a="1"&b=2'),
+                [],
+                '<a href="http://example.com?a=%221%22&b=2">http://example.com?a=&quot;1&quot;&amp;b=2</a>',
+            ],
+            [
+                new Match('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                ['rel' => 'nofollow', 'title' => '"quotes"'],
+                '<a href="http://example.com" rel="nofollow" title="&quot;quotes&quot;">http://example.com</a>',
+            ],
+            [
+                new Match('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                ['"quotes"' => 'value'],
+                null,
+            ],
         ];
     }
 
@@ -62,7 +80,7 @@ class HtmlHighlighterTest extends TestCase
     {
         $htmlHighlighter = new HtmlHighlighter('http');
         $actual = $htmlHighlighter->filterOverhighlight($string);
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
     /**
