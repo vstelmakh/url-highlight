@@ -5,7 +5,7 @@ namespace VStelmakh\UrlHighlight\Util;
 /**
  * @internal
  */
-class Str
+class StringHelper
 {
     /**
      * Split string into array of characters
