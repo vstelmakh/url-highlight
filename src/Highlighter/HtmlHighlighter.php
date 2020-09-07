@@ -36,9 +36,10 @@ class HtmlHighlighter implements HighlighterInterface
      */
     public function getHighlight(Match $match): string
     {
-        $link = LinkHelper::getLink($match, $this->defaultScheme);
+        $link = $this->getLink($match);
         $linkSafeQuotes = str_replace('"', '%22', $link);
-        return sprintf('<a href="%s"%s>%s</a>', $linkSafeQuotes, $this->attributes, $match->getFullMatch());
+        $displayText = $this->getDisplayText($match);
+        return sprintf('<a href="%s"%s>%s</a>', $linkSafeQuotes, $this->attributes, $displayText);
     }
 
     /**
@@ -52,6 +53,28 @@ class HtmlHighlighter implements HighlighterInterface
         $string = $this->filterHighlightInTagAttributes($string);
         $string = $this->filterHighlightInLinks($string);
         return $string;
+    }
+
+    /**
+     * Return link used in href attribute
+     *
+     * @param Match $match
+     * @return string
+     */
+    protected function getLink(Match $match): string
+    {
+        return LinkHelper::getLink($match, $this->defaultScheme);
+    }
+
+    /**
+     * Return text/link used to display url
+     *
+     * @param Match $match
+     * @return string
+     */
+    protected function getDisplayText(Match $match): string
+    {
+        return $match->getFullMatch();
     }
 
     /**
