@@ -109,6 +109,10 @@ class HtmlHighlighterTest extends TestCase
                 '<img src="<a href="http://example.com/image.png">http://example.com/image.png</a>" alt="example">',
                 '<img src="http://example.com/image.png" alt="example">',
             ],
+            [
+                'Hello, <a href="mailto:user@example.com">mail us user@example.com</a>.',
+                'Hello, <a href="mailto:user@example.com">mail us user@example.com</a>.',
+            ],
         ];
     }
 }
