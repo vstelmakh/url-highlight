@@ -18,13 +18,31 @@ class HtmlHighlighter implements HighlighterInterface
     private $attributes;
 
     /**
+     * @var string
+     */
+    private $contentBefore;
+
+    /**
+     * @var string
+     */
+    private $contentAfter;
+
+    /**
      * @param string $defaultScheme Used to build href for urls matched without scheme
      * @param array&string[] $attributes Key/value map of tag attributes
+     * @param string $contentBefore Content to add before highlight: {here}<a...
+     * @param string $contentAfter Content to add after highlight: ...</a>{here}
      */
-    public function __construct(string $defaultScheme, array $attributes = [])
-    {
+    public function __construct(
+        string $defaultScheme,
+        array $attributes = [],
+        string $contentBefore = '',
+        string $contentAfter = ''
+    ) {
         $this->defaultScheme = $defaultScheme;
         $this->attributes = $this->buildAttributes($attributes);
+        $this->contentBefore = $contentBefore;
+        $this->contentAfter = $contentAfter;
     }
 
     /**
@@ -38,8 +56,15 @@ class HtmlHighlighter implements HighlighterInterface
     {
         $link = $this->getLink($match);
         $linkSafeQuotes = str_replace('"', '%22', $link);
-        $displayText = $this->getDisplayText($match);
-        return sprintf('<a href="%s"%s>%s</a>', $linkSafeQuotes, $this->attributes, $displayText);
+
+        return sprintf(
+            '%s<a href="%s"%s>%s</a>%s',
+            $this->getContentBefore($match),
+            $linkSafeQuotes,
+            $this->attributes,
+            $this->getText($match),
+            $this->getContentAfter($match)
+        );
     }
 
     /**
@@ -56,7 +81,7 @@ class HtmlHighlighter implements HighlighterInterface
     }
 
     /**
-     * Return link used in href attribute
+     * Link used in href attribute: <a href="{here}"...
      *
      * @param Match $match
      * @return string
@@ -67,14 +92,36 @@ class HtmlHighlighter implements HighlighterInterface
     }
 
     /**
-     * Return text/link used to display url
+     * Content used to display url: ...>{here}</a>
      *
      * @param Match $match
      * @return string
      */
-    protected function getDisplayText(Match $match): string
+    protected function getText(Match $match): string
     {
         return $match->getFullMatch();
+    }
+
+    /**
+     * Content before highlight: {here}<a...
+     *
+     * @param Match $match
+     * @return string
+     */
+    protected function getContentBefore(Match $match): string
+    {
+        return $this->contentBefore;
+    }
+
+    /**
+     * Content after highlight: ...</a>{here}
+     *
+     * @param Match $match
+     * @return string
+     */
+    protected function getContentAfter(Match $match): string
+    {
+        return $this->contentAfter;
     }
 
     /**
