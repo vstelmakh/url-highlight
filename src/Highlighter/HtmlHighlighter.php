@@ -2,6 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
+use InvalidArgumentException;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
 
@@ -68,7 +69,7 @@ class HtmlHighlighter implements HighlighterInterface
             $isValidAttributeName = !preg_match_all('/[\t\n\f \/>"\'=]/', $key, $matches);
             if (!$isValidAttributeName) {
                 $invalidChars = array_unique($matches[0]);
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     'Attribute name %s contains invalid characters: %s',
                     json_encode($key),
                     json_encode(implode(', ', $invalidChars))
