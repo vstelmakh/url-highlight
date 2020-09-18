@@ -43,6 +43,12 @@ jobs:
 
             - name: Update Composer dependencies
               run: composer update ${{ matrix.composer }} --prefer-dist --no-progress --no-suggest --no-interaction
+              if: matrix.php != '8.0'
+
+            - name: Update Composer dependencies (ignore platform requirements)
+              run: composer update ${{ matrix.composer }} --prefer-dist --no-progress --no-suggest --no-interaction --ignore-platform-reqs
+              if: matrix.php == '8.0'
+              # Ignore platform requirements for PHP 8. Not yet supported by all packages.
 
             - name: Run PHP Code Sniffer
               run: composer run-script test:phpcs
@@ -62,5 +68,6 @@ jobs:
 
             - name: Run PHPBench
               run: composer run-script test:phpbench
-              if: (success() || failure()) && matrix.composer != '--prefer-lowest'
+              if: (success() || failure()) && matrix.composer != '--prefer-lowest' && matrix.php != '8.0'
               # Skip for prefer lowest as it throws error on PHP 7.4. See: https://bugs.php.net/bug.php?id=78482
+              # Skip for PHP 8, not supported yet by PHPBench.
