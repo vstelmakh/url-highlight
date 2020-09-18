@@ -6,7 +6,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VStelmakh\UrlHighlight\Encoder\EncoderInterface;
 use VStelmakh\UrlHighlight\Matcher\EncodedMatcher;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 
 class EncodedMatcherTest extends TestCase
@@ -38,10 +38,10 @@ class EncodedMatcherTest extends TestCase
      *
      * @param string $string
      * @param string $decoded
-     * @param Match|null $match
-     * @param Match|null $expected
+     * @param UrlMatch|null $match
+     * @param UrlMatch|null $expected
      */
-    public function testMatch(string $string, string $decoded, ?Match $match, ?Match $expected): void
+    public function testMatch(string $string, string $decoded, ?UrlMatch $match, ?UrlMatch $expected): void
     {
         $this->encoder
             ->expects(self::once())
@@ -68,8 +68,8 @@ class EncodedMatcherTest extends TestCase
             [
                 'http://example&period;com?a=1&amp;b=2',
                 'http://example.com?a=1&b=2',
-                new Match('http://example.com?a=1&b=2', 0, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
-                new Match('http://example&period;com?a=1&amp;b=2', 0, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
+                new UrlMatch('http://example.com?a=1&b=2', 0, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
+                new UrlMatch('http://example&period;com?a=1&amp;b=2', 0, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
             ],
             [
                 '&lgt;http://example&period;com?a=1&amp;b=2',
@@ -86,8 +86,8 @@ class EncodedMatcherTest extends TestCase
      * @param string $string
      * @param string $decoded
      * @param string[]|null $supportedChars
-     * @param array&Match[] $matches
-     * @param array&Match[] $expected
+     * @param array&UrlMatch[] $matches
+     * @param array&UrlMatch[] $expected
      */
     public function testMatchAll(
         string $string,
@@ -149,12 +149,12 @@ class EncodedMatcherTest extends TestCase
                 '<a href="http://example.com">example.com</a>',
                 null,
                 [
-                    new Match('http://example.com', 9, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
-                    new Match('example.com', 29, 'example.com', null, null, 'example.com', 'com', null, null),
+                    new UrlMatch('http://example.com', 9, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                    new UrlMatch('example.com', 29, 'example.com', null, null, 'example.com', 'com', null, null),
                 ],
                 [
-                    new Match('http://example&period;com', 24, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
-                    new Match('example&#x2E;com', 59, 'example.com', null, null, 'example.com', 'com', null, null),
+                    new UrlMatch('http://example&period;com', 24, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                    new UrlMatch('example&#x2E;com', 59, 'example.com', null, null, 'example.com', 'com', null, null),
                 ],
             ],
             [
@@ -162,10 +162,10 @@ class EncodedMatcherTest extends TestCase
                 '<a href="http://example.com?a=1&b=2">Example</a>',
                 ['<', '>', '"', '&'],
                 [
-                    new Match('http://example.com?a=1&b=2', 9, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
+                    new UrlMatch('http://example.com?a=1&b=2', 9, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
                 ],
                 [
-                    new Match('http://example.com?a=1&amp;b=2', 17, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
+                    new UrlMatch('http://example.com?a=1&amp;b=2', 17, 'http://example.com?a=1&b=2', 'http', null, 'example.com', 'com', null, '?a=1&b=2'),
                 ],
             ],
         ];

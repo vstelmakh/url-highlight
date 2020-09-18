@@ -2,7 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Tests\Validator;
 
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Validator\Validator;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +15,7 @@ class ValidatorTest extends TestCase
      * @param array|string[] $schemeBlacklist
      * @param array|string[] $schemeWhitelist
      * @param bool $matchEmails
-     * @param Match $match
+     * @param UrlMatch $match
      * @param bool $expected
      */
     public function testIsValidMatch(
@@ -23,7 +23,7 @@ class ValidatorTest extends TestCase
         array $schemeBlacklist,
         array $schemeWhitelist,
         bool $matchEmails,
-        Match $match,
+        UrlMatch $match,
         bool $expected
     ): void {
         $validator = new Validator($matchByTLD, $schemeBlacklist, $schemeWhitelist, $matchEmails);
@@ -78,8 +78,8 @@ class ValidatorTest extends TestCase
         ];
     }
 
-    private function getMatch(?string $scheme, ?string $local, ?string $host, ?string $tld): Match
+    private function getMatch(?string $scheme, ?string $local, ?string $host, ?string $tld): UrlMatch
     {
-        return new Match('', 0, '', $scheme, $local, $host, $tld, null, null);
+        return new UrlMatch('', 0, '', $scheme, $local, $host, $tld, null, null);
     }
 }

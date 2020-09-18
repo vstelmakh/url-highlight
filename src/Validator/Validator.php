@@ -3,7 +3,7 @@
 namespace VStelmakh\UrlHighlight\Validator;
 
 use VStelmakh\UrlHighlight\Domains;
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 
 class Validator implements ValidatorInterface
@@ -49,10 +49,10 @@ class Validator implements ValidatorInterface
     /**
      * Verify if url match (scheme or host) fit config requirements
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return bool
      */
-    public function isValidMatch(Match $match): bool
+    public function isValidMatch(UrlMatch $match): bool
     {
         $scheme = $match->getScheme();
         if (!empty($scheme) && $scheme !== 'mailto') {
@@ -72,10 +72,10 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * @param Match $match
+     * @param UrlMatch $match
      * @return bool
      */
-    private function isEmail(Match $match): bool
+    private function isEmail(UrlMatch $match): bool
     {
         $scheme = $match->getScheme();
         $userinfo = $match->getUserinfo();

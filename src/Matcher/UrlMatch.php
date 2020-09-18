@@ -2,7 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
-class Match
+class UrlMatch
 {
     /**
      * @var string

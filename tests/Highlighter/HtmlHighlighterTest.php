@@ -4,18 +4,18 @@ namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 class HtmlHighlighterTest extends TestCase
 {
     /**
      * @dataProvider getHighlightDataProvider
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @param array&string[] $attributes
      * @param string|null $expected
      */
-    public function testGetHighlight(Match $match, array $attributes, ?string $expected): void
+    public function testGetHighlight(UrlMatch $match, array $attributes, ?string $expected): void
     {
         if ($expected === null) {
             $this->expectException(\InvalidArgumentException::class);
@@ -33,37 +33,37 @@ class HtmlHighlighterTest extends TestCase
     {
         return [
             [
-                new Match('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                new UrlMatch('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
                 [],
                 '<a href="http://example.com">http://example.com</a>',
             ],
             [
-                new Match('example.com', 0, 'example.com', null, null, 'example.com', 'com', null, null),
+                new UrlMatch('example.com', 0, 'example.com', null, null, 'example.com', 'com', null, null),
                 [],
                 '<a href="http://example.com">example.com</a>',
             ],
             [
-                new Match('mailto:user@example.com', 0, 'mailto:user@example.com', 'mailto', 'user', 'example.com', 'com', null, null),
+                new UrlMatch('mailto:user@example.com', 0, 'mailto:user@example.com', 'mailto', 'user', 'example.com', 'com', null, null),
                 [],
                 '<a href="mailto:user@example.com">mailto:user@example.com</a>',
             ],
             [
-                new Match('user@example.com', 0, 'user@example.com', null, 'user', 'example.com', 'com', null, null),
+                new UrlMatch('user@example.com', 0, 'user@example.com', null, 'user', 'example.com', 'com', null, null),
                 [],
                 '<a href="mailto:user@example.com">user@example.com</a>',
             ],
             [
-                new Match('http://example.com?a=&quot;1&quot;&amp;b=2', 0, 'http://example.com?a="1"&b=2', 'http', null, 'example.com', 'com', null, '?a="1"&b=2'),
+                new UrlMatch('http://example.com?a=&quot;1&quot;&amp;b=2', 0, 'http://example.com?a="1"&b=2', 'http', null, 'example.com', 'com', null, '?a="1"&b=2'),
                 [],
                 '<a href="http://example.com?a=%221%22&b=2">http://example.com?a=&quot;1&quot;&amp;b=2</a>',
             ],
             [
-                new Match('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                new UrlMatch('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
                 ['rel' => 'nofollow', 'title' => '"quotes"'],
                 '<a href="http://example.com" rel="nofollow" title="&quot;quotes&quot;">http://example.com</a>',
             ],
             [
-                new Match('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                new UrlMatch('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
                 ['"quotes"' => 'value'],
                 null,
             ],

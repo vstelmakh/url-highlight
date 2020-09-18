@@ -2,7 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
 
 class HtmlHighlighter implements HighlighterInterface
@@ -31,10 +31,10 @@ class HtmlHighlighter implements HighlighterInterface
      * Return html link highlight
      * Example: <a href="http://example.com">http://example.com</a>
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    public function getHighlight(Match $match): string
+    public function getHighlight(UrlMatch $match): string
     {
         $link = LinkHelper::getLink($match, $this->defaultScheme);
         $linkSafeQuotes = str_replace('"', '%22', $link);

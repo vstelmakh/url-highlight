@@ -2,7 +2,7 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
 
 class MarkdownHighlighter implements HighlighterInterface
@@ -24,10 +24,10 @@ class MarkdownHighlighter implements HighlighterInterface
      * Return markdown link highlight
      * Example: [http://example.com](http://example.com)
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    public function getHighlight(Match $match): string
+    public function getHighlight(UrlMatch $match): string
     {
         $link = LinkHelper::getLink($match, $this->defaultScheme);
         $fullMatchSafeBrackets = str_replace(['[', ']'], ['\\[', '\\]'], $match->getFullMatch());
