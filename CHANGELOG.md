@@ -2,6 +2,13 @@
 All notable changes to this project documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
+### v2.3.0 (2020-09-24)
+- Added PHP 8 compatibility
+- Renamed class `VStelmakh\UrlHighlight\Matcher\Match` to `UrlMatch`
+  > Since PHP v8.0 `match` is a reserved keyword.  
+  > This will affect you if custom [Validator](./README.md#validator) or [Highlighter](./README.md#highlighter) implemented.
+  > Consider expecting [UrlMatch](./src/Matcher/UrlMatch.php) instead of `Match` in your implementations.
+
 ### v2.2.0 (2020-09-04)
 - Fixed match complex urls with brackets (e.g. ELK urls)
 - Improved matcher performance (~3x faster)
