@@ -94,7 +94,7 @@ jobs:
                     restore-keys: ${{ steps.composer.outputs.cache_key }}
 
             -   name: Update Composer dependencies (ignore platform requirements)
-                run: composer update ${{ matrix.composer }} --prefer-dist --no-progress --no-suggest --no-interaction --ignore-platform-reqs
+                run: composer update --prefer-dist --no-progress --no-suggest --no-interaction --ignore-platform-reqs
 
             -   name: Run PHP Code Sniffer
                 run: composer run-script test:phpcs
