@@ -2,13 +2,13 @@
 
 namespace VStelmakh\UrlHighlight\Validator;
 
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 interface ValidatorInterface
 {
     /**
-     * @param Match $match
+     * @param UrlMatch $match
      * @return bool
      */
-    public function isValidMatch(Match $match): bool;
+    public function isValidMatch(UrlMatch $match): bool;
 }

@@ -4,17 +4,17 @@ namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use VStelmakh\UrlHighlight\Highlighter\MarkdownHighlighter;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 class MarkdownHighlighterTest extends TestCase
 {
     /**
      * @dataProvider getHighlightDataProvider
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @param string|null $expected
      */
-    public function testGetHighlight(Match $match, ?string $expected): void
+    public function testGetHighlight(UrlMatch $match, ?string $expected): void
     {
         $markdownHighlighter = new MarkdownHighlighter('http');
         $actual = $markdownHighlighter->getHighlight($match);
@@ -28,27 +28,27 @@ class MarkdownHighlighterTest extends TestCase
     {
         return [
             [
-                new Match('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                new UrlMatch('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
                 '[http://example.com](http://example.com)',
             ],
             [
-                new Match('example.com', 0, 'example.com', null, null, 'example.com', 'com', null, null),
+                new UrlMatch('example.com', 0, 'example.com', null, null, 'example.com', 'com', null, null),
                 '[example.com](http://example.com)',
             ],
             [
-                new Match('mailto:user@example.com', 0, 'mailto:user@example.com', 'mailto', 'user', 'example.com', 'com', null, null),
+                new UrlMatch('mailto:user@example.com', 0, 'mailto:user@example.com', 'mailto', 'user', 'example.com', 'com', null, null),
                 '[mailto:user@example.com](mailto:user@example.com)',
             ],
             [
-                new Match('user@example.com', 0, 'user@example.com', null, 'user', 'example.com', 'com', null, null),
+                new UrlMatch('user@example.com', 0, 'user@example.com', null, 'user', 'example.com', 'com', null, null),
                 '[user@example.com](mailto:user@example.com)',
             ],
             [
-                new Match('http://example.com/brackets[is]here', 0, 'http://example.com/brackets[is]here', 'http', null, 'example.com', 'com', null, '/brackets[is]here'),
+                new UrlMatch('http://example.com/brackets[is]here', 0, 'http://example.com/brackets[is]here', 'http', null, 'example.com', 'com', null, '/brackets[is]here'),
                 '[http://example.com/brackets\[is\]here](http://example.com/brackets[is]here)',
             ],
             [
-                new Match('http://example.com/brackets(is)here', 0, 'http://example.com/brackets(is)here', 'http', null, 'example.com', 'com', null, '/brackets(is)here'),
+                new UrlMatch('http://example.com/brackets(is)here', 0, 'http://example.com/brackets(is)here', 'http', null, 'example.com', 'com', null, '/brackets(is)here'),
                 '[http://example.com/brackets(is)here](http://example.com/brackets%28is%29here)',
             ],
         ];

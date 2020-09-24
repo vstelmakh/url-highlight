@@ -3,7 +3,7 @@
 namespace VStelmakh\UrlHighlight\Tests\Replacer;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
 use VStelmakh\UrlHighlight\Replacer\Replacer;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +32,7 @@ class ReplacerTest extends TestCase
      * @dataProvider replaceCallbackDataProvider
      *
      * @param string $string
-     * @param array&Match[] $matches
+     * @param array&UrlMatch[] $matches
      * @param string $expected
      */
     public function testReplaceCallback(string $string, array $matches, string $expected): void
@@ -42,7 +42,7 @@ class ReplacerTest extends TestCase
             ->method('matchAll')
             ->willReturn($matches);
 
-        $callback = static function (Match $match) {
+        $callback = static function (UrlMatch $match) {
             return self::REPLACE;
         };
 
@@ -59,15 +59,15 @@ class ReplacerTest extends TestCase
             [
                 'Hello ★, follow the link: http://example.com.',
                 [
-                    new Match('http://example.com', 28, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
+                    new UrlMatch('http://example.com', 28, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
                 ],
                 sprintf('Hello ★, follow the link: %s.', self::REPLACE)
             ],
             [
                 'Hello ★, follow the link: http://example.com/互联网. Привіт світ (example.com).',
                 [
-                    new Match('http://example.com/互联网', 28, 'http://example.com/互联网', 'http', null, 'example.com', 'com', null, '/互联网'),
-                    new Match('example.com', 81, 'example.com', null, null, 'example.com', 'com', null, null),
+                    new UrlMatch('http://example.com/互联网', 28, 'http://example.com/互联网', 'http', null, 'example.com', 'com', null, '/互联网'),
+                    new UrlMatch('example.com', 81, 'example.com', null, null, 'example.com', 'com', null, null),
                 ],
                 sprintf('Hello ★, follow the link: %s. Привіт світ (%s).', self::REPLACE, self::REPLACE)
             ],

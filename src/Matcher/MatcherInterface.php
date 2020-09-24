@@ -11,15 +11,15 @@ interface MatcherInterface
      * Match string by url regex
      *
      * @param string $string
-     * @return Match|null
+     * @return UrlMatch|null
      */
-    public function match(string $string): ?Match;
+    public function match(string $string): ?UrlMatch;
 
     /**
      * Get all valid url regex matches from string
      *
      * @param string $string
-     * @return array&Match[]
+     * @return array&UrlMatch[]
      */
     public function matchAll(string $string): array;
 }
