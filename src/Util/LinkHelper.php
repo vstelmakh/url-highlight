@@ -2,18 +2,18 @@
 
 namespace VStelmakh\UrlHighlight\Util;
 
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 class LinkHelper
 {
     /**
      * Return match link with scheme depends on context
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @param string $defaultScheme
      * @return string
      */
-    public static function getLink(Match $match, string $defaultScheme): string
+    public static function getLink(UrlMatch $match, string $defaultScheme): string
     {
         $scheme = '';
 

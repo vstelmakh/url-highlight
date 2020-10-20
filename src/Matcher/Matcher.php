@@ -34,9 +34,9 @@ class Matcher implements MatcherInterface
      * Match string by url regex
      *
      * @param string $string
-     * @return Match|null
+     * @return UrlMatch|null
      */
-    public function match(string $string): ?Match
+    public function match(string $string): ?UrlMatch
     {
         $urlRegex = $this->getUrlRegex(true);
         preg_match($urlRegex, $string, $rawMatch, PREG_OFFSET_CAPTURE);
@@ -51,7 +51,7 @@ class Matcher implements MatcherInterface
      * Get all valid url regex matches from string
      *
      * @param string $string
-     * @return array&Match[]
+     * @return array&UrlMatch[]
      */
     public function matchAll(string $string): array
     {
@@ -130,14 +130,14 @@ class Matcher implements MatcherInterface
 
     /**
      * @param array|mixed[] $rawMatch
-     * @return Match
+     * @return UrlMatch
      */
-    private function createMatch(array $rawMatch): Match
+    private function createMatch(array $rawMatch): UrlMatch
     {
         $fullMatch = $this->balancedFilter->filter($rawMatch[0][0]);
         $path = $this->balancedFilter->filter($rawMatch['path'][0] ?? '');
 
-        return new Match(
+        return new UrlMatch(
             $fullMatch,
             $rawMatch[0][1],
             $fullMatch,

@@ -3,7 +3,7 @@
 namespace VStelmakh\UrlHighlight\Tests\Matcher;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use PHPUnit\Framework\TestCase;
 use VStelmakh\UrlHighlight\Validator\Validator;
@@ -146,9 +146,9 @@ class MatcherTest extends TestCase
      *
      * @param string $string
      * @param bool $isValid
-     * @param Match|null $match
+     * @param UrlMatch|null $match
      */
-    public function testMatch(string $string, bool $isValid, ?Match $match): void
+    public function testMatch(string $string, bool $isValid, ?UrlMatch $match): void
     {
         $matchValidatorInvokedCount = ($match === null) ? self::never() : self::once();
         $this->validator
@@ -216,7 +216,7 @@ class MatcherTest extends TestCase
                 $result[] = [
                     sprintf('Example text before %s and after. Open filename.txt at 3:00pm. For more info see http://google.com.', $url),
                     array_merge($isValidMap, [false, true]),
-                    array_merge($expected, [new Match('http://google.com', $secondMatchByteOffset, 'http://google.com', 'http', null, 'google.com', 'com', null, null)])
+                    array_merge($expected, [new UrlMatch('http://google.com', $secondMatchByteOffset, 'http://google.com', 'http', null, 'google.com', 'com', null, null)])
                 ];
 
                 foreach ($invalidPrefixChars as $prefix) {
@@ -238,9 +238,9 @@ class MatcherTest extends TestCase
      * @param array|mixed[]|null $matchData
      * @param bool $isStrict
      * @param int $byteOffset
-     * @return Match|null
+     * @return UrlMatch|null
      */
-    private function getMatchDataAsMatch(string $url, int $byteOffset, ?array $matchData, bool $isStrict): ?Match
+    private function getMatchDataAsMatch(string $url, int $byteOffset, ?array $matchData, bool $isStrict): ?UrlMatch
     {
         if ($matchData === null) {
             return null;
@@ -254,6 +254,6 @@ class MatcherTest extends TestCase
             return null;
         }
 
-        return new Match($matchData[0], $byteOffset, ...$matchData);
+        return new UrlMatch($matchData[0], $byteOffset, ...$matchData);
     }
 }

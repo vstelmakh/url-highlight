@@ -35,9 +35,9 @@ class EncodedMatcher implements MatcherInterface
      * Match string by url regex
      *
      * @param string $string
-     * @return Match|null
+     * @return UrlMatch|null
      */
-    public function match(string $string): ?Match
+    public function match(string $string): ?UrlMatch
     {
         $decodedString = $this->encoder->decode($string);
         $match = $this->matcher->match($decodedString);
@@ -48,7 +48,7 @@ class EncodedMatcher implements MatcherInterface
      * Get all valid url regex matches from encoded string
      *
      * @param string $string
-     * @return array&Match[]
+     * @return array&UrlMatch[]
      */
     public function matchAll(string $string): array
     {
@@ -83,10 +83,10 @@ class EncodedMatcher implements MatcherInterface
     /**
      * Replace html special chars with char variations regex
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    private function getEncodedMatchRegex(Match $match): string
+    private function getEncodedMatchRegex(UrlMatch $match): string
     {
         $supportedChars = $this->encoder->getSupportedChars();
         return !empty($supportedChars)
@@ -95,11 +95,11 @@ class EncodedMatcher implements MatcherInterface
     }
 
     /**
-     * @param Match $match
+     * @param UrlMatch $match
      * @param array&string[] $supportedChars
      * @return string
      */
-    private function getUrlRegexBySupportedChars(Match $match, array $supportedChars): string
+    private function getUrlRegexBySupportedChars(UrlMatch $match, array $supportedChars): string
     {
         $replace = [];
         foreach ($supportedChars as $char) {
@@ -111,10 +111,10 @@ class EncodedMatcher implements MatcherInterface
     }
 
     /**
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    private function getUrlRegexByAllChars(Match $match): string
+    private function getUrlRegexByAllChars(UrlMatch $match): string
     {
         $fullMatchRegex = '';
 
@@ -138,12 +138,12 @@ class EncodedMatcher implements MatcherInterface
     /**
      * @param string $fullMatch
      * @param int $byteOffset
-     * @param Match $match
-     * @return Match
+     * @param UrlMatch $match
+     * @return UrlMatch
      */
-    private function getEncodedMatch(string $fullMatch, int $byteOffset, Match $match): Match
+    private function getEncodedMatch(string $fullMatch, int $byteOffset, UrlMatch $match): UrlMatch
     {
-        return new Match(
+        return new UrlMatch(
             $fullMatch,
             $byteOffset,
             $match->getUrl(),

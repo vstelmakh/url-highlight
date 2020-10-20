@@ -2,7 +2,8 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Matcher\Match;
+use InvalidArgumentException;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
 
@@ -99,10 +100,10 @@ class HtmlHighlighter implements HighlighterInterface
      * Return html link highlight
      * Example: {content before}<a href="http://example.com">http://example.com</a>{content after}
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    protected function getMatchHighlight(Match $match): string
+    protected function getMatchHighlight(UrlMatch $match): string
     {
         $link = $this->getLink($match);
         $linkSafeQuotes = str_replace('"', '%22', $link);
@@ -120,10 +121,10 @@ class HtmlHighlighter implements HighlighterInterface
     /**
      * Link used in href attribute: <a href="{here}"...
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    protected function getLink(Match $match): string
+    protected function getLink(UrlMatch $match): string
     {
         return LinkHelper::getLink($match, $this->getDefaultScheme());
     }
@@ -141,10 +142,10 @@ class HtmlHighlighter implements HighlighterInterface
     /**
      * Content used to display url: ...>{here}</a>
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    protected function getText(Match $match): string
+    protected function getText(UrlMatch $match): string
     {
         return $match->getFullMatch();
     }
@@ -152,10 +153,10 @@ class HtmlHighlighter implements HighlighterInterface
     /**
      * Content before highlight: {here}<a...
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    protected function getContentBefore(Match $match): string
+    protected function getContentBefore(UrlMatch $match): string
     {
         return $this->contentBefore;
     }
@@ -163,10 +164,10 @@ class HtmlHighlighter implements HighlighterInterface
     /**
      * Content after highlight: ...</a>{here}
      *
-     * @param Match $match
+     * @param UrlMatch $match
      * @return string
      */
-    protected function getContentAfter(Match $match): string
+    protected function getContentAfter(UrlMatch $match): string
     {
         return $this->contentAfter;
     }
@@ -185,7 +186,7 @@ class HtmlHighlighter implements HighlighterInterface
             $isValidAttributeName = !preg_match_all('/[\t\n\f \/>"\'=]/', $key, $matches);
             if (!$isValidAttributeName) {
                 $invalidChars = array_unique($matches[0]);
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     'Attribute name %s contains invalid characters: %s',
                     json_encode($key),
                     json_encode(implode(', ', $invalidChars))
