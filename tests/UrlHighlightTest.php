@@ -142,8 +142,8 @@ class UrlHighlightTest extends TestCase
 
         $highlighter = $this->createMock(HighlighterInterface::class);
         $highlighter
-            ->expects(self::atLeastOnce())
-            ->method('getHighlight');
+            ->expects(self::once())
+            ->method('highlight');
 
         $encoder = $this->createMock(EncoderInterface::class);
         $encoder

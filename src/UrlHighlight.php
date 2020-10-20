@@ -88,8 +88,6 @@ class UrlHighlight
      */
     public function highlightUrls(string $string): string
     {
-        $string = $this->replacer->replaceCallback($string, [$this->highlighter, 'getHighlight']);
-        $string = $this->highlighter->filterOverhighlight($string);
-        return $string;
+        return $this->highlighter->highlight($string, $this->replacer);
     }
 }

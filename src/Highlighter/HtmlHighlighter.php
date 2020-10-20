@@ -3,6 +3,7 @@
 namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
 
 class HtmlHighlighter implements HighlighterInterface
@@ -29,12 +30,12 @@ class HtmlHighlighter implements HighlighterInterface
 
     /**
      * @param string $defaultScheme Used to build href for urls matched without scheme
-     * @param array&string[] $attributes Key/value map of tag attributes
+     * @param array&string[] $attributes Key/value map of tag attributes, e.g.: ['rel' => 'nofollow']
      * @param string $contentBefore Content to add before highlight: {here}<a...
      * @param string $contentAfter Content to add after highlight: ...</a>{here}
      */
     public function __construct(
-        string $defaultScheme,
+        string $defaultScheme = 'http',
         array $attributes = [],
         string $contentBefore = '',
         string $contentAfter = ''
@@ -46,13 +47,62 @@ class HtmlHighlighter implements HighlighterInterface
     }
 
     /**
+     * Replace all valid matches by html <a> tags
+     * Additional filtering done here to avoid highlight in html tags or inside a tag content
+     *
+     * @param string $string
+     * @param ReplacerInterface $replacer
+     * @return string
+     */
+    public function highlight(string $string, ReplacerInterface $replacer): string
+    {
+        $result = '';
+        /** @var array&string[] $parts */
+        $parts = preg_split('/(<[^<>]+>)/u', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+        $isLinkContent = false;
+        foreach ($parts as $num => $part) {
+            $isTag = $num % 2 !== 0;
+
+            if ($isTag) {
+                $isOpenLinkTag = (bool) preg_match('/^<\s*a(?:\s|>)/iu', $part);
+                $isLinkContent = $isOpenLinkTag ? true : $isLinkContent;
+
+                if (!$isOpenLinkTag) {
+                    $isCloseLinkTag = (bool) preg_match('/<\s*\/\s*a\s*>$/iu', $part);
+                    $isLinkContent = $isCloseLinkTag ? false : $isLinkContent;
+                }
+            } elseif (!$isLinkContent) {
+                $part = $this->doHighlight($part, $replacer);
+            }
+
+            $result .= $part;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Use replacer with callable to highlight urls
+     * String input at this point is not html tag or a tag content and could be safely highlighted
+     *
+     * @param string $string
+     * @param ReplacerInterface $replacer
+     * @return string
+     */
+    protected function doHighlight(string $string, ReplacerInterface $replacer): string
+    {
+        return $replacer->replaceCallback($string, \Closure::fromCallable([$this, 'getMatchHighlight']));
+    }
+
+    /**
      * Return html link highlight
-     * Example: <a href="http://example.com">http://example.com</a>
+     * Example: {content before}<a href="http://example.com">http://example.com</a>{content after}
      *
      * @param Match $match
      * @return string
      */
-    public function getHighlight(Match $match): string
+    protected function getMatchHighlight(Match $match): string
     {
         $link = $this->getLink($match);
         $linkSafeQuotes = str_replace('"', '%22', $link);
@@ -68,19 +118,6 @@ class HtmlHighlighter implements HighlighterInterface
     }
 
     /**
-     * Filter highlight in tag attributes, e.g href, src... and in <a> tags text
-     *
-     * @param string $string
-     * @return string
-     */
-    public function filterOverhighlight(string $string): string
-    {
-        $string = $this->filterHighlightInTagAttributes($string);
-        $string = $this->filterHighlightInLinks($string);
-        return $string;
-    }
-
-    /**
      * Link used in href attribute: <a href="{here}"...
      *
      * @param Match $match
@@ -88,7 +125,17 @@ class HtmlHighlighter implements HighlighterInterface
      */
     protected function getLink(Match $match): string
     {
-        return LinkHelper::getLink($match, $this->defaultScheme);
+        return LinkHelper::getLink($match, $this->getDefaultScheme());
+    }
+
+    /**
+     * Link default scheme. Used to build href attribute
+     *
+     * @return string
+     */
+    protected function getDefaultScheme(): string
+    {
+        return $this->defaultScheme;
     }
 
     /**
@@ -149,49 +196,5 @@ class HtmlHighlighter implements HighlighterInterface
             $result[] = sprintf('%s="%s"', $key, $valueSafeQuotes);
         }
         return empty($result) ? '' : ' ' . implode(' ', $result);
-    }
-
-    /**
-     * Filter a tags in html attributes
-     * Example: <a href="<a href="http://example.com">http://example.com</a>">http://example.com</a>
-     * Result: <a href="http://example.com">http://example.com</a>
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInTagAttributes(string $string): string
-    {
-        $regex = '/
-            (
-                <\w+\s[^>]+                              # tag start: "<tag"
-                \w\s?=\s?[\'"]                           # attribute start: "href=""
-            )
-            <a\s[^>]*href=[\'"].*[\'"][^>]*>([^<]*)<\/a> # html link: "<a href="#"><\/a>"
-            (
-                [\'"]                                    # attribute end: """
-                [^>]*>                                   # tag end: ">"
-            )
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
-    }
-
-    /**
-     * Filter a tags in a tags
-     * Example: <a href="#"><a href="http://example.com">http://example.com</a></a>
-     * Result: <a href="#"http://example.com">http://example.com</a>
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInLinks(string $string): string
-    {
-        $regex = '/
-            (<a[^>]*>)                 # parent tag start "<a"
-            <a[^>]*>([^<]*)<\s*\/\s*a> # child tag "<a><\/a>"
-            (<\s*\/\s*a>)              # parent tag end "<\/a>"
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
     }
 }

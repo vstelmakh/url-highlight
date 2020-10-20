@@ -3,21 +3,48 @@
 namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
 
-class MarkdownHighlighter implements HighlighterInterface
+class MarkdownHighlighter extends HtmlHighlighter
 {
-    /**
-     * @var string
-     */
-    private $defaultScheme;
-
     /**
      * @param string $defaultScheme Used to build link for urls matched without scheme
      */
     public function __construct(string $defaultScheme = 'http')
     {
-        $this->defaultScheme = $defaultScheme;
+        parent::__construct($defaultScheme);
+    }
+
+    /**
+     * Replace all valid matches by markdown links
+     * Additional filtering done here to avoid highlight in existing markdown links
+     *
+     * @param string $string
+     * @param ReplacerInterface $replacer
+     * @return string
+     */
+    protected function doHighlight(string $string, ReplacerInterface $replacer): string
+    {
+        $result = '';
+        $regex = '/(
+            \[.+\]\([^\(\)]+\)       # markdown link
+            |                        # or
+            (?:^|\s+)\[.+\]:\s*\S+   # markdown link reference
+            |                        # or
+            (?:^|\s+)\[.+\](?:$|\s+) # markdown link short
+        )/ux';
+
+        /** @var array&string[] $parts */
+        $parts = preg_split($regex, $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+        foreach ($parts as $num => $part) {
+            $isMarkdownLink = $num % 2 !== 0;
+            $result .= $isMarkdownLink
+                ? $part
+                : $replacer->replaceCallback($part, \Closure::fromCallable([$this, 'getMarkdownHighlight']));
+        }
+
+        return $result;
     }
 
     /**
@@ -27,70 +54,11 @@ class MarkdownHighlighter implements HighlighterInterface
      * @param Match $match
      * @return string
      */
-    public function getHighlight(Match $match): string
+    private function getMarkdownHighlight(Match $match): string
     {
-        $link = LinkHelper::getLink($match, $this->defaultScheme);
+        $link = LinkHelper::getLink($match, $this->getDefaultScheme());
         $fullMatchSafeBrackets = str_replace(['[', ']'], ['\\[', '\\]'], $match->getFullMatch());
         $linkSafeBrackets = str_replace(['(', ')'], ['%28', '%29'], $link);
         return sprintf('[%s](%s)', $fullMatchSafeBrackets, $linkSafeBrackets);
-    }
-
-    /**
-     * Filter highlight in markdown links
-     *
-     * @param string $string
-     * @return string
-     */
-    public function filterOverhighlight(string $string): string
-    {
-        $string = $this->filterHighlightInText($string);
-        $string = $this->filterHighlightInLink($string);
-        return $string;
-    }
-
-    /**
-     * Filter markdown link inside markdown link text
-     * Example: [[http://example.com](http://example.com)](http://example.com)
-     * Result: [http://example.com](http://example.com)
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInText(string $string): string
-    {
-        $regex = '/
-            (
-                \[               # text start
-            )
-            \[(.+)\]\([^\(\)]+\) # markdown link (capture text)
-            (
-                \]\(.+\)         # text end with following link
-            )
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
-    }
-
-    /**
-     * Filter markdown link inside markdown link
-     * Example: [http://example.com]([http://example.com](http://example.com))
-     * Result: [http://example.com](http://example.com)
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInLink(string $string): string
-    {
-        $regex = '/
-            (
-                \]\(             # link start, prefixed with text
-            )
-            \[.+\]\(([^\(\)]+)\) # markdown link (capture link)
-            (
-                \)               # link end
-            )
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
     }
 }

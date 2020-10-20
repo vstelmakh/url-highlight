@@ -2,24 +2,16 @@
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Matcher\Match;
+use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
 
 interface HighlighterInterface
 {
     /**
-     * Return corresponding match highlight. In other words - replacement for found url match.
-     *
-     * @param Match $match
-     * @return string
-     */
-    public function getHighlight(Match $match): string;
-
-    /**
-     * If input string contains already highlighted urls - this urls will be highlighted once more.
-     * Here it should be filtered out.
+     * Get string and replacer as input. Return string with highlighted urls.
      *
      * @param string $string
+     * @param ReplacerInterface $replacer
      * @return string
      */
-    public function filterOverhighlight(string $string): string;
+    public function highlight(string $string, ReplacerInterface $replacer): string;
 }
