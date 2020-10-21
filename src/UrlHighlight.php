@@ -41,8 +41,11 @@ class UrlHighlight
      * @param HighlighterInterface|null $highlighter
      * @param EncoderInterface|null $encoder
      */
-    public function __construct(?ValidatorInterface $validator = null, ?HighlighterInterface $highlighter = null, ?EncoderInterface $encoder = null)
-    {
+    public function __construct(
+        ?ValidatorInterface $validator = null,
+        ?HighlighterInterface $highlighter = null,
+        ?EncoderInterface $encoder = null
+    ) {
         $validator = $validator ?? new Validator(true);
         $matcher = new Matcher($validator);
         $this->matcher = $encoder ? new EncodedMatcher($matcher, $encoder) : $matcher;
