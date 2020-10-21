@@ -10,10 +10,12 @@ class MarkdownHighlighter extends HtmlHighlighter
 {
     /**
      * @param string $defaultScheme Used to build link for urls matched without scheme
+     * @param string $contentBefore Content to add before highlight: {here}[...
+     * @param string $contentAfter Content to add after highlight: ...){here}
      */
-    public function __construct(string $defaultScheme = 'http')
+    public function __construct(string $defaultScheme = 'http', string $contentBefore = '', string $contentAfter = '')
     {
-        parent::__construct($defaultScheme);
+        parent::__construct($defaultScheme, [], $contentBefore, $contentAfter);
     }
 
     /**
@@ -59,6 +61,13 @@ class MarkdownHighlighter extends HtmlHighlighter
         $link = LinkHelper::getLink($match, $this->getDefaultScheme());
         $fullMatchSafeBrackets = str_replace(['[', ']'], ['\\[', '\\]'], $match->getFullMatch());
         $linkSafeBrackets = str_replace(['(', ')'], ['%28', '%29'], $link);
-        return sprintf('[%s](%s)', $fullMatchSafeBrackets, $linkSafeBrackets);
+
+        return sprintf(
+            '%s[%s](%s)%s',
+            $this->getContentBefore($match),
+            $fullMatchSafeBrackets,
+            $linkSafeBrackets,
+            $this->getContentAfter($match)
+        );
     }
 }
