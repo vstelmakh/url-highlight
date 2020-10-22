@@ -4,9 +4,7 @@ namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use VStelmakh\UrlHighlight\Highlighter\MarkdownHighlighter;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Replacer\Replacer;
-use VStelmakh\UrlHighlight\Validator\Validator;
+use VStelmakh\UrlHighlight\Replacer\ReplacerFactory;
 
 class MarkdownHighlighterTest extends TestCase
 {
@@ -25,7 +23,8 @@ class MarkdownHighlighterTest extends TestCase
         string $expected
     ): void {
         $markdownHighlighter = new MarkdownHighlighter('http', $contentBefore, $contentAfter);
-        $actual = $markdownHighlighter->highlight($input, $this->createReplacer());
+        $replacer = ReplacerFactory::createReplacer();
+        $actual = $markdownHighlighter->highlight($input, $replacer);
 
         self::assertSame($expected, $actual);
     }
@@ -121,15 +120,5 @@ class MarkdownHighlighterTest extends TestCase
                 'Example text before <p>[http://example.com](http://example.com)</p> and after.',
             ],
         ];
-    }
-
-    /**
-     * @return Replacer
-     */
-    private function createReplacer(): Replacer
-    {
-        $validator = new Validator();
-        $matcher = new Matcher($validator);
-        return new Replacer($matcher);
     }
 }

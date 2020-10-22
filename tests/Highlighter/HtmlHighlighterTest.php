@@ -4,9 +4,7 @@ namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Replacer\Replacer;
-use VStelmakh\UrlHighlight\Validator\Validator;
+use VStelmakh\UrlHighlight\Replacer\ReplacerFactory;
 
 class HtmlHighlighterTest extends TestCase
 {
@@ -31,7 +29,8 @@ class HtmlHighlighterTest extends TestCase
         }
 
         $htmlHighlighter = new HtmlHighlighter('http', $attributes, $contentBefore, $contentAfter);
-        $actual = $htmlHighlighter->highlight($input, $this->createReplacer());
+        $replacer = ReplacerFactory::createReplacer();
+        $actual = $htmlHighlighter->highlight($input, $replacer);
 
         self::assertSame($expected, $actual);
     }
@@ -134,15 +133,5 @@ class HtmlHighlighterTest extends TestCase
                 '<div>Example text before <p>BEFORE <a href="http://example.com" rel="nofollow">http://example.com</a> AFTER</p> and <div><a href="http://example.com">http://example.com</a></div> after.</div>'
             ],
         ];
-    }
-
-    /**
-     * @return Replacer
-     */
-    private function createReplacer(): Replacer
-    {
-        $validator = new Validator();
-        $matcher = new Matcher($validator);
-        return new Replacer($matcher);
     }
 }

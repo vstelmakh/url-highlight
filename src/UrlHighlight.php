@@ -5,10 +5,9 @@ namespace VStelmakh\UrlHighlight;
 use VStelmakh\UrlHighlight\Encoder\EncoderInterface;
 use VStelmakh\UrlHighlight\Highlighter\HighlighterInterface;
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
-use VStelmakh\UrlHighlight\Matcher\EncodedMatcher;
-use VStelmakh\UrlHighlight\Matcher\Matcher;
+use VStelmakh\UrlHighlight\Matcher\MatcherFactory;
 use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
-use VStelmakh\UrlHighlight\Replacer\Replacer;
+use VStelmakh\UrlHighlight\Replacer\ReplacerFactory;
 use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
 use VStelmakh\UrlHighlight\Validator\Validator;
 use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
@@ -47,9 +46,8 @@ class UrlHighlight
         ?EncoderInterface $encoder = null
     ) {
         $validator = $validator ?? new Validator(true);
-        $matcher = new Matcher($validator);
-        $this->matcher = $encoder ? new EncodedMatcher($matcher, $encoder) : $matcher;
-        $this->replacer = new Replacer($this->matcher);
+        $this->matcher = MatcherFactory::createMatcher($validator, $encoder);
+        $this->replacer = ReplacerFactory::createReplacer($this->matcher);
         $this->highlighter = $highlighter ?? new HtmlHighlighter('http');
     }
 
