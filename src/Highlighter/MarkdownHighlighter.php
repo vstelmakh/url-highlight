@@ -4,7 +4,6 @@ namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
-use VStelmakh\UrlHighlight\Util\LinkHelper;
 
 class MarkdownHighlighter extends HtmlHighlighter
 {
@@ -58,14 +57,16 @@ class MarkdownHighlighter extends HtmlHighlighter
      */
     private function getMarkdownHighlight(UrlMatch $match): string
     {
-        $link = LinkHelper::getLink($match, $this->getDefaultScheme());
-        $fullMatchSafeBrackets = str_replace(['[', ']'], ['\\[', '\\]'], $match->getFullMatch());
+        $text = $this->getText($match);
+        $textSafeBrackets = str_replace(['[', ']'], ['\\[', '\\]'], $text);
+
+        $link = $this->getLink($match);
         $linkSafeBrackets = str_replace(['(', ')'], ['%28', '%29'], $link);
 
         return sprintf(
             '%s[%s](%s)%s',
             $this->getContentBefore($match),
-            $fullMatchSafeBrackets,
+            $textSafeBrackets,
             $linkSafeBrackets,
             $this->getContentAfter($match)
         );
