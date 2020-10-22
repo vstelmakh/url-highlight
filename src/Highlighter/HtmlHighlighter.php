@@ -112,7 +112,7 @@ class HtmlHighlighter implements HighlighterInterface
             '%s<a href="%s"%s>%s</a>%s',
             $this->getContentBefore($match),
             $linkSafeQuotes,
-            $this->attributes,
+            $this->getAttributes($match),
             $this->getText($match),
             $this->getContentAfter($match)
         );
@@ -148,6 +148,18 @@ class HtmlHighlighter implements HighlighterInterface
     protected function getText(UrlMatch $match): string
     {
         return $match->getFullMatch();
+    }
+
+    /**
+     * Additional link attributes <a href="#"{here}>...
+     * Consider to add leading space and escape quotes, tag brackets e.g. " < > etc.
+     *
+     * @param UrlMatch $match
+     * @return string
+     */
+    protected function getAttributes(UrlMatch $match): string
+    {
+        return $this->attributes;
     }
 
     /**
