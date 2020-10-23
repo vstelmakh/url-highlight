@@ -4,6 +4,7 @@ namespace VStelmakh\UrlHighlight\Highlighter;
 
 use InvalidArgumentException;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
 use VStelmakh\UrlHighlight\Util\LinkHelper;
 
 class HtmlHighlighter implements HighlighterInterface
@@ -19,40 +20,168 @@ class HtmlHighlighter implements HighlighterInterface
     private $attributes;
 
     /**
-     * @param string $defaultScheme Used to build href for urls matched without scheme
-     * @param array&string[] $attributes Key/value map of tag attributes
+     * @var string
      */
-    public function __construct(string $defaultScheme, array $attributes = [])
-    {
+    private $contentBefore;
+
+    /**
+     * @var string
+     */
+    private $contentAfter;
+
+    /**
+     * @param string $defaultScheme Used to build href for urls matched without scheme
+     * @param array&string[] $attributes Key/value map of tag attributes, e.g.: ['rel' => 'nofollow']
+     * @param string $contentBefore Content to add before highlight: {here}<a...
+     * @param string $contentAfter Content to add after highlight: ...</a>{here}
+     */
+    public function __construct(
+        string $defaultScheme = 'http',
+        array $attributes = [],
+        string $contentBefore = '',
+        string $contentAfter = ''
+    ) {
         $this->defaultScheme = $defaultScheme;
         $this->attributes = $this->buildAttributes($attributes);
+        $this->contentBefore = $contentBefore;
+        $this->contentAfter = $contentAfter;
+    }
+
+    /**
+     * Replace all valid matches by html <a> tags
+     * Additional filtering done here to avoid highlight in html tags or inside a tag content
+     *
+     * @param string $string
+     * @param ReplacerInterface $replacer
+     * @return string
+     */
+    public function highlight(string $string, ReplacerInterface $replacer): string
+    {
+        $result = '';
+        /** @var array&string[] $parts */
+        $parts = preg_split('/(<[^<>]+>)/u', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+        $isLinkContent = false;
+        foreach ($parts as $num => $part) {
+            $isTag = $num % 2 !== 0;
+
+            if ($isTag) {
+                $isOpenLinkTag = (bool) preg_match('/^<\s*a(?:\s|>)/iu', $part);
+                $isLinkContent = $isOpenLinkTag ? true : $isLinkContent;
+
+                if (!$isOpenLinkTag) {
+                    $isCloseLinkTag = (bool) preg_match('/<\s*\/\s*a\s*>$/iu', $part);
+                    $isLinkContent = $isCloseLinkTag ? false : $isLinkContent;
+                }
+            } elseif (!$isLinkContent) {
+                $part = $this->doHighlight($part, $replacer);
+            }
+
+            $result .= $part;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Use replacer with callable to highlight urls
+     * String input at this point is not html tag or a tag content and could be safely highlighted
+     *
+     * @param string $string
+     * @param ReplacerInterface $replacer
+     * @return string
+     */
+    protected function doHighlight(string $string, ReplacerInterface $replacer): string
+    {
+        return $replacer->replaceCallback($string, \Closure::fromCallable([$this, 'getMatchHighlight']));
     }
 
     /**
      * Return html link highlight
-     * Example: <a href="http://example.com">http://example.com</a>
+     * Example: {content before}<a href="http://example.com">http://example.com</a>{content after}
      *
      * @param UrlMatch $match
      * @return string
      */
-    public function getHighlight(UrlMatch $match): string
+    protected function getMatchHighlight(UrlMatch $match): string
     {
-        $link = LinkHelper::getLink($match, $this->defaultScheme);
+        $link = $this->getLink($match);
         $linkSafeQuotes = str_replace('"', '%22', $link);
-        return sprintf('<a href="%s"%s>%s</a>', $linkSafeQuotes, $this->attributes, $match->getFullMatch());
+
+        return sprintf(
+            '%s<a href="%s"%s>%s</a>%s',
+            $this->getContentBefore($match),
+            $linkSafeQuotes,
+            $this->getAttributes($match),
+            $this->getText($match),
+            $this->getContentAfter($match)
+        );
     }
 
     /**
-     * Filter highlight in tag attributes, e.g href, src... and in <a> tags text
+     * Link used in href attribute: <a href="{here}"...
      *
-     * @param string $string
+     * @param UrlMatch $match
      * @return string
      */
-    public function filterOverhighlight(string $string): string
+    protected function getLink(UrlMatch $match): string
     {
-        $string = $this->filterHighlightInTagAttributes($string);
-        $string = $this->filterHighlightInLinks($string);
-        return $string;
+        return LinkHelper::getLink($match, $this->getDefaultScheme());
+    }
+
+    /**
+     * Link default scheme. Used to build href attribute
+     *
+     * @return string
+     */
+    protected function getDefaultScheme(): string
+    {
+        return $this->defaultScheme;
+    }
+
+    /**
+     * Content used to display url: ...>{here}</a>
+     *
+     * @param UrlMatch $match
+     * @return string
+     */
+    protected function getText(UrlMatch $match): string
+    {
+        return $match->getFullMatch();
+    }
+
+    /**
+     * Additional link attributes <a href="#"{here}>...
+     * Consider to add leading space and escape quotes, tag brackets e.g. " < > etc.
+     *
+     * @param UrlMatch $match
+     * @return string
+     */
+    protected function getAttributes(UrlMatch $match): string
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Content before highlight: {here}<a...
+     *
+     * @param UrlMatch $match
+     * @return string
+     */
+    protected function getContentBefore(UrlMatch $match): string
+    {
+        return $this->contentBefore;
+    }
+
+    /**
+     * Content after highlight: ...</a>{here}
+     *
+     * @param UrlMatch $match
+     * @return string
+     */
+    protected function getContentAfter(UrlMatch $match): string
+    {
+        return $this->contentAfter;
     }
 
     /**
@@ -80,49 +209,5 @@ class HtmlHighlighter implements HighlighterInterface
             $result[] = sprintf('%s="%s"', $key, $valueSafeQuotes);
         }
         return empty($result) ? '' : ' ' . implode(' ', $result);
-    }
-
-    /**
-     * Filter a tags in html attributes
-     * Example: <a href="<a href="http://example.com">http://example.com</a>">http://example.com</a>
-     * Result: <a href="http://example.com">http://example.com</a>
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInTagAttributes(string $string): string
-    {
-        $regex = '/
-            (
-                <\w+\s[^>]+                              # tag start: "<tag"
-                \w\s?=\s?[\'"]                           # attribute start: "href=""
-            )
-            <a\s[^>]*href=[\'"].*[\'"][^>]*>([^<]*)<\/a> # html link: "<a href="#"><\/a>"
-            (
-                [\'"]                                    # attribute end: """
-                [^>]*>                                   # tag end: ">"
-            )
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
-    }
-
-    /**
-     * Filter a tags in a tags
-     * Example: <a href="#"><a href="http://example.com">http://example.com</a></a>
-     * Result: <a href="#"http://example.com">http://example.com</a>
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInLinks(string $string): string
-    {
-        $regex = '/
-            (<a[^>]*>)                 # parent tag start "<a"
-            <a[^>]*>([^<]*)<\s*\/\s*a> # child tag "<a><\/a>"
-            (<\s*\/\s*a>)              # parent tag end "<\/a>"
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
     }
 }

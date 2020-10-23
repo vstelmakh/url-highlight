@@ -109,6 +109,16 @@ class UrlHighlightTest extends TestCase
             ],
             [
                 null,
+                'With html <p>http://example.com and links <a href="http://example.com">http://example.com</a></p>',
+                'With html <p><a href="http://example.com">http://example.com</a> and links <a href="http://example.com">http://example.com</a></p>',
+            ],
+            [
+                null,
+                'With email user@example.com.',
+                'With email <a href="mailto:user@example.com">user@example.com</a>.',
+            ],
+            [
+                null,
                 '&lt;a href=&quot;http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt;',
                 '&lt;a href=&quot;<a href="http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt">http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt</a>;',
             ],
@@ -132,8 +142,8 @@ class UrlHighlightTest extends TestCase
 
         $highlighter = $this->createMock(HighlighterInterface::class);
         $highlighter
-            ->expects(self::atLeastOnce())
-            ->method('getHighlight');
+            ->expects(self::once())
+            ->method('highlight');
 
         $encoder = $this->createMock(EncoderInterface::class);
         $encoder
