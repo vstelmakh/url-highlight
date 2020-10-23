@@ -26,6 +26,18 @@ class UrlHighlightBench
      * @Revs(10)
      * @Iterations(5)
      */
+    public function benchHighlightHtml(): void
+    {
+        $urlHighlight = new UrlHighlight();
+
+        $input = file_get_contents(__DIR__ . '/input_html.txt');
+        $urlHighlight->highlightUrls($input);
+    }
+
+    /**
+     * @Revs(10)
+     * @Iterations(5)
+     */
     public function benchHighlightHtmlSpecialChars(): void
     {
         $urlHighlight = new UrlHighlight(null, null, new HtmlSpecialcharsEncoder());
