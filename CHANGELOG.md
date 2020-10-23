@@ -2,6 +2,12 @@
 All notable changes to this project documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
+### v3.0.0 (unreleased)
+- Refactored [HighlighterInterface](./src/Highlighter/HighlighterInterface.php) to be more flexible **\[BC break\]**
+  - Refactored [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php) to follow template method pattern (much easy to extend)
+  - Refactored [MarkdownHighlighter](./src/Highlighter/MarkdownHighlighter.php) to aware of HTML content (extends [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php))
+- Added [MatcherFactory](./src/Matcher/MatcherFactory.php) and [ReplacerFactory](./src/Replacer/ReplacerFactory.php)
+
 ### v2.3.0 (2020-09-24)
 - Added PHP 8 compatibility
 - Renamed class `VStelmakh\UrlHighlight\Matcher\Match` to `UrlMatch`
