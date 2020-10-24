@@ -2,9 +2,6 @@
 
 namespace VStelmakh\UrlHighlight\Replacer;
 
-/**
- * @internal
- */
 interface ReplacerInterface
 {
     /**
