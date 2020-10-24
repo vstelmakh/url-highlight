@@ -3,6 +3,7 @@
 .editorconfig export-ignore
 
 /.github export-ignore
+/docs export-ignore
 /resources export-ignore
 /tests export-ignore
 /benchmarks export-ignore
