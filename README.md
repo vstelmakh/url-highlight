@@ -125,8 +125,9 @@ $highlighter = new HtmlHighlighter(
 );
 $urlHighlight = new UrlHighlight(null, $highlighter);
 ```
-If you need custom behavior - extend [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php). It's highly customizable by variety of protected methods.  
-For completely custom highlighter - create and use your own highlighter implementing [HighlighterInterface](./src/Highlighter/HighlighterInterface.php).  
+
+If you need custom behavior - extend [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php) or implement [HighlighterInterface](./src/Highlighter/HighlighterInterface.php).  
+See [Creating custom highlighter](./docs/highlighter-custom.md) for details and examples.  
 
 ### Encoder
 Encoder should be used to handle encoded input properly. For example HTML escaped string could contain something
