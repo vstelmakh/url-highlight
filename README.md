@@ -16,6 +16,8 @@ Features:
 - Extract URLs from string
 - Check if string is URL
 
+[🚀 See examples 👀](./docs/examples.md)
+
 ## Installation
 Install the latest version with [Composer](https://getcomposer.org/):  
 ```bash
@@ -39,7 +41,8 @@ echo $urlHighlight->highlightUrls('Hello, http://example.com.');
 // Hello, <a href="http://example.com">http://example.com</a>.
 ```
 
-To properly handle HTML entity escaped string, see [Encoder](#encoder).
+> 💡 **Tip**: For customizing highlight see [Highlighter](#highlighter).
+> To properly handle HTML entity escaped string see [Encoder](#encoder).
 
 ## Usage
 #### Check if string is URL
@@ -83,9 +86,11 @@ $urlHighlight = new UrlHighlight($validator, null, $encoder);
 ```
 
 ### Validator
-There is one validator bundled with the library. Which is used by default with settings listed below.  
-Create validator instance to define different properties:
+There is one validator bundled with the library. Which is used by default with settings listed in example below.  
 
+<details>
+    <summary>🛠️ Validator usage example</summary>
+  
 ```php
 <?php
 use VStelmakh\UrlHighlight\UrlHighlight;
@@ -99,18 +104,22 @@ $validator = new Validator(
 );
 $urlHighlight = new UrlHighlight($validator);
 ```
-If you need custom behavior - create and use your own validator implementing [ValidatorInterface](./src/Validator/ValidatorInterface.php).  
+</details>
+
+> 💡 **Tip**: If you need custom behavior - create and use your own validator implementing [ValidatorInterface](./src/Validator/ValidatorInterface.php).  
 
 ### Highlighter
 There are 2 highlighters bundled with the library:
-- `HtmlHighlighter` - converts matches to html tags.  
+- [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php) - convert matches to html tags.  
     Example: `http://example.com` &rarr; `<a href="http://example.com">http://example.com</a>`
-- `MarkdownHighlighter` - converts matches to markdown format.  
+    
+- [MarkdownHighlighter](./src/Highlighter/MarkdownHighlighter.php) - convert matches to markdown format.  
     Example: `http://example.com` &rarr; `[http://example.com](http://example.com)`
 
-By default, `HtmlHighlighter` is used, with settings listed below.  
+By default, `HtmlHighlighter` is used, with settings listed in example below.  
 
-Highlighter usage example:  
+<details>
+    <summary>🛠️ Highlighter usage example</summary>
 
 ```php
 <?php
@@ -125,18 +134,21 @@ $highlighter = new HtmlHighlighter(
 );
 $urlHighlight = new UrlHighlight(null, $highlighter);
 ```
-If you need custom behavior - extend [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php). It's highly customizable by variety of protected methods.  
-For completely custom highlighter - create and use your own highlighter implementing [HighlighterInterface](./src/Highlighter/HighlighterInterface.php).  
+</details>
+
+> 💡 **Tip**: If you need custom behavior - extend [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php) or implement [HighlighterInterface](./src/Highlighter/HighlighterInterface.php).  
+> For more details and examples see [Creating custom highlighter](./docs/highlighter-custom.md).  
 
 ### Encoder
 Encoder should be used to handle encoded input properly. For example HTML escaped string could contain something
 like: `http://example.com?a=1&quot;` or `http://example.com?a=1&amp;b=2` which will be wrongly matched as URL.
 
 By default, there is no encoder used. There are 2 encoders bundled with library:
-- `HtmlEntitiesEncoder` - to work with HTML entities encoded string (any character expected to be HTML entity encoded)
-- `HtmlSpecialcharsEncoder` - to work with HTML escaped string (only `&` `"` `'` `<` `>` expected to be encoded)
+- [HtmlEntitiesEncoder](./src/Encoder/HtmlEntitiesEncoder.php) - to work with HTML entities encoded string (any character expected to be HTML entity encoded)
+- [HtmlSpecialcharsEncoder](./src/Encoder/HtmlSpecialcharsEncoder.php) - to work with HTML escaped string (only `&` `"` `'` `<` `>` expected to be encoded)
 
-Encoder usage example:
+<details>
+    <summary>🛠️ Encoder usage example</summary>
 
 ```php
 <?php
@@ -149,9 +161,11 @@ $urlHighlight = new UrlHighlight(null, null, $encoder);
 $urlHighlight->highlightUrls('&lt;a href=&quot;http://example.com&quot;&gt;Example&lt;/a&gt;');
 // return: '&lt;a href=&quot;<a href="http://example.com">http://example.com</a>&quot;&gt;Example&lt;/a&gt;'
 ```
-If you need custom behavior - create and use your own encoder implementing [EncoderInterface](./src/Encoder/EncoderInterface.php).  
-Keep in mind - using **encoder require more regex operations and could have performance impact**.
-Better to not use encoder if you don't expect encoded string.
+</details>
+
+> 💡 **Tip**: For custom behavior - create and use your own encoder implementing [EncoderInterface](./src/Encoder/EncoderInterface.php).  
+> Keep in mind - using **encoder require more regex operations and could have performance impact**.
+> Better to not use encoder if you don't expect encoded string.
 
 ## Credits
 [Volodymyr Stelmakh](https://github.com/vstelmakh)  
