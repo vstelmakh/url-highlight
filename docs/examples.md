@@ -10,20 +10,20 @@ Generic examples of Url highlight capabilities.
 ## Quick example
 
 **Input:**  
-The main purpose of this library is to linkify urls in string input. The easiest case would be url with scheme like http&#x3A;//example&#x2E;com.
-Without scheme example&#x2E;com - also works fine, but not for example.txt. You want to know what about punctuation. 
-If this highlighted properly: http&#x3A;//example&#x2E;com? It is! Also, it takes care about brackets. So enclosed urls looks fine 
-(http&#x3A;//example&#x2E;com/path_with_(brackets)). Of course, it supports emails user@example&#x2E;com. In real life  
-there is urls like this one: http&#x3A;//elk.example&#x2E;com:81/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:'deve-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!('@timestamp',desc)) 
-from ELK. As you see, it also works fine. Yes, it supports HTML and HTML escaped input, see examples bellow.
+The main purpose of this library is to linkify urls in string input. The easiest case would be url with scheme like http&#65279;://example.com.
+Without scheme example.com - also works fine, but not for example.txt. You want to know what about punctuation. 
+If this highlighted properly: http&#65279;://example.com? It is! Also, it takes care about brackets. So enclosed urls looks fine 
+(http&#65279;://example.com/path_with_(brackets)). Of course, it supports emails user@&#65279;example.com. In real life 
+there is urls like this one: http&#65279;://elk.example.com:81/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:'deve-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!('@timestamp',desc)) 
+from ELK. As you see, it also works fine. Yes, it supports HTML and HTML encoded input, see examples bellow.
 
 **Result:**  
 The main purpose of this library is to linkify urls in string input. The easiest case would be url with scheme like <a href="http://example.com" rel="nofollow">http://example.com</a>.
 Without scheme <a href="http://example.com" rel="nofollow">example.com</a> - also works fine, but not for example.txt. You want to know what about punctuation. 
 If this highlighted properly: <a href="http://example.com" rel="nofollow">http://example.com</a>? It is! Also, it takes care about brackets. So enclosed urls looks fine 
-(<a href="http://example.com/path_with_(brackets)" rel="nofollow">http://example.com/path_with_(brackets)</a>). Of course, it supports emails <a href="mailto:user@example.com" rel="nofollow">user@example.com</a>. In real life  
+(<a href="http://example.com/path_with_(brackets)" rel="nofollow">http://example.com/path_with_(brackets)</a>). Of course, it supports emails <a href="mailto:user@example.com" rel="nofollow">user@example.com</a>. In real life 
 there is urls like this one: <a href="http://elk.example.com:81/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:'deve-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!('@timestamp',desc))" rel="nofollow">http://elk.example.com:81/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:'deve-*',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!('@timestamp',desc))</a> 
-from ELK. As you see, it also works fine. Yes, it supports HTML and HTML escaped input, see examples bellow.
+from ELK. As you see, it also works fine. Yes, it supports HTML and HTML encoded input, see examples bellow.
 
 ## Specific cases
 
