@@ -16,6 +16,8 @@ Features:
 - Extract URLs from string
 - Check if string is URL
 
+[🚀 See examples 👀](./docs/examples.md)
+
 ## Installation
 Install the latest version with [Composer](https://getcomposer.org/):  
 ```bash
