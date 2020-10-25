@@ -29,10 +29,10 @@ class Validator implements ValidatorInterface
     private $matchEmails;
 
     /**
-     * @param bool $matchByTLD
-     * @param array&string[] $schemeBlocklist
-     * @param array&string[] $schemeAllowlist
-     * @param bool $matchEmails
+     * @param bool $matchByTLD Should use top level domain to match urls without scheme
+     * @param array&string[] $schemeBlocklist Blocklisted url schemes
+     * @param array&string[] $schemeAllowlist Allowlisted url schemes (explicitly allowed)
+     * @param bool $matchEmails Should match emails (if match by TLD set to "false" - will match only "mailto" urls)
      */
     public function __construct(
         bool $matchByTLD = true,

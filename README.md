@@ -98,8 +98,8 @@ use VStelmakh\UrlHighlight\Validator\Validator;
 
 $validator = new Validator(
     true, // bool - if should use top level domain to match urls without scheme
-    [],   // string[] - array of blacklisted schemes
-    [],   // string[] - array of whitelisted schemes
+    [],   // string[] - array of blocklisted schemes
+    [],   // string[] - array of allowlisted schemes (explicitly allowed)
     true  // bool - if should match emails (if match by TLD set to "false" - will match only "mailto" urls)
 );
 $urlHighlight = new UrlHighlight($validator);
