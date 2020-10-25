@@ -16,12 +16,12 @@ class Validator implements ValidatorInterface
     /**
      * @var CaseInsensitiveSet
      */
-    private $schemeBlacklist;
+    private $schemeBlocklist;
 
     /**
      * @var CaseInsensitiveSet
      */
-    private $schemeWhitelist;
+    private $schemeAllowlist;
 
     /**
      * @var bool
@@ -30,19 +30,19 @@ class Validator implements ValidatorInterface
 
     /**
      * @param bool $matchByTLD
-     * @param array&string[] $schemeBlacklist
-     * @param array&string[] $schemeWhitelist
+     * @param array&string[] $schemeBlocklist
+     * @param array&string[] $schemeAllowlist
      * @param bool $matchEmails
      */
     public function __construct(
         bool $matchByTLD = true,
-        array $schemeBlacklist = [],
-        array $schemeWhitelist = [],
+        array $schemeBlocklist = [],
+        array $schemeAllowlist = [],
         bool $matchEmails = true
     ) {
         $this->matchByTLD = $matchByTLD;
-        $this->schemeBlacklist = new CaseInsensitiveSet($schemeBlacklist);
-        $this->schemeWhitelist = new CaseInsensitiveSet($schemeWhitelist);
+        $this->schemeBlocklist = new CaseInsensitiveSet($schemeBlocklist);
+        $this->schemeAllowlist = new CaseInsensitiveSet($schemeAllowlist);
         $this->matchEmails = $matchEmails;
     }
 
@@ -88,9 +88,9 @@ class Validator implements ValidatorInterface
      */
     private function isAllowedScheme(string $scheme): bool
     {
-        $isAllowedByBlacklist = !$this->schemeBlacklist->contains($scheme);
-        $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->contains($scheme);
-        return $isAllowedByBlacklist && $isAllowedByWhitelist;
+        $isAllowedByBlocklist = !$this->schemeBlocklist->contains($scheme);
+        $isAllowedByAllowlist = $this->schemeAllowlist->isEmpty() || $this->schemeAllowlist->contains($scheme);
+        return $isAllowedByBlocklist && $isAllowedByAllowlist;
     }
 
     /**
