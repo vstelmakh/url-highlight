@@ -12,21 +12,21 @@ class ValidatorTest extends TestCase
      * @dataProvider isValidMatchDataProvider
      *
      * @param bool $matchByTLD
-     * @param array|string[] $schemeBlacklist
-     * @param array|string[] $schemeWhitelist
+     * @param array|string[] $schemeBlocklist
+     * @param array|string[] $schemeAllowlist
      * @param bool $matchEmails
      * @param UrlMatch $match
      * @param bool $expected
      */
     public function testIsValidMatch(
         bool $matchByTLD,
-        array $schemeBlacklist,
-        array $schemeWhitelist,
+        array $schemeBlocklist,
+        array $schemeAllowlist,
         bool $matchEmails,
         UrlMatch $match,
         bool $expected
     ): void {
-        $validator = new Validator($matchByTLD, $schemeBlacklist, $schemeWhitelist, $matchEmails);
+        $validator = new Validator($matchByTLD, $schemeBlocklist, $schemeAllowlist, $matchEmails);
         $actual = $validator->isValidMatch($match);
         self::assertEquals($expected, $actual, 'Dataset: ' . json_encode(func_get_args()));
     }
