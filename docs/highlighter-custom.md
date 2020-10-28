@@ -2,7 +2,11 @@
 
 ---
 
-# Creating custom highlighter
+# Custom highlighter
+- [Extending `HtmlHighlighter`](#extending-htmlhighlighter)
+- [Implementing `HighlighterInterface`](#implementing-highlighterinterface)
+- [Testing custom highlighter](#testing-custom-highlighter)
+
 If you need more than just replace links by html tags.
 There are 2 options available for your choice:
 - Extend [HtmlHighlighter](../src/Highlighter/HtmlHighlighter.php), bundled with library. 
@@ -16,7 +20,7 @@ There are 2 options available for your choice:
 In most of the cases it would be enough to extend [HtmlHighlighter](../src/Highlighter/HtmlHighlighter.php).
 It's highly customizable providing variety of protected methods which gives ability to change any part of highlighting process.
 
-### Example
+#### Example
 Let's say you want to display only hostname as link text and add `nofollow` attribute for external websites.  
 To achieve this, you need is to create custom highlighter and override 2 methods:
 
@@ -75,9 +79,9 @@ This way is more complicated, but gives you ability to create completely custom 
 > 💡 **Tip**: If you need custom highligter aware of HTML syntax, you could extend [HtmlHighlighter](../src/Highlighter/HtmlHighlighter.php),
 > but completely change highlighting logic. See [MarkdownHighlighter](../src/Highlighter/MarkdownHighlighter.php) for example.
 
-### Example
+#### Example
 
-Foe example you want to remove all the urls from string input:
+For example, you want to remove all the urls from string input:
 
 ```php
 <?php
@@ -116,3 +120,39 @@ echo $urlHighlight->highlightUrls('Visit http://example.com and http://example2.
 // Output:
 // Visit %censored% and %censored%.
 ```
+
+## Testing custom highlighter
+To test `HighlighterInterface::highlight()` you need to provide 2 arguments: input `string` and instance of [ReplacerInterface](../src/Replacer/ReplacerInterface.php).
+Find a test string is simple, but for [ReplacerInterface](../src/Replacer/ReplacerInterface.php) you need a real object or mock.
+That's the point where it could be confusing.
+
+Mocking [ReplacerInterface](../src/Replacer/ReplacerInterface.php) is not easy and unnecessary.
+Use [ReplacerFactory](../src/Replacer/ReplacerFactory.php) to get a real object implementing [ReplacerInterface](../src/Replacer/ReplacerInterface.php).
+It's simple and gives you same behaviour as Url highlight library do.
+So you can focus on testing your custom highlighter logic, instead of building complex mocks.
+
+#### Example
+
+```php
+<?php
+
+use PHPUnit\Framework\TestCase;
+use VStelmakh\UrlHighlight\Replacer\ReplacerFactory;
+
+class CustomHighlighterTest extends TestCase
+{
+    public function testHighlight(): void
+    {
+        $input = 'http://exmple.com';
+        $expected = '<a href="http://exmple.com">http://exmple.com</a>';
+
+        $htmlHighlighter = new CustomHighlighter();
+        $replacer = ReplacerFactory::createReplacer();
+        $actual = $htmlHighlighter->highlight($input, $replacer);
+
+        self::assertSame($expected, $actual);
+    }
+}
+```
+> 💡 **Tip**: See [HtmlHighlighterTest](../tests/Highlighter/HtmlHighlighterTest.php) and
+> [MarkdownHighlighterTest](../tests/Highlighter/MarkdownHighlighterTest.php) for additional examples.
