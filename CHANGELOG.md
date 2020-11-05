@@ -2,7 +2,7 @@
 All notable changes to this project documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
-### v3.0.0 (unreleased)
+### v3.0.0 (2020-11-05)
 - Refactored [HighlighterInterface](./src/Highlighter/HighlighterInterface.php) to be more flexible **\[BC break\]**
   - Refactored [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php) to follow template method pattern (much easy to extend)
   - Refactored [MarkdownHighlighter](./src/Highlighter/MarkdownHighlighter.php) to aware of HTML content (extends [HtmlHighlighter](./src/Highlighter/HtmlHighlighter.php))
