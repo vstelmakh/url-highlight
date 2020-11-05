@@ -3,21 +3,49 @@
 namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
-use VStelmakh\UrlHighlight\Util\LinkHelper;
+use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
 
-class MarkdownHighlighter implements HighlighterInterface
+class MarkdownHighlighter extends HtmlHighlighter
 {
     /**
-     * @var string
+     * @param string $defaultScheme Used to build link for urls matched without scheme
+     * @param string $contentBefore Content to add before highlight: {here}[...
+     * @param string $contentAfter Content to add after highlight: ...){here}
      */
-    private $defaultScheme;
+    public function __construct(string $defaultScheme = 'http', string $contentBefore = '', string $contentAfter = '')
+    {
+        parent::__construct($defaultScheme, [], $contentBefore, $contentAfter);
+    }
 
     /**
-     * @param string $defaultScheme Used to build link for urls matched without scheme
+     * Replace all valid matches by markdown links
+     * Additional filtering done here to avoid highlight in existing markdown links
+     *
+     * @param string $string
+     * @param ReplacerInterface $replacer
+     * @return string
      */
-    public function __construct(string $defaultScheme = 'http')
+    protected function doHighlight(string $string, ReplacerInterface $replacer): string
     {
-        $this->defaultScheme = $defaultScheme;
+        $result = '';
+        $regex = '/(
+            \[.+\]\([^\(\)]+\)       # markdown link
+            |                        # or
+            (?:^|\s+)\[.+\]:\s*\S+   # markdown link reference
+            |                        # or
+            (?:^|\s+)\[.+\](?:$|\s+) # markdown link short
+        )/ux';
+
+        /** @var array&string[] $parts */
+        $parts = preg_split($regex, $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+        foreach ($parts as $num => $part) {
+            $isMarkdownLink = $num % 2 !== 0;
+            $result .= $isMarkdownLink
+                ? $part
+                : $replacer->replaceCallback($part, \Closure::fromCallable([$this, 'getMarkdownHighlight']));
+        }
+
+        return $result;
     }
 
     /**
@@ -27,70 +55,20 @@ class MarkdownHighlighter implements HighlighterInterface
      * @param UrlMatch $match
      * @return string
      */
-    public function getHighlight(UrlMatch $match): string
+    private function getMarkdownHighlight(UrlMatch $match): string
     {
-        $link = LinkHelper::getLink($match, $this->defaultScheme);
-        $fullMatchSafeBrackets = str_replace(['[', ']'], ['\\[', '\\]'], $match->getFullMatch());
+        $text = $this->getText($match);
+        $textSafeBrackets = str_replace(['[', ']'], ['\\[', '\\]'], $text);
+
+        $link = $this->getLink($match);
         $linkSafeBrackets = str_replace(['(', ')'], ['%28', '%29'], $link);
-        return sprintf('[%s](%s)', $fullMatchSafeBrackets, $linkSafeBrackets);
-    }
 
-    /**
-     * Filter highlight in markdown links
-     *
-     * @param string $string
-     * @return string
-     */
-    public function filterOverhighlight(string $string): string
-    {
-        $string = $this->filterHighlightInText($string);
-        $string = $this->filterHighlightInLink($string);
-        return $string;
-    }
-
-    /**
-     * Filter markdown link inside markdown link text
-     * Example: [[http://example.com](http://example.com)](http://example.com)
-     * Result: [http://example.com](http://example.com)
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInText(string $string): string
-    {
-        $regex = '/
-            (
-                \[               # text start
-            )
-            \[(.+)\]\([^\(\)]+\) # markdown link (capture text)
-            (
-                \]\(.+\)         # text end with following link
-            )
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
-    }
-
-    /**
-     * Filter markdown link inside markdown link
-     * Example: [http://example.com]([http://example.com](http://example.com))
-     * Result: [http://example.com](http://example.com)
-     *
-     * @param string $string
-     * @return string
-     */
-    private function filterHighlightInLink(string $string): string
-    {
-        $regex = '/
-            (
-                \]\(             # link start, prefixed with text
-            )
-            \[.+\]\(([^\(\)]+)\) # markdown link (capture link)
-            (
-                \)               # link end
-            )
-        /ixuU';
-
-        return preg_replace($regex, '$1$2$3', $string) ?? $string;
+        return sprintf(
+            '%s[%s](%s)%s',
+            $this->getContentBefore($match),
+            $textSafeBrackets,
+            $linkSafeBrackets,
+            $this->getContentAfter($match)
+        );
     }
 }

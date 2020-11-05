@@ -4,94 +4,120 @@ namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use VStelmakh\UrlHighlight\Highlighter\MarkdownHighlighter;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VStelmakh\UrlHighlight\Replacer\ReplacerFactory;
 
 class MarkdownHighlighterTest extends TestCase
 {
     /**
-     * @dataProvider getHighlightDataProvider
+     * @dataProvider highlightDataProvider
      *
-     * @param UrlMatch $match
-     * @param string|null $expected
-     */
-    public function testGetHighlight(UrlMatch $match, ?string $expected): void
-    {
-        $markdownHighlighter = new MarkdownHighlighter('http');
-        $actual = $markdownHighlighter->getHighlight($match);
-        self::assertSame($expected, $actual);
-    }
-
-    /**
-     * @return array&array[]
-     */
-    public function getHighlightDataProvider(): array
-    {
-        return [
-            [
-                new UrlMatch('http://example.com', 0, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
-                '[http://example.com](http://example.com)',
-            ],
-            [
-                new UrlMatch('example.com', 0, 'example.com', null, null, 'example.com', 'com', null, null),
-                '[example.com](http://example.com)',
-            ],
-            [
-                new UrlMatch('mailto:user@example.com', 0, 'mailto:user@example.com', 'mailto', 'user', 'example.com', 'com', null, null),
-                '[mailto:user@example.com](mailto:user@example.com)',
-            ],
-            [
-                new UrlMatch('user@example.com', 0, 'user@example.com', null, 'user', 'example.com', 'com', null, null),
-                '[user@example.com](mailto:user@example.com)',
-            ],
-            [
-                new UrlMatch('http://example.com/brackets[is]here', 0, 'http://example.com/brackets[is]here', 'http', null, 'example.com', 'com', null, '/brackets[is]here'),
-                '[http://example.com/brackets\[is\]here](http://example.com/brackets[is]here)',
-            ],
-            [
-                new UrlMatch('http://example.com/brackets(is)here', 0, 'http://example.com/brackets(is)here', 'http', null, 'example.com', 'com', null, '/brackets(is)here'),
-                '[http://example.com/brackets(is)here](http://example.com/brackets%28is%29here)',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider filterOverhighlightDataProvider
-     *
-     * @param string $string
+     * @param string $input
+     * @param string $contentBefore
+     * @param string $contentAfter
      * @param string $expected
      */
-    public function testFilterOverhighlight(string $string, string $expected): void
-    {
-        $htmlHighlighter = new MarkdownHighlighter('http');
-        $actual = $htmlHighlighter->filterOverhighlight($string);
+    public function testHighlight(
+        string $input,
+        string $contentBefore,
+        string $contentAfter,
+        string $expected
+    ): void {
+        $markdownHighlighter = new MarkdownHighlighter('http', $contentBefore, $contentAfter);
+        $replacer = ReplacerFactory::createReplacer();
+        $actual = $markdownHighlighter->highlight($input, $replacer);
+
         self::assertSame($expected, $actual);
     }
 
     /**
      * @return array&array[]
      */
-    public function filterOverhighlightDataProvider(): array
+    public function highlightDataProvider(): array
     {
         return [
             [
-                'Hello, [http://example.com](http://example.com).',
-                'Hello, [http://example.com](http://example.com).',
+                'Example text',
+                '',
+                '',
+                'Example text',
             ],
             [
-                'Hello, [[http://example.com](http://example.com)](http://example.com).',
-                'Hello, [http://example.com](http://example.com).',
+                'Example text before http://example.com and after.',
+                '',
+                '',
+                'Example text before [http://example.com](http://example.com) and after.',
             ],
             [
-                'Hello, [http://example.com]([http://example.com](http://example.com)).',
-                'Hello, [http://example.com](http://example.com).',
+                'Example text before example.com and after.',
+                '',
+                '',
+                'Example text before [example.com](http://example.com) and after.',
             ],
             [
-                'Hello, [[http://example.com](http://example.com)]([http://example.com](http://example.com)).',
-                'Hello, [http://example.com](http://example.com).',
+                'Example text before mailto:user@example.com and after.',
+                '',
+                '',
+                'Example text before [mailto:user@example.com](mailto:user@example.com) and after.',
             ],
             [
-                'Hello, [[http://example.com/brackets\[is\]here](http://example.com/brackets[is]here)]([http://example.com/brackets\[is\]here](http://example.com/brackets[is]here)).',
-                'Hello, [http://example.com/brackets\[is\]here](http://example.com/brackets[is]here).',
+                'Example text before user@example.com and after.',
+                '',
+                '',
+                'Example text before [user@example.com](mailto:user@example.com) and after.',
+            ],
+            [
+                'Example text before http://example.com/brackets[is]here and after.',
+                '',
+                '',
+                'Example text before [http://example.com/brackets\[is\]here](http://example.com/brackets[is]here) and after.',
+            ],
+            [
+                'Example text before http://example.com/brackets(is)here and after.',
+                '',
+                '',
+                'Example text before [http://example.com/brackets(is)here](http://example.com/brackets%28is%29here) and after.',
+            ],
+            [
+                'Example text before http://example.com and after.',
+                'BEFORE ',
+                ' AFTER',
+                'Example text before BEFORE [http://example.com](http://example.com) AFTER and after.'
+            ],
+            [
+                'Example text before <a href="http://example.com">http://example.com</a> and after.',
+                '',
+                '',
+                'Example text before <a href="http://example.com">http://example.com</a> and after.',
+            ],
+            [
+                'Example text before [http://example.com](http://example.com) and after.',
+                '',
+                '',
+                'Example text before [http://example.com](http://example.com) and after.',
+            ],
+            [
+                'Example text before [http://example.com] and after.',
+                '',
+                '',
+                'Example text before [http://example.com] and after.',
+            ],
+            [
+                'Example text before [example.com]: http://example.com and after.',
+                '',
+                '',
+                'Example text before [example.com]: http://example.com and after.',
+            ],
+            [
+                'Example text before <a href="mailto:user@example.com">contact user@example.com for help</a> and after.',
+                '',
+                '',
+                'Example text before <a href="mailto:user@example.com">contact user@example.com for help</a> and after.',
+            ],
+            [
+                'Example text before <p>http://example.com</p> and after.',
+                '',
+                '',
+                'Example text before <p>[http://example.com](http://example.com)</p> and after.',
             ],
         ];
     }

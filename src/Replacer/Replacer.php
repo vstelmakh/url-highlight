@@ -32,7 +32,7 @@ class Replacer implements ReplacerInterface
 
         $matches = $this->matcher->matchAll($string);
         foreach ($matches as $match) {
-            $replacement = $callback($match, $match->getFullMatch());
+            $replacement = $callback($match);
             $position = $match->getByteOffset() + $offset;
             $length = strlen($match->getFullMatch());
             $string = substr_replace($string, $replacement, $position, $length);
