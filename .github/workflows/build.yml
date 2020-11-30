@@ -10,8 +10,11 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php: ['7.1', '7.4']
+                php: ['7.1', '7.4', '8.0']
                 composer: ['--prefer-lowest', '']
+                exclude:
+                    - php: '8.0'
+                      composer: '--prefer-lowest'
         steps:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -62,48 +65,3 @@ jobs:
                 run: composer run-script test:phpbench
                 if: (success() || failure()) && matrix.composer != '--prefer-lowest'
                 # Skip for prefer lowest as it throws error on PHP 7.4. See: https://bugs.php.net/bug.php?id=78482
-
-    # Separate build, as not all the tools works on PHP8 for now
-    build-php8:
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: '8.0'
-                    extensions: dom, json, mbstring, libxml
-                    coverage: xdebug
-
-            -   name: Git checkout
-                uses: actions/checkout@v2
-
-            -   name: Validate composer.json and composer.lock
-                run: composer validate
-
-            -   name: Prepare Composer cache vars
-                id: composer
-                run: |
-                    echo "::set-output name=cache_dir::$(composer config cache-files-dir)"
-                    echo "::set-output name=cache_key::$(date +'%Y-%m-%d')-${{ runner.os }}-8.0-composer-"
-
-            -   name: Cache Composer dependencies
-                uses: actions/cache@v2
-                with:
-                    path: ${{ steps.composer.outputs.cache_dir }}
-                    key: ${{ steps.composer.outputs.cache_key }}${{ hashFiles('**/composer.json') }}
-                    restore-keys: ${{ steps.composer.outputs.cache_key }}
-
-            -   name: Update Composer dependencies (ignore platform requirements)
-                run: composer update --prefer-dist --no-progress --no-suggest --no-interaction --ignore-platform-reqs
-
-            -   name: Run PHP Code Sniffer
-                run: composer run-script test:phpcs
-                if: success()
-
-            -   name: Run PHPStan
-                run: composer run-script test:phpstan
-                if: success() || failure()
-
-            -   name: Run PHPUnit (no coverage)
-                run: composer run-script test:phpunit
-                if: success() || failure()

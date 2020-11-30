@@ -21,8 +21,8 @@
         "phpunit/phpunit": "^7.5.3 || ^8 || ^9",
         "phpstan/phpstan": "^0.12",
         "squizlabs/php_codesniffer": "^3.5",
-        "vstelmakh/covelyzer": "^0.1",
-        "phpbench/phpbench": "^0.16 || ^0.17"
+        "vstelmakh/covelyzer": "^0.2",
+        "phpbench/phpbench": "^0.16 || ^0.17 || ^1.0.0-alpha3"
     },
     "autoload": {
         "psr-4": {
@@ -41,8 +41,7 @@
         "test:phpunit": "vendor/bin/phpunit --colors=always",
 
         "test:phpunit-coverage": [
-            "@test:phpunit --dump-xdebug-filter var/xdebug-filter.php",
-            "@test:phpunit --prepend var/xdebug-filter.php --coverage-clover var/coverage.xml"
+            "@test:phpunit --coverage-clover var/coverage.xml"
         ],
         "test:covelyzer": "vendor/bin/covelyzer var/coverage.xml --ansi",
 
