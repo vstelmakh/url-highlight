@@ -11,7 +11,7 @@ If you need more than just replace links by html tags.
 There are 2 options available for your choice:
 - Extend [HtmlHighlighter](../src/Highlighter/HtmlHighlighter.php), bundled with library. 
 - Create highlighter implementing [HighlighterInterface](../src/Highlighter/HighlighterInterface.php).
-  More flexibility, could be complicated.
+  Gives more flexibility, but could be complicated.
 
 > 💡 **Tip**: Check [HtmlHighlighter](../src/Highlighter/HtmlHighlighter.php) constructor.
 > There is simple configuration available, possibly covering your case.
@@ -22,7 +22,7 @@ It's highly customizable providing variety of protected methods which gives abil
 
 #### Example
 Let's say you want to display only hostname as link text and add `nofollow` attribute for external websites.  
-To achieve this, you need is to create custom highlighter and override 2 methods:
+To achieve this, you need is to create a custom highlighter and override 2 methods:
 
 ```php
 <?php
@@ -73,7 +73,7 @@ It's well documented in doc-blocks itself.
 ## Implementing `HighlighterInterface`
 
 If you need completely custom behaviour or need to highlight urls using not HTML syntax - implementing `HighlighterInterface`
-could be the option for you.
+could be the option in this case.
 This way is more complicated, but gives you ability to create completely custom behaviour.
 
 > 💡 **Tip**: If you need custom highligter aware of HTML syntax, you could extend [HtmlHighlighter](../src/Highlighter/HtmlHighlighter.php),
@@ -81,7 +81,7 @@ This way is more complicated, but gives you ability to create completely custom 
 
 #### Example
 
-For example, you want to remove all the urls from string input:
+For example, you want to hide all the urls from string input:
 
 ```php
 <?php
@@ -123,7 +123,7 @@ echo $urlHighlight->highlightUrls('Visit http://example.com and http://example2.
 
 ## Testing custom highlighter
 To test `HighlighterInterface::highlight()` you need to provide 2 arguments: input `string` and instance of [ReplacerInterface](../src/Replacer/ReplacerInterface.php).
-Find a test string is simple, but for [ReplacerInterface](../src/Replacer/ReplacerInterface.php) you need a real object or mock.
+Usually there is no problem to find a test string, but for [ReplacerInterface](../src/Replacer/ReplacerInterface.php) you need a real object or mock.
 That's the point where it could be confusing.
 
 Mocking [ReplacerInterface](../src/Replacer/ReplacerInterface.php) is not easy and unnecessary.
