@@ -53,6 +53,20 @@ jobs:
                 run: composer run-script test:phpstan
                 if: success() || failure()
 
+            # Remove after drop PHPUnit version < 9.3 support
+            -   name: Select PHPUnit config
+                run: |
+                    PHPUNIT_VERSION=$(composer show phpunit/phpunit | grep -oP "versions : \* \K.+")
+                    PHPUNIT_VERSION_MAJOR=$(echo $PHPUNIT_VERSION | grep -oP "^\d+")
+                    PHPUNIT_VERSION_MINOR=$(echo $PHPUNIT_VERSION | grep -oP "\d+\.\K\d+")
+                    echo "PHPUnit version: $PHPUNIT_VERSION"
+                    if [[ $PHPUNIT_VERSION_MAJOR -lt 9 || ( $PHPUNIT_VERSION_MAJOR -eq 9 && $PHPUNIT_VERSION_MINOR -lt 3 ) ]]; then
+                    	echo "Using deprecated config: \"phpunit.xml.deprecated\""
+                    	mv phpunit.xml.deprecated phpunit.xml
+                    else
+                        echo "Using regular config: \"phpunit.xml\""
+                    fi
+
             -   name: Run PHPUnit with coverage
                 run: composer run-script test:phpunit-coverage
                 if: success() || failure()
