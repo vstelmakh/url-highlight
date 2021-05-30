@@ -77,5 +77,5 @@ jobs:
 
             -   name: Run PHPBench
                 run: composer run-script test:phpbench
-                if: (success() || failure()) && matrix.composer != '--prefer-lowest'
-                # Skip for prefer lowest as it throws error on PHP 7.4. See: https://bugs.php.net/bug.php?id=78482
+                if: (success() || failure()) && matrix.php != '7.1' && matrix.composer != '--prefer-lowest'
+                # Skip for PHP 7.1 or "prefer lowest" due to obsolete config syntax in v0.16
