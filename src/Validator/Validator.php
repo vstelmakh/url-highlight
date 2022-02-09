@@ -55,20 +55,20 @@ class Validator implements ValidatorInterface
     public function isValidMatch(UrlMatch $match): bool
     {
         $scheme = $match->getScheme();
-        if (!empty($scheme) && $scheme !== 'mailto' && !$this->isAllowedScheme($scheme)) {
-            return false;
+        if (!empty($scheme) && $scheme !== 'mailto') {
+            return $this->isAllowedScheme($scheme);
         }
 
-        if (!$this->matchEmails && $this->isEmail($match)) {
-            return false;
+        if ($this->isEmail($match)) {
+            return $this->matchEmails;
         }
 
         $tld = $match->getTld();
-        if ($this->matchByTLD && (empty($tld) || !$this->isValidTopLevelDomain($tld))) {
-            return false;
+        if (!empty($tld) && $this->matchByTLD) {
+            return $this->isValidTopLevelDomain($tld);
         }
 
-        return true;
+        return false;
     }
 
     /**
