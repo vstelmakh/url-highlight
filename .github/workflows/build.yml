@@ -39,7 +39,7 @@ jobs:
                     echo "::set-output name=cache_key::$(date +'%Y-%m-%d')-${{ runner.os }}-${{ matrix.php }}${{ matrix.composer }}-composer-"
 
             -   name: Cache Composer dependencies
-                uses: actions/cache@v2
+                uses: actions/cache@v3
                 with:
                     path: ${{ steps.composer.outputs.cache_dir }}
                     key: ${{ steps.composer.outputs.cache_key }}${{ hashFiles('**/composer.json') }}
