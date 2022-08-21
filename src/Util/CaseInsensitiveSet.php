@@ -9,9 +9,7 @@ namespace VStelmakh\UrlHighlight\Util;
  */
 class CaseInsensitiveSet
 {
-    /**
-     * @var array&string[]
-     */
+    /** @var array&string[] */
     private $values = [];
 
     /**

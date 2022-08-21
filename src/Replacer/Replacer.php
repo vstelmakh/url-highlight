@@ -9,9 +9,7 @@ use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
  */
 class Replacer implements ReplacerInterface
 {
-    /**
-     * @var MatcherInterface
-     */
+    /** @var MatcherInterface */
     private $matcher;
 
     /**

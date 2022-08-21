@@ -11,19 +11,13 @@ use VStelmakh\UrlHighlight\Matcher\Matcher;
 
 class EncodedMatcherTest extends TestCase
 {
-    /**
-     * @var Matcher&MockObject
-     */
+    /** @var Matcher&MockObject */
     private $matcher;
 
-    /**
-     * @var EncoderInterface&MockObject
-     */
+    /** @var EncoderInterface&MockObject */
     private $encoder;
 
-    /**
-     * @var EncodedMatcher
-     */
+    /** @var EncodedMatcher */
     private $encodedMatcher;
 
     protected function setUp(): void
@@ -60,7 +54,7 @@ class EncodedMatcherTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function matchDataProvider(): array
     {
@@ -139,7 +133,7 @@ class EncodedMatcherTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function matchAllDataProvider(): array
     {

@@ -4,49 +4,31 @@ namespace VStelmakh\UrlHighlight\Matcher;
 
 class UrlMatch
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $fullMatch;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $byteOffset;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $url;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $scheme;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $userinfo;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $host;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $tld;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $port;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $path;
 
     /**

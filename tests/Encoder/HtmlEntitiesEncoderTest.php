@@ -7,9 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class HtmlEntitiesEncoderTest extends TestCase
 {
-    /**
-     * @var HtmlEntitiesEncoder
-     */
+    /** @var HtmlEntitiesEncoder */
     private $htmlEntitiesEncoder;
 
     public function setUp(): void
@@ -30,7 +28,7 @@ class HtmlEntitiesEncoderTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function decodeDataProvider(): array
     {
@@ -64,7 +62,7 @@ class HtmlEntitiesEncoderTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function getEncodedCharRegexDataProvider(): array
     {

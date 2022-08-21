@@ -51,7 +51,7 @@ class ReplacerTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function replaceCallbackDataProvider(): array
     {

@@ -8,7 +8,7 @@ use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
 class ReplacerFactory
 {
     /**
-     * Create replacer using provided or default matcher
+     * Create replacer using provided or default matcher.
      *
      * @param MatcherInterface|null $matcher
      * @return Replacer

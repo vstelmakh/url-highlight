@@ -20,7 +20,7 @@ class StringHelperTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function getCharsDataProvider(): array
     {

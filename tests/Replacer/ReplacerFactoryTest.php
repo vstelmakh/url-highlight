@@ -31,7 +31,7 @@ class ReplacerFactoryTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function createReplacerDataProvider(): array
     {

@@ -21,7 +21,7 @@ class CaseInsensitiveSetTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return mixed[]
      */
     public function toArrayDataProvider(): array
     {
@@ -48,7 +48,7 @@ class CaseInsensitiveSetTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return mixed[]
      */
     public function addDataProvider(): array
     {
@@ -73,7 +73,7 @@ class CaseInsensitiveSetTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return mixed[]
      */
     public function containsDataProvider(): array
     {
@@ -104,7 +104,7 @@ class CaseInsensitiveSetTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return mixed[]
      */
     public function isEmptyDataProvider(): array
     {

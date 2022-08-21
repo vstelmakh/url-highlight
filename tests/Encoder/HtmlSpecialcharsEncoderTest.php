@@ -7,9 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class HtmlSpecialcharsEncoderTest extends TestCase
 {
-    /**
-     * @var HtmlSpecialcharsEncoder
-     */
+    /** @var HtmlSpecialcharsEncoder */
     private $htmlSpecialcharsEncoder;
 
     public function setUp(): void
@@ -30,7 +28,7 @@ class HtmlSpecialcharsEncoderTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return mixed[]
      */
     public function decodeDataProvider(): array
     {
@@ -64,7 +62,7 @@ class HtmlSpecialcharsEncoderTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return mixed[]
      */
     public function getEncodedCharRegexDataProvider(): array
     {

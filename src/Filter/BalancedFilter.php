@@ -32,7 +32,7 @@ class BalancedFilter implements FilterInterface
     }
 
     /**
-     * Filter by one pair of open - close chars
+     * Filter by one pair of open - close chars.
      *
      * @param string $string
      * @param string $openChar
@@ -57,11 +57,11 @@ class BalancedFilter implements FilterInterface
     }
 
     /**
-     * Return array of matches by provided char with offset
+     * Return array of matches by provided char with offset.
      *
      * @param string $string
      * @param string $char
-     * @return array&array[] [0 => (string) char, 1 => (int) offset]
+     * @return array<array{0: string, 1: int}> [0 => (string) char, 1 => (int) offset]
      */
     private function matchCharOffset(string $string, string $char): array
     {

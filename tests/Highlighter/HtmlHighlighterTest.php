@@ -36,7 +36,7 @@ class HtmlHighlighterTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function highlightDataProvider(): array
     {

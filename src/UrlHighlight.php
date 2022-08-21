@@ -14,19 +14,13 @@ use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
 
 class UrlHighlight
 {
-    /**
-     * @var MatcherInterface
-     */
+    /** @var MatcherInterface */
     private $matcher;
 
-    /**
-     * @var ReplacerInterface
-     */
+    /** @var ReplacerInterface */
     private $replacer;
 
-    /**
-     * @var HighlighterInterface
-     */
+    /** @var HighlighterInterface */
     private $highlighter;
 
     /**
