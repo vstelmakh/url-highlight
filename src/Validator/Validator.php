@@ -8,24 +8,16 @@ use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
 
 class Validator implements ValidatorInterface
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $matchByTLD;
 
-    /**
-     * @var CaseInsensitiveSet
-     */
+    /** @var CaseInsensitiveSet */
     private $schemeBlacklist;
 
-    /**
-     * @var CaseInsensitiveSet
-     */
+    /** @var CaseInsensitiveSet */
     private $schemeWhitelist;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $matchEmails;
 
     /**

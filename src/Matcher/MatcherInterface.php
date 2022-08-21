@@ -19,7 +19,7 @@ interface MatcherInterface
      * Get all valid url regex matches from string
      *
      * @param string $string
-     * @return array&UrlMatch[]
+     * @return UrlMatch[]
      */
     public function matchAll(string $string): array;
 }

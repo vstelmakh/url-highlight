@@ -34,7 +34,7 @@ class MatcherFactoryTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function createMatcherDataProvider(): array
     {

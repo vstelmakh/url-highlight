@@ -22,7 +22,7 @@ class LinkHelperTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function getLinkDataProvider(): array
     {

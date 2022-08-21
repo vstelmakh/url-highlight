@@ -162,7 +162,7 @@ class MatcherTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return mixed[]
      */
     public function matchDataProvider(): array
     {
@@ -193,7 +193,7 @@ class MatcherTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function matchAllDataProvider(): array
     {
@@ -235,7 +235,7 @@ class MatcherTest extends TestCase
 
     /**
      * @param string $url
-     * @param array|mixed[]|null $matchData
+     * @param array<string|null>|null $matchData
      * @param bool $isStrict
      * @param int $byteOffset
      * @return UrlMatch|null
@@ -254,6 +254,6 @@ class MatcherTest extends TestCase
             return null;
         }
 
-        return new UrlMatch($matchData[0], $byteOffset, ...$matchData);
+        return new UrlMatch($matchData[0], $byteOffset, ...$matchData); // @phpstan-ignore-line
     }
 }

@@ -25,7 +25,7 @@ class UrlHighlightTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function isUrlDataProvider(): array
     {
@@ -40,7 +40,7 @@ class UrlHighlightTest extends TestCase
      * @dataProvider getUrlsDataProvider
      *
      * @param string $string
-     * @param array&array[] $expected
+     * @param array<string, string[]> $expected
      */
     public function testGetUrls(string $string, array $expected): void
     {
@@ -50,7 +50,7 @@ class UrlHighlightTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function getUrlsDataProvider(): array
     {
@@ -82,7 +82,7 @@ class UrlHighlightTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function highlightUrlsDataProvider(): array
     {

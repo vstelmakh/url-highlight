@@ -10,14 +10,10 @@ use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
  */
 class Matcher implements MatcherInterface
 {
-    /**
-     * @var ValidatorInterface
-     */
+    /** @var ValidatorInterface */
     private $validator;
 
-    /**
-     * @var BalancedFilter
-     */
+    /** @var BalancedFilter */
     private $balancedFilter;
 
     /**
@@ -129,7 +125,7 @@ class Matcher implements MatcherInterface
     }
 
     /**
-     * @param array|mixed[] $rawMatch
+     * @param array<array{0: string, 1: int}> $rawMatch [0 => (string) match, 1 => (int) offset]
      * @return UrlMatch
      */
     private function createMatch(array $rawMatch): UrlMatch

@@ -32,7 +32,7 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * @return array&array[]
+     * @return mixed[]
      */
     public function isValidMatchDataProvider(): array
     {

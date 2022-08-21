@@ -22,7 +22,7 @@ class BalancedFilterTest extends TestCase
     }
 
     /**
-     * @return array|array[]
+     * @return mixed[]
      */
     public function filterDataProvider(): array
     {
