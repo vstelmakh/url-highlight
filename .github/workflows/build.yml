@@ -69,6 +69,7 @@ jobs:
                     else
                         echo "Using regular config: \"phpunit.xml\""
                     fi
+                if: success() || failure()
 
             -   name: Run PHPUnit with coverage
                 run: composer run-script test:phpunit-coverage
