@@ -168,6 +168,11 @@ class MatcherTest extends TestCase
     {
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
+            /**
+             * @var string $url
+             * @var bool $isValid
+             * @var ?array<string|null> $matchData
+             */
             $match = $this->getMatchDataAsMatch($url, 0, $matchData, true);
             $result[] = [$url, $isValid, $match];
         }
@@ -203,6 +208,11 @@ class MatcherTest extends TestCase
 
         $result = [];
         foreach (self::URLS as [$url, $isValid, $matchData]) {
+            /**
+             * @var string $url
+             * @var bool $isValid
+             * @var ?array<string|null> $matchData
+             */
             if ($isValid) {
                 $isValidMap = ($matchData !== null) ? [$isValid] : [];
 
