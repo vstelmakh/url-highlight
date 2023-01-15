@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace VStelmakh\UrlHighlight\Tests\Encoder;
 
 use VStelmakh\UrlHighlight\Encoder\HtmlEntitiesEncoder;

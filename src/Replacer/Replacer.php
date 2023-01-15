@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace VStelmakh\UrlHighlight\Replacer;
 
 use VStelmakh\UrlHighlight\Matcher\MatcherInterface;

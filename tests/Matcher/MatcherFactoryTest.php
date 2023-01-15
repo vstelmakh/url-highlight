@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace VStelmakh\UrlHighlight\Tests\Matcher;
 
 use PHPUnit\Framework\MockObject\MockObject;
