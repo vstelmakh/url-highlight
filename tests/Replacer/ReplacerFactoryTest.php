@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace VStelmakh\UrlHighlight\Tests\Replacer;
 
 use PHPUnit\Framework\MockObject\MockObject;

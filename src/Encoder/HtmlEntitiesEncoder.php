@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace VStelmakh\UrlHighlight\Encoder;
 
 use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;

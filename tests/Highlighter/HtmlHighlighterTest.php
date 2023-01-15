@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace VStelmakh\UrlHighlight\Tests\Highlighter;
 
 use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
