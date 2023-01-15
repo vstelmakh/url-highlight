@@ -89,6 +89,11 @@ class Matcher implements MatcherInterface
             )?
             (?=[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}])                   # followed by valid host char
             (?|                                                        # host
+                (?<host>                                                   # host is ip address v4
+                    (?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}   # first 3 digit parts
+                    (?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])            # last digit part
+                )
+                |                                                          # or
                 (?<host>                                                   # host prefixed by scheme or userinfo (less strict)
                     (?<=\/{2}|@)                                               # prefixed with \/\/ or @
                     (?=[^\-])                                                  # label start, not: -

@@ -100,7 +100,15 @@ class MatcherTest extends TestCase
             [null, 'http', null, 'elk.example.com', 'com', null, '/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:\'deve-*\',interval:auto,query:(query_string:(analyze_wildcard:!t,query:\'*\')),sort:!(\'@timestamp\',desc))']
         ],
 
-        // Not url
+        // IP
+        ['http://192.168.0.1', true, [null, 'http', null, '192.168.0.1', null, null, null]],
+        ['192.168.0.1', true, [null, null, null, '192.168.0.1', null, null, null]],
+        ['http://192.168.0.1/some/path?var1=1&var2=abc#anchor', true, [null, 'http', null, '192.168.0.1', null, null, '/some/path?var1=1&var2=abc#anchor']],
+        ['192.168.0.1/some/path?var1=1&var2=abc#anchor', true, [null, null, null, '192.168.0.1', null, null, '/some/path?var1=1&var2=abc#anchor']],
+        ['http://user:password@192.168.0.1/some/path?var1=1&var2=abc#anchor', true, [null, 'http', 'user:password', '192.168.0.1', null, null, '/some/path?var1=1&var2=abc#anchor']],
+        ['user:password@192.168.0.1/some/path?var1=1&var2=abc#anchor', true, [null, null, 'user:password', '192.168.0.1', null, null, '/some/path?var1=1&var2=abc#anchor']],
+
+        // Not valid url
         ['6:00am', false, null],
         ['filename.txt', false, [null, null, null, 'filename.txt', 'txt', null, null]],
         ['/home/user/', false, null],
@@ -111,6 +119,7 @@ class MatcherTest extends TestCase
         ['user:admin', false, null],
         ['http://', false, null],
         ['http:://localhost', false, null],
+        ['999.999.999.999', false, ['999.999.999.999', null, null, '999.999.999', '999', null, null]],
 
         // Invalid hosts
         ['example-.com', false, null],
