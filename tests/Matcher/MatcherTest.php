@@ -99,6 +99,10 @@ class MatcherTest extends TestCase
             true,
             [null, 'http', null, 'elk.example.com', 'com', null, '/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:\'deve-*\',interval:auto,query:(query_string:(analyze_wildcard:!t,query:\'*\')),sort:!(\'@timestamp\',desc))']
         ],
+        ['example.com/?email=user@host.com', true, [null, null, null, 'example.com', 'com', null, '/?email=user@host.com']],
+        ['http://example.com/?email=user@host.com', true, [null, 'http', null, 'example.com', 'com', null, '/?email=user@host.com']],
+        ['http://user@example.com/?email=user@host.com', true, [null, 'http', 'user', 'example.com', 'com', null, '/?email=user@host.com']],
+        ['http://user:password@example.com/?link=host.com', true, [null, 'http', 'user:password', 'example.com', 'com', null, '/?link=host.com']],
 
         // Not url
         ['6:00am', false, null],
