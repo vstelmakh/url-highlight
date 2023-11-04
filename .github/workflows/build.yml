@@ -31,7 +31,7 @@ jobs:
                     coverage: xdebug
 
             -   name: Git checkout
-                uses: actions/checkout@v3
+                uses: actions/checkout@v4
 
             -   name: Validate composer.json and composer.lock
                 run: composer validate
@@ -39,8 +39,8 @@ jobs:
             -   name: Prepare Composer cache vars
                 id: composer
                 run: |
-                    echo "::set-output name=cache_dir::$(composer config cache-files-dir)"
-                    echo "::set-output name=cache_key::$(date +'%Y-%m-%d')-${{ runner.os }}-${{ matrix.php }}${{ matrix.composer }}-composer-"
+                    echo "cache_dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                    echo "cache_key=$(date +'%Y-%m-%d')-${{ runner.os }}-${{ matrix.php }}${{ matrix.composer }}-composer-" >> $GITHUB_OUTPUT
 
             -   name: Cache Composer dependencies
                 uses: actions/cache@v3
