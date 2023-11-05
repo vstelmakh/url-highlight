@@ -48,6 +48,7 @@ class ValidatorTest extends TestCase
             [true, ['http'], [], true, $this->getMatch('http', null, null, null), false],
             [true, ['ftp'], [], true, $this->getMatch('http', null, null, null), true],
             [true, ['http'], [], true, $this->getMatch(null, null, 'example.com', 'com'), true],
+            [true, ['http'], [], true, $this->getMatch('http', null, 'example.com', 'com'), false],
             [true, [], ['http'], true, $this->getMatch('http', null, null, null), true],
             [true, [], ['ftp'], true, $this->getMatch('http', null, null, null), false],
             [true, [], ['http'], true, $this->getMatch(null, null, 'example.com', 'com'), true],
@@ -65,6 +66,7 @@ class ValidatorTest extends TestCase
             [false, ['http'], [], true, $this->getMatch('http', null, null, null), false],
             [false, ['ftp'], [], true, $this->getMatch('http', null, null, null), true],
             [false, ['http'], [], true, $this->getMatch(null, null, 'example.com', 'com'), false],
+            [false, ['http'], [], true, $this->getMatch('http', null, 'example.com', 'com'), false],
             [false, [], ['http'], true, $this->getMatch('http', null, null, null), true],
             [false, [], ['ftp'], true, $this->getMatch('http', null, null, null), false],
             [false, [], ['http'], true, $this->getMatch(null, null, 'example.com', 'com'), false],
@@ -75,8 +77,10 @@ class ValidatorTest extends TestCase
 
             [true, [], [], true, $this->getMatch(null, 'username', 'example.com', 'com'), true],
             [true, [], [], false, $this->getMatch(null, 'username', 'example.com', 'com'), false],
+            [false, [], [], true, $this->getMatch(null, 'username', 'example.notexist', 'notexist'), false],
             [true, [], [], true, $this->getMatch('mailto', 'username', 'example.com', 'com'), true],
             [true, [], [], false, $this->getMatch('mailto', 'username', 'example.com', 'com'), false],
+            [true, [], [], true, $this->getMatch('mailto', 'username', 'example.notexist', 'notexist'), true],
         ];
     }
 

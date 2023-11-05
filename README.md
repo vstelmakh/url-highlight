@@ -97,10 +97,10 @@ use VStelmakh\UrlHighlight\UrlHighlight;
 use VStelmakh\UrlHighlight\Validator\Validator;
 
 $validator = new Validator(
-    true, // bool - if should use top level domain to match urls without scheme
-    [],   // string[] - array of blacklisted schemes
-    [],   // string[] - array of whitelisted schemes
-    true  // bool - if should match emails (if match by TLD set to "false" - will match only "mailto" urls)
+    true, // bool - allow to use top level domain to match urls without scheme
+    [],   // string[] - array of blacklisted schemes (not listed here are allowed)
+    [],   // string[] - array of whitelisted schemes (only listed here are allowed)
+    true  // bool - allow to match emails (if match by TLD set to "false" - will match only "mailto" urls)
 );
 $urlHighlight = new UrlHighlight($validator);
 ```
