@@ -49,7 +49,7 @@ class UrlHighlight
 
     /**
      * Check if string is valid url.
-     * If encoder provided - string will be decoded, than check performed.
+     * If encoder provided - string will be decoded, then check performed.
      *
      * @param string $string
      * @return bool

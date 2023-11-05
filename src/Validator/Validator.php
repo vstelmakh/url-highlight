@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Validator;
 
-use VStelmakh\UrlHighlight\Domains;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Util\CaseInsensitiveSet;
+use VStelmakh\UrlHighlight\Validator\DomainChecker\DomainChecker;
+use VStelmakh\UrlHighlight\Validator\DomainChecker\DomainCheckerInterface;
 
 class Validator implements ValidatorInterface
 {
@@ -22,22 +23,28 @@ class Validator implements ValidatorInterface
     /** @var bool */
     private $hasEmailMatch;
 
+    /** @var DomainCheckerInterface */
+    private $domainChecker;
+
     /**
      * @param bool $hasTLDMatch Allow to use top level domain to match urls without scheme
      * @param string[] $schemeBlacklist Blacklisted schemes (not listed here are allowed)
      * @param string[] $schemeWhitelist Whitelisted schemes (only listed here are allowed)
      * @param bool $hasEmailMatch Allow to match emails (if match by TLD set to "false" - will match only "mailto" urls)
+     * @param ?DomainCheckerInterface $domainChecker
      */
     public function __construct(
         bool $hasTLDMatch = true,
         array $schemeBlacklist = [],
         array $schemeWhitelist = [],
-        bool $hasEmailMatch = true
+        bool $hasEmailMatch = true,
+        ?DomainCheckerInterface $domainChecker = null
     ) {
         $this->hasTLDMatch = $hasTLDMatch;
         $this->schemeBlacklist = new CaseInsensitiveSet($schemeBlacklist);
         $this->schemeWhitelist = new CaseInsensitiveSet($schemeWhitelist);
         $this->hasEmailMatch = $hasEmailMatch;
+        $this->domainChecker = $domainChecker ?? new DomainChecker();
     }
 
     /**
@@ -97,8 +104,7 @@ class Validator implements ValidatorInterface
     private function isValidDomain(?string $tld): bool
     {
         if (!empty($tld) && $this->hasTLDMatch) {
-            $tld = \mb_strtolower($tld);
-            return isset(Domains::TOP_LEVEL_DOMAINS[$tld]);
+            return $this->domainChecker->isValidDomain($tld);
         }
 
         return false;

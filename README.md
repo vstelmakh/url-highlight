@@ -94,6 +94,7 @@ There is one validator bundled with the library. Which is used by default with s
 ```php
 <?php
 use VStelmakh\UrlHighlight\UrlHighlight;
+use VStelmakh\UrlHighlight\Validator\DomainChecker\DomainCheckerInterface;
 use VStelmakh\UrlHighlight\Validator\Validator;
 
 $validator = new Validator(
@@ -101,6 +102,7 @@ $validator = new Validator(
     [],   // string[] - array of blacklisted schemes (not listed here are allowed)
     [],   // string[] - array of whitelisted schemes (only listed here are allowed)
     true  // bool - allow to match emails (if match by TLD set to "false" - will match only "mailto" urls)
+    null, // DomainCheckerInterface - custom top level domain checker implementation
 );
 $urlHighlight = new UrlHighlight($validator);
 ```
