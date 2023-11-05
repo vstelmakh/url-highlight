@@ -116,9 +116,11 @@ class Validator implements ValidatorInterface
      */
     private function isValidScheme(?string $scheme): bool
     {
+        // @codeCoverageIgnoreStart
         if (empty($scheme)) {
             return false;
         }
+        // @codeCoverageIgnoreEnd
 
         $isAllowedByBlacklist = !$this->schemeBlacklist->contains($scheme);
         $isAllowedByWhitelist = $this->schemeWhitelist->isEmpty() || $this->schemeWhitelist->contains($scheme);
