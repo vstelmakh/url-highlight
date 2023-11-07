@@ -12,7 +12,7 @@ use VStelmakh\UrlHighlight\Validator\DomainChecker\DomainCheckerInterface;
 class Validator implements ValidatorInterface
 {
     /** @var bool */
-    private $hasTLDMatch;
+    private $isNoSchemeAllowed;
 
     /** @var CaseInsensitiveSet */
     private $schemeBlacklist;
@@ -21,34 +21,34 @@ class Validator implements ValidatorInterface
     private $schemeWhitelist;
 
     /** @var bool */
-    private $hasEmailMatch;
+    private $isEmailAllowed;
 
     /** @var DomainCheckerInterface */
     private $domainChecker;
 
     /**
-     * @param bool $hasTLDMatch Allow to use top level domain to match urls without scheme
+     * @param bool $isNoSchemeAllowed Allow to use top level domain to match urls without scheme
      * @param string[] $schemeBlacklist Blacklisted schemes (not listed here are allowed)
      * @param string[] $schemeWhitelist Whitelisted schemes (only listed here are allowed)
-     * @param bool $hasEmailMatch Allow to match emails (if match by TLD set to "false" - will match only "mailto" urls)
-     * @param ?DomainCheckerInterface $domainChecker
+     * @param bool $isEmailAllowed Allow to match emails (if match by TLD set to "false" - will match only "mailto" urls)
+     * @param ?DomainCheckerInterface $domainChecker Custom top level domain checker implementation
      */
     public function __construct(
-        bool $hasTLDMatch = true,
+        bool $isNoSchemeAllowed = true,
         array $schemeBlacklist = [],
         array $schemeWhitelist = [],
-        bool $hasEmailMatch = true,
+        bool $isEmailAllowed = true,
         ?DomainCheckerInterface $domainChecker = null
     ) {
-        $this->hasTLDMatch = $hasTLDMatch;
+        $this->isNoSchemeAllowed = $isNoSchemeAllowed;
         $this->schemeBlacklist = new CaseInsensitiveSet($schemeBlacklist);
         $this->schemeWhitelist = new CaseInsensitiveSet($schemeWhitelist);
-        $this->hasEmailMatch = $hasEmailMatch;
+        $this->isEmailAllowed = $isEmailAllowed;
         $this->domainChecker = $domainChecker ?? new DomainChecker();
     }
 
     /**
-     * Verify if url match (scheme or host) fit config requirements
+     * Verify if url match satisfy requirements
      *
      * @interal
      * @param UrlMatch $match
@@ -76,7 +76,7 @@ class Validator implements ValidatorInterface
      */
     private function isValidEmail(UrlMatch $match): bool
     {
-        if (!$this->hasEmailMatch) {
+        if (!$this->isEmailAllowed) {
             return false;
         }
 
@@ -103,7 +103,7 @@ class Validator implements ValidatorInterface
      */
     private function isValidDomain(?string $tld): bool
     {
-        if (!empty($tld) && $this->hasTLDMatch) {
+        if (!empty($tld) && $this->isNoSchemeAllowed) {
             return $this->domainChecker->isValidDomain($tld);
         }
 
