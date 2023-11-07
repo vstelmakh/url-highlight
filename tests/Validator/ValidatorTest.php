@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Tests\Validator;
 
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VStelmakh\UrlHighlight\Validator\DomainChecker\DomainCheckerInterface;
 use VStelmakh\UrlHighlight\Validator\Validator;
 use PHPUnit\Framework\TestCase;
 
@@ -81,6 +82,38 @@ class ValidatorTest extends TestCase
             [true, [], [], true, $this->getMatch('mailto', 'username', 'example.com', 'com'), true],
             [true, [], [], false, $this->getMatch('mailto', 'username', 'example.com', 'com'), false],
             [true, [], [], true, $this->getMatch('mailto', 'username', 'example.notexist', 'notexist'), true],
+        ];
+    }
+
+    /**
+     * @dataProvider customDomainCheckerDataProvider
+     *
+     * @param UrlMatch $match
+     * @param bool $expected
+     * @return void
+     */
+    public function testCustomDomainChecker(UrlMatch $match, bool $expected): void
+    {
+        $domainChecker = new class implements DomainCheckerInterface {
+            public function isValidDomain(string $tld): bool
+            {
+                return $tld === 'com';
+            }
+        };
+
+        $validator = new Validator(true, [], [], true, $domainChecker);
+        $actual = $validator->isValidMatch($match);
+        self::assertEquals($expected, $actual, 'Dataset: ' . json_encode(func_get_args()));
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function customDomainCheckerDataProvider(): array
+    {
+        return [
+            [$this->getMatch(null, null, 'example.com', 'com'), true],
+            [$this->getMatch(null, null, 'example.org', 'org'), false],
         ];
     }
 
