@@ -85,6 +85,12 @@ class MatcherTest extends TestCase
         ['example.com/with/%50,co_mm@$,in,url', true, [null, null, null, 'example.com', 'com', null, '/with/%50,co_mm@$,in,url']],
         ['example.com:80', true, [null, null, null, 'example.com', 'com', '80', null]],
 
+        // Userinfo
+        [
+            'http://name.sur,name:pa$$w0rd~!+s-t_r%23*(n)=;g@example.com', true, [null, 'http', 'name.sur,name:pa$$w0rd~!+s-t_r%23*(n)=;g', 'example.com', 'com', null, null],
+            'mailto:name.sur,name:pa$$w0rd~!+s-t_r%23*(n)=;g@example.com', true, [null, 'mailto', 'name.sur,name:pa$$w0rd~!+s-t_r%23*(n)=;g', 'example.com', 'com', null, null],
+        ],
+
         // Combined
         [
             'http://user:password@subdomain.example-example.com:80/with_(brackets)-and-(another(inside))/here-(too+44)/index.php?var1=1+2&var2=abc:@xyz&var3[1]=1&var3[2]=value%202#anchor',

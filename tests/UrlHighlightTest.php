@@ -62,6 +62,10 @@ class UrlHighlightTest extends TestCase
                 ['http://example.com/app.php/some/path/index.html', 'google.com'],
             ],
             [
+                '<a href="mailto:hello@example.com">Example</a>',
+                ['mailto:hello@example.com'],
+            ],
+            [
                 'not url',
                 [],
             ],

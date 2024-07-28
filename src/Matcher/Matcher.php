@@ -86,7 +86,7 @@ class Matcher implements MatcherInterface
                     |                                                      # or
                     (?=[^\p{Sm}\p{Sc}\p{Sk}\p{P}])                         # start with not: mathematical, currency, modifier symbol, punctuation
                 )
-                (?<userinfo>[^\s<>@\/]+)                                   # not: whitespace, < > @ \/
+                (?<userinfo>[\p{L}\d\-\._~%!$&\'()*+,;=:]+)                # unreserved, percent encoded, sub-delims, colon
                 @                                                          # at
             )?
             (?=[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}])                   # followed by valid host char
