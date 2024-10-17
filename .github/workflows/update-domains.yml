@@ -1,0 +1,120 @@
+name: Update domains
+
+on:
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        description: 'Create a pull request'
+        type: boolean
+        required: true
+        default: false
+  schedule:
+    # at 08:00, on day 1 of the month, only in April and October
+    - cron: '0 8 1 4,10 *'
+
+env:
+  ARTIFACT_NAME: domains
+
+jobs:
+  crawl:
+    name: Crawl domains
+    runs-on: ubuntu-latest
+    env:
+      CRAWL_RESULT_PATH: var/Domains.php
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl
+
+      - name: Checkout domain updater
+        uses: actions/checkout@v4
+        with:
+          repository: 'vstelmakh/url-highlight-domain-updater'
+          ref: 'master'
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: domain-updater-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: domain-updater-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --ansi --prefer-dist --no-progress --no-interaction --no-dev --optimize-autoloader
+
+      - name: Run domain updater
+        run: bin/update-domains --ansi "${CRAWL_RESULT_PATH}"
+
+      - name: Upload domains artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: '${{ env.ARTIFACT_NAME }}'
+          path: '${{ env.CRAWL_RESULT_PATH }}'
+          retention-days: 1
+          if-no-files-found: 'error'
+          overwrite: true
+
+  commit:
+    name: Commit result
+    needs: crawl
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      DOMAINS_FILE_PATH: src/Domains.php
+    steps:
+      - name: Checkout Url highlight
+        uses: actions/checkout@v4
+
+      - name: Download domains artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: '${{ env.ARTIFACT_NAME }}'
+          path: src/
+
+      - name: Git status
+        run: |
+          git -c color.ui=always status --short
+
+      - name: Domains file diff
+        run: |
+          git --no-pager diff --color=always "${DOMAINS_FILE_PATH}"
+          echo ''
+          HAS_CHANGES="$(git diff --quiet "${DOMAINS_FILE_PATH}" && echo 'false' || echo 'true')"
+          echo "HAS_CHANGES=${HAS_CHANGES}" >> $GITHUB_ENV
+          echo -n "${DOMAINS_FILE_PATH} has "
+          [[ "${HAS_CHANGES}" == 'true' ]] && echo 'changes' || echo 'no changes'
+
+      - name: Commit changes
+        if: ${{ env.HAS_CHANGES == 'true' }}
+        # requires permissions: contents: write
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          BRANCH_NAME="update-domains-$(date +'%Y-%m-%d')"
+          echo "Checkout branch '${BRANCH_NAME}'"
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+          HAS_BRANCH=$(git ls-remote --exit-code --heads origin "refs/heads/${BRANCH_NAME}" >> /dev/null && echo 'true' || echo 'false')
+          if [[ "${HAS_BRANCH}" == 'true' ]]; then
+            echo "Branch '${BRANCH_NAME}' already exists"
+            exit 1
+          fi
+          git checkout -b "${BRANCH_NAME}"
+          git add "${DOMAINS_FILE_PATH}"
+          git commit -m 'update top level domains list'
+          git push origin "${BRANCH_NAME}"
+
+      - name: Create pull request
+        if: ${{ (env.HAS_CHANGES == 'true') && (github.event_name != 'workflow_dispatch' || inputs.create_pr) }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # requires permissions: pull-requests: write as well as corresponding checkbox in repo settings
+        run: |
+          gh pr create \
+            --base '${{ github.event.repository.default_branch }}' \
+            --head "${BRANCH_NAME}" \
+            --title "Update domains list" \
+            --body "Updated top level domains list from [IANA](https://www.iana.org/).<br>Timestamp: $(date +'%Y-%m-%d %T %Z')<br><br>This PR was created automatically by the [update-domains workflow](https://github.com/${GITHUB_REPOSITORY}/actions/workflows/update-domains.yml)."
