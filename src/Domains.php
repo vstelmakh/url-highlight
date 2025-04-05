@@ -10,7 +10,7 @@ namespace VStelmakh\UrlHighlight;
 interface Domains
 {
     /**
-     * List of valid top-level domains maintained by the IANA
+     * List of valid top-level domains provided by IANA
      * Source: http://data.iana.org/TLD/tlds-alpha-by-domain.txt
      */
     public const TOP_LEVEL_DOMAINS = [
@@ -312,7 +312,6 @@ interface Domains
         'cymru' => true,
         'cyou' => true,
         'cz' => true,
-        'dabur' => true,
         'dad' => true,
         'dance' => true,
         'data' => true,
@@ -643,7 +642,6 @@ interface Domains
         'kddi' => true,
         'ke' => true,
         'kerryhotels' => true,
-        'kerrylogistics' => true,
         'kerryproperties' => true,
         'kfh' => true,
         'kg' => true,
@@ -707,7 +705,6 @@ interface Domains
         'limo' => true,
         'lincoln' => true,
         'link' => true,
-        'lipsy' => true,
         'live' => true,
         'living' => true,
         'lk' => true,
