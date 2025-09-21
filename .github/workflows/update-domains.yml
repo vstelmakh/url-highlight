@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'vstelmakh/url-highlight-domain-updater'
-          ref: 'master'
+          ref: 'main'
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4

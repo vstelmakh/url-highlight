@@ -2,7 +2,7 @@
 
 ---
 
-[![Build status](https://github.com/vstelmakh/url-highlight/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/vstelmakh/url-highlight/actions/workflows/build.yml)
+[![Build status](https://github.com/vstelmakh/url-highlight/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/vstelmakh/url-highlight/actions/workflows/build.yml)
 [![Packagist version](https://img.shields.io/packagist/v/vstelmakh/url-highlight?color=orange)](https://packagist.org/packages/vstelmakh/url-highlight)
 [![PHP version](https://img.shields.io/packagist/php-v/vstelmakh/url-highlight)](https://www.php.net/)
 [![License](https://img.shields.io/github/license/vstelmakh/url-highlight?color=yellowgreen)](LICENSE)
