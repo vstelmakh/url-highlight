@@ -12,7 +12,7 @@ By contributing to this project, you agree that your contributions will be licen
 
 ## Workflow
 1. Fork the repository.
-2. Start your branch from `master`.
+2. Start your branch from `main`.
 3. Implement your change and add tests for it.
 4. Follow the contributing [rules](#rules).
 5. Ensure the tests passes. See [tests and tools](#tests-and-tools) for details.
