@@ -2,6 +2,10 @@
 All notable changes to this project are documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
+### 3.1.3 (2025-10-04)
+- Updated top level domain list to recent changes
+- Added CI build for PHP 8.5
+
 ### 3.1.2 (2025-04-05)
 - Updated top level domain list to recent changes
 
