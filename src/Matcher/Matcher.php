@@ -114,7 +114,7 @@ class Matcher implements MatcherInterface
                         (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
                         (?<=[^\-])                                                 # label end, not: -
                     )*                                                             
-                    \.(?<tld>\w{2,63})                                         # tld
+                    \.(?<tld>[\p{L}\p{N}]{2,63})                                   # tld start: dot, constists of: letter, number
                 )
             )
             (?:\:(?<port>\d+))?                                        # port
