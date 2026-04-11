@@ -76,7 +76,7 @@ class Matcher implements MatcherInterface
 
         return '/' . $prefix . '
             (?|                                                        # scheme
-                (?<scheme>[a-z][\w\-]+):\/{2}                              # scheme ending with :\/\/
+                (?<scheme>[a-z][a-z0-9+\-.]*):\/{2}                        # start with letter, consists of: letter, number, plus, minus, dot, end with :\/\/
                 |                                                          # or
                 (?<scheme>mailto):                                         # mailto
             )?
