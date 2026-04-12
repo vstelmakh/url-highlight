@@ -71,59 +71,99 @@ class Matcher implements MatcherInterface
      */
     private function getUrlRegex(bool $strict): string
     {
-        $prefix = $strict ? '^' : '';
-        $suffix = $strict ? '$' : '';
+        return implode("\n", [
+            '/',
+            $strict ? '^' : '',     // start anchor, if strict
+            $this->schemeRegex(),   // scheme, optional
+            $this->userinfoRegex(), // userinfo, optional
+            $this->hostRegex(),     // host, required
+            $this->portRegex(),     // port, optional
+            $this->pathRegex(),     // path, optional
+            $strict ? '$' : '',     // end anchor, if strict
+            '/ixuJ',                // case-insensitive, extended, unicode, j-changed
+        ]);
+    }
 
-        return '/' . $prefix . '
-            (?|                                                        # scheme
-                (?<scheme>[a-z][a-z0-9+\-.]*):\/{2}                        # start with letter, consists of: letter, number, plus, minus, dot, end with :\/\/
-                |                                                          # or
-                (?<scheme>mailto):                                         # mailto
-            )?
-            (?:                                                        # userinfo
-                (?:
-                    (?<=\/{2})                                             # prefixed with \/\/
-                    |                                                      # or
-                    (?=[^\p{Sm}\p{Sc}\p{Sk}\p{P}])                         # start with not: mathematical, currency, modifier symbol, punctuation
-                )
-                (?<userinfo>[\p{L}\d\-\._~%!$&\'()*+,;=:]+)                # unreserved, percent encoded, sub-delims, colon
-                @                                                          # at
-            )?
-            (?=[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}])                   # followed by valid host char
-            (?|                                                        # host
-                (?<host>                                                   # host prefixed by scheme or userinfo (less strict)
-                    (?<=\/{2}|@)                                               # prefixed with \/\/ or @
-                    (?=[^\-])                                                  # label start, not: -
-                    (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
-                    (?<=[^\-])                                                 # label end, not: -
-                    (?:                                                        # more label parts
-                        \.
-                        (?=[^\-])                                                  # label start, not: -
-                        (?<tld>(?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63})   # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
-                        (?<=[^\-])                                                 # label end, not: -
-                    )*
-                )
-                |                                                          # or
-                (?<host>                                                   # host with tld (no scheme or userinfo)
-                    (?=[^\-])                                                  # label start, not: -
-                    (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
-                    (?<=[^\-])                                                 # label end, not: -
-                    (?:                                                        # more label parts
-                        \.
-                        (?=[^\-])                                                  # label start, not: -
-                        (?:[^\p{Z}\p{Sm}\p{Sc}\p{Sk}\p{C}\p{P}]|-){1,63}           # label not: whitespace, mathematical, currency, modifier symbol, control point, punctuation | except -
-                        (?<=[^\-])                                                 # label end, not: -
-                    )*                                                             
-                    \.(?<tld>[\p{L}\p{N}]{2,63})                                   # tld start: dot, constists of: letter, number
-                )
-            )
-            (?:\:(?<port>\d+))?                                        # port
-            (?<path>                                                   # path, query, fragment
-                [\/?]                                                  # prefixed with \/ or ?
-                [^\s<>]*                                               # any chars except whitespace and <>
-                (?<=[^\s<>({\[`!;:\'".,?«»“”‘’])                       # end with not a space or some punctuation chars
-            )?
-        ' . $suffix . '/ixuJ';
+    private function schemeRegex(): string
+    {
+        return implode('', [
+            '(?|',                               // branch reset group
+                '(?<scheme>[a-z][a-z0-9+\-.]*)',     // start with letter, consists of: letter, number, "+", "-", "."
+                ':\/{2}',                            // followed by "://"
+                '|',                                 // or
+                '(?<scheme>mailto):',                // mailto, followed by ":"
+            ')?',                                // close group, optional
+        ]);
+    }
+
+    private function userinfoRegex(): string
+    {
+        return implode('', [
+            '(?:',                                         // non-capturing group
+                '(?:',                                         // non-capturing group
+                    '(?<=\/{2})',                                  // prefixed with "//" (has scheme)
+                    '|',                                           // or
+                    '(?=[^',                                       // lookahead, not starting with:
+                        '\p{Sm}',                                      // mathematical
+                        '\p{Sc}',                                      // currency
+                        '\p{Sk}',                                      // modifier symbol
+                        '\p{P}',                                       // punctuation
+                    '])',                                          // close lookahead
+                ')',                                           // close group
+                '(?<userinfo>[\p{L}\d\-\._~%!$&\'()*+,;=:]+)', // only: unreserved, percent encoded, sub-delims, colon
+                '@',                                           // suffixed with "@"
+            ')?',                                          // close group, optional
+        ]);
+    }
+
+    private function hostRegex(): string
+    {
+        $label = implode('', [
+            '(?=[^\-])',      // not start with: "-"
+            '(?:',            // non-capturing group
+                '[^',             // not
+                    '\p{Z}',          // whitespace
+                    '\p{Sm}',         // mathematical
+                    '\p{Sc}',         // currency
+                    '\p{Sk}',         // combining character (mark)
+                    '\p{C}',          // control character (invisible)
+                    '\p{P}',          // punctuation
+                ']',
+                '|-',             // except: "-"
+            ')',              // close group
+            '{1,63}',         // length: 1-63 chars
+            '(?<=[^\-])',     // not end with: "-"
+        ]);
+
+        return implode('', [
+            '(?<host>',                       // capturing group
+                '(?<=\/{2}|@)',                   // prefixed with: "//" (has scheme) or "@" (email)
+                "(?:{$label}\.){0,}{$label}",     // no subdomain requirement
+                '|',                              // otherwise
+                "(?:{$label}\.){1,}{$label}",     // at least 1 subdomain
+            ')',                              // close group
+        ]);
+    }
+
+    private function portRegex(): string
+    {
+        return implode('', [
+            '(?:',              // non-capturing group
+                ':',                // prefixed with: ":"
+                '(?<port>\d+)',     // capturing group, at least 1 digit
+            ')?',               // close group, optional
+        ]);
+    }
+
+    private function pathRegex(): string
+    {
+        return implode('', [
+            '(?<path> ',                             // capturing group, the rest of the URL: path, query, fragment
+                '[\/?]',                                 // prefixed with "/" or "?"
+                '[^\s<>]*',                              // any chars except whitespace and "<", ">"
+                '(?<=[^\s<>({\[`!;:\'\".,?«»“”‘’])',     // end with not a space or some punctuation chars
+            ')?',                                    // close group, optional
+        ]);
     }
 
     /**
@@ -135,6 +175,9 @@ class Matcher implements MatcherInterface
         $fullMatch = $this->balancedFilter->filter($rawMatch[0][0]);
         $path = $this->balancedFilter->filter($rawMatch['path'][0] ?? '');
 
+        $hostParts = explode('.', $rawMatch['host'][0] ?? '');
+        $tld = count($hostParts) >= 2 ? array_pop($hostParts) : null;
+
         return new UrlMatch(
             $fullMatch,
             $rawMatch[0][1],
@@ -142,7 +185,7 @@ class Matcher implements MatcherInterface
             $rawMatch['scheme'][0] ?? null,
             $rawMatch['userinfo'][0] ?? null,
             $rawMatch['host'][0] ?? null,
-            $rawMatch['tld'][0] ?? null,
+            $tld,
             $rawMatch['port'][0] ?? null,
             $path
         );
