@@ -110,7 +110,12 @@ class Matcher implements MatcherInterface
                         '\p{P}',                                       // punctuation
                     '])',                                          // close lookahead
                 ')',                                           // close group
-                '(?<userinfo>[\p{L}\d\-\._~%!$&\'()*+,;=:]+)', // only: unreserved, percent encoded, sub-delims, colon
+                '(?<userinfo>[',                               // capturing group, only:
+                    '\p{L}\d\-\._~',                               // unreserved
+                    '%',                                           // percent encoded
+                    '!$&\'()*+,;=',                                // sub-delims
+                    ':',                                           // ":"
+                ']+)',                                         // one or more, close group
                 '@',                                           // suffixed with "@"
             ')?',                                          // close group, optional
         ]);
