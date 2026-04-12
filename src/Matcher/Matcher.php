@@ -119,20 +119,32 @@ class Matcher implements MatcherInterface
     private function hostRegex(): string
     {
         $label = implode('', [
-            '(?=[^\-])',      // not start with: "-"
-            '(?:',            // non-capturing group
-                '[^',             // not
-                    '\p{Z}',          // whitespace
-                    '\p{Sm}',         // mathematical
-                    '\p{Sc}',         // currency
-                    '\p{Sk}',         // combining character (mark)
-                    '\p{C}',          // control character (invisible)
-                    '\p{P}',          // punctuation
+            '(?=[^\-])',         // not start with: "-"
+            '(?:',               // non-capturing group, consists of:
+                '[^',                // not (exclude):
+                    '\p{Z}',             // whitespace
+                    '\p{Sm}',            // mathematical
+                    '\p{Sc}',            // currency
+                    '\p{Sk}',            // combining character (mark)
+                    '\p{C}',             // control character (invisible)
+                    '\p{P}',             // punctuation
                 ']',
-                '|-',             // except: "-"
-            ')',              // close group
-            '{1,63}',         // length: 1-63 chars
-            '(?<=[^\-])',     // not end with: "-"
+                '|',
+                '[',                 // except (include):
+                    '\-',                // "-"
+                    '\x{200C}',          // zero width non-joiner
+                    '\x{200D}',          // zero width joiner
+                    '\x{00B7}',          // middle dot
+                    '\x{0375}',          // greek lower numeral sign
+                    '\x{05F3}',          // hebrew punctuation geresh
+                    '\x{05F4}',          // hebrew punctuation gershayim
+                    '\x{30FB}',          // katakana middle dot
+                    '\x{0660}-\x{0669}', // arabic-indic digits
+                    '\x{06F0}-\x{06F9}', // extended arabic-indic digits
+                ']',
+            ')',                 // close group
+            '{1,63}',            // length: 1-63 chars
+            '(?<=[^\-])',        // not end with: "-"
         ]);
 
         return implode('', [
