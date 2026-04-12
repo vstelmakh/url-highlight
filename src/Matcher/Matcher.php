@@ -99,57 +99,57 @@ class Matcher implements MatcherInterface
     private function userinfoRegex(): string
     {
         return implode('', [
-            '(?:',                                         // non-capturing group
-                '(?:',                                         // non-capturing group
-                    '(?<=\/{2})',                                  // prefixed with "//" (has scheme)
-                    '|',                                           // or
-                    '(?=[^',                                       // lookahead, not starting with:
-                        '\p{Sm}',                                      // mathematical
-                        '\p{Sc}',                                      // currency
-                        '\p{Sk}',                                      // modifier symbol
-                        '\p{P}',                                       // punctuation
-                    '])',                                          // close lookahead
-                ')',                                           // close group
-                '(?<userinfo>[',                               // capturing group, only:
-                    '\p{L}\d\-\._~',                               // unreserved
-                    '%',                                           // percent encoded
-                    '!$&\'()*+,;=',                                // sub-delims
-                    ':',                                           // ":"
-                ']+)',                                         // one or more, close group
-                '@',                                           // suffixed with "@"
-            ')?',                                          // close group, optional
+            '(?:',                   // non-capturing group
+                '(?:',                   // non-capturing group
+                    '(?<=\/{2})',            // prefixed with "//" (has scheme)
+                    '|',                     // or
+                    '(?=[^',                 // lookahead, not starting with:
+                        '\p{Sm}',                // mathematical
+                        '\p{Sc}',                // currency
+                        '\p{Sk}',                // modifier symbol
+                        '\p{P}',                 // punctuation
+                    '])',                    // close lookahead
+                ')',                     // close group
+                '(?<userinfo>[',         // capturing group, only:
+                    '\p{L}\d\-\._~',         // unreserved
+                    '%',                     // percent encoded
+                    '!$&\'()*+,;=',          // sub-delims
+                    ':',                     // ":"
+                ']+)',                   // one or more, close group
+                '@',                     // suffixed with "@"
+            ')?',                    // close group, optional
         ]);
     }
 
     private function hostRegex(): string
     {
         $label = implode('', [
-            '(?=[^\-])',         // not start with: "-"
-            '(?:',               // non-capturing group, consists of:
-                '[^',                // not (exclude):
-                    '\p{Z}',             // whitespace
-                    '\p{Sm}',            // mathematical
-                    '\p{Sc}',            // currency
-                    '\p{Sk}',            // combining character (mark)
-                    '\p{C}',             // control character (invisible)
-                    '\p{P}',             // punctuation
+            '(?=[^\-])',                 // not start with: "-"
+            '(?:',                       // non-capturing group, consists of:
+                '[^',                        // not (exclude):
+                    '\p{Z}',                     // whitespace
+                    '\p{Sm}',                    // mathematical
+                    '\p{Sc}',                    // currency
+                    '\p{Sk}',                    // combining character (mark)
+                    '\p{C}',                     // control character (invisible)
+                    '\p{P}',                     // punctuation
                 ']',
                 '|',
-                '[',                 // except (include):
-                    '\-',                // "-"
-                    '\x{200C}',          // zero width non-joiner
-                    '\x{200D}',          // zero width joiner
-                    '\x{00B7}',          // middle dot
-                    '\x{0375}',          // greek lower numeral sign
-                    '\x{05F3}',          // hebrew punctuation geresh
-                    '\x{05F4}',          // hebrew punctuation gershayim
-                    '\x{30FB}',          // katakana middle dot
-                    '\x{0660}-\x{0669}', // arabic-indic digits
-                    '\x{06F0}-\x{06F9}', // extended arabic-indic digits
+                '[',                         // except (include):
+                    '\-',                        // "-"
+                    '\x{200C}',                  // zero width non-joiner
+                    '\x{200D}',                  // zero width joiner
+                    '\x{00B7}',                  // middle dot
+                    '\x{0375}',                  // greek lower numeral sign
+                    '\x{05F3}',                  // hebrew punctuation geresh
+                    '\x{05F4}',                  // hebrew punctuation gershayim
+                    '\x{30FB}',                  // katakana middle dot
+                    '\x{0660}-\x{0669}',         // arabic-indic digits
+                    '\x{06F0}-\x{06F9}',         // extended arabic-indic digits
                 ']',
-            ')',                 // close group
-            '{1,63}',            // length: 1-63 chars
-            '(?<=[^\-])',        // not end with: "-"
+            ')',                         // close group
+            '{1,63}',                    // length: 1-63 chars
+            '(?<=[^\-])',                // not end with: "-"
         ]);
 
         return implode('', [
