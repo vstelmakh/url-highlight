@@ -55,7 +55,11 @@ class MatcherTest extends TestCase
         ['http://互联网.ch/互联网', true, [null, 'http', null, '互联网.ch', 'ch', null, '/互联网']],
         ['http://україна.укр/привіт/світ', true, [null, 'http', null, 'україна.укр', 'укр', null, '/привіт/світ']],
 
-        // Other scheme
+        // Invisible chars
+        ['http://نامه‌ای.com/path', true, [null, 'http', null, 'نامه‌ای.com', 'com', null, '/path']],
+        ['http://ශ්‍රී.com/path', true, [null, 'http', null, 'ශ්‍රී.com', 'com', null, '/path']],
+
+        // Another scheme
         ['https://example.com', true, [null, 'https', null, 'example.com', 'com', null, null]],
         ['mailto:name@example.com', true, [null, 'mailto', 'name', 'example.com', 'com', null, null]],
         ['ftp://localhost', true, [null, 'ftp', null, 'localhost', null, null, null]],

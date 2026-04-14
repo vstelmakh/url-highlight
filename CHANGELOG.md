@@ -2,6 +2,10 @@
 All notable changes to this project are documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
+### 3.2.0
+- Improved scheme matching in compliance with RFC 3986
+- Improved host matching with invisible characters (joiners) in compliance with RFC 5892 (Appendix A)
+
 ### 3.1.4
 - Updated a top-level domain list to recent changes
 
@@ -48,14 +52,14 @@ Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) sp
 ### 2.2.0
 - Fixed match complex urls with brackets (e.g. ELK urls)
 - Improved matcher performance (~3x faster)
-- Fixed html entity encoder regex builder (not all html entities were encoded)
+- Fixed HTML entity encoder regex builder (not all html entities were encoded)
 - Added fallback to encoded matcher to skip match if the encoder is not able to encode
 - Improved url match regex to cover more cases
 - Added match emails by default in validator
 
 ### 2.1.0
-- Added html highlighter tag attributes
-- Added markdown highlighter
+- Added HTML highlighter tag attributes
+- Added Markdown highlighter
 
 ### 2.0.0
 - Replaced array configuration by specific interfaces: Validator, Highlighter, Encoder **\[BC break\]**
