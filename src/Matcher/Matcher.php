@@ -192,8 +192,9 @@ class Matcher implements MatcherInterface
         $fullMatch = $this->balancedFilter->filter($rawMatch[0][0]);
         $path = $this->balancedFilter->filter($rawMatch['path'][0] ?? '');
 
-        $hostParts = explode('.', $rawMatch['host'][0] ?? '');
-        $tld = count($hostParts) >= 2 ? array_pop($hostParts) : null;
+        $lastLabel = strrchr($rawMatch['host'][0] ?? '', '.');
+        /** @var string $tld */
+        $tld = $lastLabel !== false ? substr($lastLabel, 1) : null;
 
         return new UrlMatch(
             $fullMatch,
