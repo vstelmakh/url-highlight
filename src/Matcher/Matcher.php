@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Matcher\Filter\TrailingPunctuationFilter;
+
 /**
  * @internal
  */
 final readonly class Matcher
 {
+    private TrailingPunctuationFilter $trailingPunctuationFilter;
+
+    public function __construct()
+    {
+        $this->trailingPunctuationFilter = new TrailingPunctuationFilter();
+    }
+
     /**
      * @return array<UrlMatch>
      */
@@ -176,17 +185,19 @@ final readonly class Matcher
         $lastLabel = strrchr($host, '.');
         $tld = $lastLabel !== false ? substr($lastLabel, 1) : null;
 
-        return new UrlMatch(
-            $match[0][0] ?? '',
-            $match[0][1],
-            $match['scheme'][0],
-            $match['userinfo'][0],
-            $host,
-            $tld,
-            $match['port'][0],
-            $match['path'][0],
-            $match['query'][0],
-            $match['fragment'][0],
+        $normalized = new UrlMatch(
+            match: $match[0][0] ?? '',
+            offset: $match[0][1],
+            scheme: $match['scheme'][0],
+            userinfo: $match['userinfo'][0],
+            host: $host,
+            tld: $tld,
+            port: $match['port'][0],
+            path: $match['path'][0],
+            query: $match['query'][0],
+            fragment: $match['fragment'][0],
         );
+
+        return $this->trailingPunctuationFilter->filter($normalized);
     }
 }
