@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
-use VStelmakh\UrlHighlight\Matcher\Filter\TrailingPunctuationFilter;
-
 /**
  * @internal
  */
 final readonly class Matcher
 {
-    private TrailingPunctuationFilter $trailingPunctuationFilter;
+    private PunctuationFilter $punctuationFilter;
+    private HostValidator $hostValidator;
 
     public function __construct()
     {
-        $this->trailingPunctuationFilter = new TrailingPunctuationFilter();
+        $this->punctuationFilter = new PunctuationFilter();
+        $this->hostValidator = new HostValidator();
     }
 
     /**
@@ -27,8 +27,11 @@ final readonly class Matcher
         $urlRegex = $this->regex(false);
         /** @var $matches array<array{0: ?string, 1: int}> */
         preg_match_all($urlRegex, $string, $matches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE + PREG_UNMATCHED_AS_NULL);
-        foreach ($matches as $match) {
-            $result[] = $this->normalize($match);
+        foreach ($matches as $rawMatch) {
+            $match = $this->normalize($rawMatch);
+            if ($match !== null) {
+                $result[] = $match;
+            }
         }
         return $result;
     }
@@ -36,9 +39,9 @@ final readonly class Matcher
     public function matchStrict(string $string): ?UrlMatch
     {
         $urlRegex = $this->regex(true);
-        /** @var $match array<array{0: ?string, 1: int}> */
-        preg_match($urlRegex, $string, $match, PREG_OFFSET_CAPTURE + PREG_UNMATCHED_AS_NULL);
-        return $match === [] ? null : $this->normalize($match);
+        /** @var $rawMatch array<array{0: ?string, 1: int}> */
+        preg_match($urlRegex, $string, $rawMatch, PREG_OFFSET_CAPTURE + PREG_UNMATCHED_AS_NULL);
+        return $rawMatch === [] ? null : $this->normalize($rawMatch);
     }
 
     private function regex(bool $strict): string
@@ -177,27 +180,26 @@ final readonly class Matcher
     }
 
     /**
-     * @param array<array{0: ?string, 1: int}> $match [0 => (string) value, 1 => (int) offset]
+     * @param array<array{0: ?string, 1: int}> $rawMatch [0 => (string) value, 1 => (int) offset]
      */
-    private function normalize(array $match): UrlMatch
+    private function normalize(array $rawMatch): ?UrlMatch
     {
-        $host = $match['host'][0] ?? '';
-        $lastLabel = strrchr($host, '.');
-        $tld = $lastLabel !== false ? substr($lastLabel, 1) : null;
-
-        $normalized = new UrlMatch(
-            match: $match[0][0] ?? '',
-            offset: $match[0][1],
-            scheme: $match['scheme'][0],
-            userinfo: $match['userinfo'][0],
-            host: $host,
-            tld: $tld,
-            port: $match['port'][0],
-            path: $match['path'][0],
-            query: $match['query'][0],
-            fragment: $match['fragment'][0],
+        $match = new UrlMatch(
+            match: $rawMatch[0][0] ?? '',
+            offset: $rawMatch[0][1],
+            scheme: $rawMatch['scheme'][0],
+            userinfo: $rawMatch['userinfo'][0],
+            host: $rawMatch['host'][0] ?? '',
+            port: $rawMatch['port'][0],
+            path: $rawMatch['path'][0],
+            query: $rawMatch['query'][0],
+            fragment: $rawMatch['fragment'][0],
         );
 
-        return $this->trailingPunctuationFilter->filter($normalized);
+        if (!$this->hostValidator->isValid($match)) {
+            return null;
+        }
+
+        return $this->punctuationFilter->filter($match);
     }
 }

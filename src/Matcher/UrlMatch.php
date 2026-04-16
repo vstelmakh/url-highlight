@@ -15,10 +15,26 @@ final readonly class UrlMatch
         public ?string $scheme,
         public ?string $userinfo,
         public string $host,
-        public ?string $tld,
         public ?string $port,
         public ?string $path,
         public ?string $query,
         public ?string $fragment,
     ) {}
+
+    public function isEmail(): bool
+    {
+        if (!in_array($this->scheme, [null, 'mailto'], true)) {
+            return false;
+        }
+
+        if ($this->userinfo === null) {
+            return false;
+        }
+
+        if ($this->port !== null || $this->path !== null || $this->query !== null || $this->fragment !== null) {
+            return false;
+        }
+
+        return true;
+    }
 }

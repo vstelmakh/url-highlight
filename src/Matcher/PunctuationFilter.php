@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Matcher\Filter;
-
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+namespace VStelmakh\UrlHighlight\Matcher;
 
 /**
  * Strips trailing unbalanced brackets, quotes, and punctuation from URL match.
@@ -15,7 +13,7 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
  *
  * @internal
  */
-final readonly class TrailingPunctuationFilter
+final readonly class PunctuationFilter
 {
     private const array PAIRED = [')' => '(', ']' => '[', '}' => '{', '»' => '«', '”' => '“', '’' => '‘'];
     private const array SYMMETRIC = ['"' => true, '\'' => true];
@@ -43,16 +41,15 @@ final readonly class TrailingPunctuationFilter
         }
 
         return new UrlMatch(
-            substr($match->match, 0, -strlen($component)) . $filtered,
-            $match->offset,
-            $match->scheme,
-            $match->userinfo,
-            $match->host,
-            $match->tld,
-            $match->port,
-            $path,
-            $query,
-            $fragment,
+            match: substr($match->match, 0, -strlen($component)) . $filtered,
+            offset: $match->offset,
+            scheme: $match->scheme,
+            userinfo: $match->userinfo,
+            host: $match->host,
+            port: $match->port,
+            path: $path,
+            query: $query,
+            fragment: $fragment,
         );
     }
 
