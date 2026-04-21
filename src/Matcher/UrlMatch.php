@@ -15,7 +15,7 @@ final readonly class UrlMatch
         public ?string $scheme,
         public ?string $userinfo,
         public string $host,
-        public ?string $port,
+        public ?int $port,
         public ?string $path,
         public ?string $query,
         public ?string $fragment,

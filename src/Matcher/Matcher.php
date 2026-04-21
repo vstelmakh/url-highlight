@@ -190,7 +190,7 @@ final readonly class Matcher
             scheme: $rawMatch['scheme'][0],
             userinfo: $rawMatch['userinfo'][0],
             host: $rawMatch['host'][0] ?? '',
-            port: $rawMatch['port'][0],
+            port: $rawMatch['port'][0] !== null ? (int) $rawMatch['port'][0] : null,
             path: $rawMatch['path'][0],
             query: $rawMatch['query'][0],
             fragment: $rawMatch['fragment'][0],
