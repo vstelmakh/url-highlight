@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
-/**
- * @internal
- */
 final readonly class UrlMatch
 {
     public function __construct(
