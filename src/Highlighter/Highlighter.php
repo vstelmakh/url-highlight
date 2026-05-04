@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Highlighter\Linker\LinkerInterface;
-use VStelmakh\UrlHighlight\Highlighter\Token\AbstractToken;
-use VStelmakh\UrlHighlight\Highlighter\Token\CommentToken;
-use VStelmakh\UrlHighlight\Highlighter\Token\PlainToken;
-use VStelmakh\UrlHighlight\Highlighter\Token\TagToken;
+use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\PlainToken;
+use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
+use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 
 /**
@@ -16,24 +15,31 @@ use VStelmakh\UrlHighlight\Matcher\Matcher;
  */
 final readonly class Highlighter
 {
+    /**
+     * Tags which content should not be highlighted (e.g. a link, or non-visible content).
+     * @var array<string, true>
+     */
+    private const array SKIP_TAG_MAP = ['a' => true, 'script' => true, 'style' => true];
+
     public function __construct(
         private Matcher $matcher,
+        private Tokenizer $tokenizer,
     ) {}
 
     public function highlight(string $html, LinkerInterface $linker): string
     {
-        $tokens = $this->tokenize($html);
-
         $result = '';
         $skipDepth = 0;
 
+        $tokens = $this->tokenizer->tokenize($html);
+
         foreach ($tokens as $token) {
             if ($token instanceof PlainToken) {
-                $result .= $skipDepth > 0 ? $token->contents : $this->replaceUrls($token->contents, $linker);
+                $result .= $skipDepth > 0 ? $token->toString() : $this->highlightUrls($token->toString(), $linker);
                 continue;
             }
 
-            if ($token instanceof TagToken && $token->shouldSkip()) {
+            if ($token instanceof TagToken && $this->isSkipTag($token->name)) {
                 if ($token->isClosing) {
                     $skipDepth = max(0, $skipDepth - 1);
                 } elseif (!$token->isSelfClosing) {
@@ -41,80 +47,17 @@ final readonly class Highlighter
                 }
             }
 
-            $result .= $token->contents;
+            $result .= $token->toString();
         }
 
         return $result;
     }
 
-    /**
-     * @return \Generator<AbstractToken>
-     */
-    private function tokenize(string $string): \Generator
+    private function highlightUrls(string $string, LinkerInterface $linker): string
     {
-        // Handling quoted attributes so that ">" inside values is not treated as tag end.
-        $regex = implode('', [
-            '/',
-            '(',                          // capturing group
-                '<!--.*?-->',                 // html comment
-                '|',                          // or
-                '<',                          // tag start
-                    '(?:',                        // non-capturing group
-                        '[^"\'<>]',                   // any chars except: "<", ">", '"', "'",
-                        '|',                          // or
-                        '"[^"]*"',                    // double-quoted attribute value
-                        '|',                          // or
-                        '\'[^\']*\'',                 // single-quoted attribute value
-                    ')*',                         // close group, optional
-                '>',                          // end tag
-            ')',                          // close group
-            '/s',                     // single-line (dot matches newline)
-        ]);
-
-        $split = preg_split($regex, $string, -1, PREG_SPLIT_DELIM_CAPTURE);
-
-        if ($split === false) {
-            // Tokenization failed (e.g. backtrack limit exceeded). Fallback to treat the input string as plain text.
-            yield new PlainToken($string);
-            return;
-        }
-
-        // preg_split with a single capture group always alternates [plain, tag, plain, tag, ...],
-        // so "even" indices are plain text tokens, and "odd" indices are tag/comment tokens.
-        foreach ($split as $i => $contents) {
-            if ($i % 2 === 0) {
-                yield new PlainToken($contents);
-                continue;
-            }
-
-            if (str_starts_with($contents, '<!--')) {
-                yield new CommentToken($contents);
-                continue;
-            }
-
-            preg_match(
-                '/^<(?<closing>\/)?(?<name>[a-z][a-z0-9]*)/i',
-                $contents,
-                $matches,
-                PREG_UNMATCHED_AS_NULL
-            );
-
-            $isClosing = ($matches['closing'] ?? null) !== null;
-            yield new TagToken(
-                contents: $contents,
-                name: strtolower($matches['name'] ?? ''),
-                isClosing: $isClosing,
-                isSelfClosing: !$isClosing && (bool) preg_match('/\/\s*>$/', $contents),
-            );
-        }
-    }
-
-    private function replaceUrls(string $string, LinkerInterface $linker): string
-    {
-        $matches = $this->matcher->match($string);
         $offset = 0;
 
-        foreach ($matches as $match) {
+        foreach ($this->matcher->match($string) as $match) {
             $replacement = $linker->link($match);
             $position = $match->offset + $offset;
             $length = strlen($match->match);
@@ -123,5 +66,10 @@ final readonly class Highlighter
         }
 
         return $string;
+    }
+
+    private function isSkipTag(string $tag): bool
+    {
+        return isset(self::SKIP_TAG_MAP[$tag]);
     }
 }
