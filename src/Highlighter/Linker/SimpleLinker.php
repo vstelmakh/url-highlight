@@ -6,10 +6,10 @@ namespace VStelmakh\UrlHighlight\Highlighter\Linker;
 
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
-final readonly class SimpleLinker implements LinkerInterface
+final readonly class SimpleLinker implements Linker
 {
     #[\Override]
-    public function link(UrlMatch $match): string
+    public function render(UrlMatch $match): string
     {
         if ($match->isEmail()) {
             $href = $match->scheme === 'mailto' ? $match->match : 'mailto:' . $match->match;

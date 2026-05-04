@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Highlighter\Linker\LinkerInterface;
+use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\PlainToken;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
@@ -26,7 +26,7 @@ final readonly class Highlighter
         private Tokenizer $tokenizer,
     ) {}
 
-    public function highlight(string $html, LinkerInterface $linker): string
+    public function highlight(string $html, Linker $linker): string
     {
         $result = '';
         $skipDepth = 0;
@@ -53,12 +53,12 @@ final readonly class Highlighter
         return $result;
     }
 
-    private function highlightUrls(string $string, LinkerInterface $linker): string
+    private function highlightUrls(string $string, Linker $linker): string
     {
         $offset = 0;
 
         foreach ($this->matcher->match($string) as $match) {
-            $replacement = $linker->link($match);
+            $replacement = $linker->render($match);
             $position = $match->offset + $offset;
             $length = strlen($match->match);
             $string = substr_replace($string, $replacement, $position, $length);

@@ -6,7 +6,7 @@ namespace VStelmakh\UrlHighlight\Highlighter\Linker;
 
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
-interface LinkerInterface
+interface Linker
 {
-    public function link(UrlMatch $match): string;
+    public function render(UrlMatch $match): string;
 }
