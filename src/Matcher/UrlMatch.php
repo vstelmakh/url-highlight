@@ -34,4 +34,17 @@ final readonly class UrlMatch
 
         return true;
     }
+
+    public function toHref(string $fallbackScheme = 'http'): string
+    {
+        if ($this->isEmail()) {
+            $url = $this->scheme === null ? "mailto:{$this->match}" : $this->match;
+        } elseif ($this->scheme !== null) {
+            $url = $this->match;
+        } else {
+            $url = "{$fallbackScheme}://{$this->match}";
+        }
+
+        return htmlspecialchars($url, ENT_QUOTES | ENT_HTML5);
+    }
 }
