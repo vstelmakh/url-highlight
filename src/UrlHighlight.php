@@ -4,41 +4,48 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight;
 
-class UrlHighlight
+use VStelmakh\UrlHighlight\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
+use VStelmakh\UrlHighlight\Highlighter\Linker\SimpleLinker;
+use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+
+/**
+ * Url highlight - library to parse URLs from string input and render them as HTML links.
+ * Works with complex URLs, edge cases, and encoded input.
+ *
+ * @api
+ */
+readonly class UrlHighlight
 {
-    /**
-     * Check if string is valid url.
-     * If encoder provided - string will be decoded, than check performed.
-     *
-     * @param string $string
-     * @return bool
-     */
-    public function isUrl(string $string): bool
+    private Matcher $matcher;
+    private Highlighter $highlighter;
+
+    public function __construct()
     {
-        return false; // TODO: implement
+        $this->matcher = new Matcher();
+        $this->highlighter = new Highlighter($this->matcher, new Tokenizer());
     }
 
     /**
-     * Parse string and return array of urls found.
-     * If encoder provided - will return decoded urls.
+     * Find all URLs in the input string.
      *
-     * @param string $string
-     * @return array|string[]
+     * @return array<UrlMatch>
      */
-    public function getUrls(string $string): array
+    public function find(string $string): array
     {
-        return []; // TODO: implement
+        return $this->matcher->match($string);
     }
 
     /**
-     * Parse string and replace urls with highlighted links
-     * e.g. http://example.com -> <a href="http://example.com">http://example.com</a>
+     * Replace URLs in the input with rendered links.
+     * Example: "Check the example.com website." -> "Check the <a href="http://example.com">example.com</a> website."
      *
-     * @param string $string
-     * @return string
+     * @param Linker $linker Renderer used to produce the link for each URL match.
      */
-    public function highlightUrls(string $string): string
+    public function highlight(string $string, Linker $linker = new SimpleLinker()): string
     {
-        return ''; // TODO: implement
+        return $this->highlighter->highlight($string, $linker);
     }
 }
