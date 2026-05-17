@@ -8,6 +8,7 @@ use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 use VStelmakh\UrlHighlight\Highlighter\Linker\SimpleLinker;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
+use VStelmakh\UrlHighlight\Matcher\EntityDecoder;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
@@ -25,7 +26,7 @@ readonly class UrlHighlight
     public function __construct()
     {
         $this->matcher = new Matcher();
-        $this->highlighter = new Highlighter($this->matcher, new Tokenizer());
+        $this->highlighter = new Highlighter($this->matcher, new Tokenizer(), new EntityDecoder());
     }
 
     /**
@@ -43,9 +44,12 @@ readonly class UrlHighlight
      * Example: "Check the example.com website." -> "Check the <a href="http://example.com">example.com</a> website."
      *
      * @param Linker $linker Renderer used to produce the link for each URL match.
+     * @param bool $isHtmlEncoded Set to true when the input contains HTML entities (e.g. produced by htmlspecialchars).
+     *                            URLs are then matched against the decoded form, but the original encoded characters
+     *                            are preserved verbatim in the output. Leave false for literal text input.
      */
-    public function highlight(string $string, Linker $linker = new SimpleLinker()): string
+    public function highlight(string $string, Linker $linker = new SimpleLinker(), bool $isHtmlEncoded = false): string
     {
-        return $this->highlighter->highlight($string, $linker);
+        return $this->highlighter->highlight($string, $linker, $isHtmlEncoded);
     }
 }

@@ -8,6 +8,8 @@ use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\PlainToken;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
+use VStelmakh\UrlHighlight\Matcher\DecodedString;
+use VStelmakh\UrlHighlight\Matcher\EntityDecoder;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 
 /**
@@ -24,9 +26,10 @@ final readonly class Highlighter
     public function __construct(
         private Matcher $matcher,
         private Tokenizer $tokenizer,
+        private EntityDecoder $entityDecoder,
     ) {}
 
-    public function highlight(string $html, Linker $linker): string
+    public function highlight(string $html, Linker $linker, bool $isHtmlEncoded): string
     {
         $result = '';
         $skipDepth = 0;
@@ -35,7 +38,7 @@ final readonly class Highlighter
 
         foreach ($tokens as $token) {
             if ($token instanceof PlainToken) {
-                $result .= $skipDepth > 0 ? $token->toString() : $this->highlightUrls($token->toString(), $linker);
+                $result .= $skipDepth > 0 ? $token->toString() : $this->highlightUrls($token->toString(), $linker, $isHtmlEncoded);
                 continue;
             }
 
@@ -53,19 +56,31 @@ final readonly class Highlighter
         return $result;
     }
 
-    private function highlightUrls(string $string, Linker $linker): string
+    private function highlightUrls(string $string, Linker $linker, bool $isHtmlEncoded): string
     {
-        $offset = 0;
+        $decoded = $isHtmlEncoded
+            ? $this->entityDecoder->decode($string)
+            : new DecodedString($string, []);
 
-        foreach ($this->matcher->match($string) as $match) {
-            $replacement = $linker->render($match);
-            $position = $match->offset + $offset;
-            $length = strlen($match->match);
-            $string = substr_replace($string, $replacement, $position, $length);
-            $offset += strlen($replacement) - $length;
+        $matches = $this->matcher->match($decoded->value);
+        if ($matches === []) {
+            return $string;
         }
 
-        return $string;
+        $result = '';
+        $cursor = 0;
+
+        foreach ($matches as $match) {
+            $start = $decoded->toEncodedOffset($match->offset);
+            $end = $decoded->toEncodedOffset($match->offset + strlen($match->match));
+
+            $result .= substr($string, $cursor, $start - $cursor);
+            $result .= $linker->render($match);
+            $cursor = $end;
+        }
+        $result .= substr($string, $cursor);
+
+        return $result;
     }
 
     private function isSkipTag(string $tag): bool
