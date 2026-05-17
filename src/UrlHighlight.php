@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight;
 
+use VStelmakh\UrlHighlight\Highlighter\Encoder\EntityDecoder;
 use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 use VStelmakh\UrlHighlight\Highlighter\Linker\SimpleLinker;
 use VStelmakh\UrlHighlight\Highlighter\Replacer\EncodedReplacer;
 use VStelmakh\UrlHighlight\Highlighter\Replacer\PlainReplacer;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
-use VStelmakh\UrlHighlight\Matcher\EntityDecoder;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 

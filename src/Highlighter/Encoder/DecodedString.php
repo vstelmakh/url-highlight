@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Matcher;
+namespace VStelmakh\UrlHighlight\Highlighter\Encoder;
 
 /**
  * Result of HTML entity decoding: the decoded text and a mapping back to the original encoded positions.
