@@ -7,6 +7,8 @@ namespace VStelmakh\UrlHighlight;
 use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 use VStelmakh\UrlHighlight\Highlighter\Linker\SimpleLinker;
+use VStelmakh\UrlHighlight\Highlighter\Replacer\EncodedReplacer;
+use VStelmakh\UrlHighlight\Highlighter\Replacer\PlainReplacer;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\EntityDecoder;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
@@ -21,12 +23,18 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 readonly class UrlHighlight
 {
     private Matcher $matcher;
-    private Highlighter $highlighter;
+    private Highlighter $plainHighlighter;
+    private Highlighter $encodedHighlighter;
 
     public function __construct()
     {
         $this->matcher = new Matcher();
-        $this->highlighter = new Highlighter($this->matcher, new Tokenizer(), new EntityDecoder());
+        $tokenizer = new Tokenizer();
+        $this->plainHighlighter = new Highlighter($tokenizer, new PlainReplacer($this->matcher));
+        $this->encodedHighlighter = new Highlighter(
+            $tokenizer,
+            new EncodedReplacer($this->matcher, $tokenizer, new EntityDecoder()),
+        );
     }
 
     /**
@@ -45,11 +53,14 @@ readonly class UrlHighlight
      *
      * @param Linker $linker Renderer used to produce the link for each URL match.
      * @param bool $isHtmlEncoded Set to true when the input contains HTML entities (e.g. produced by htmlspecialchars).
-     *                            URLs are then matched against the decoded form, but the original encoded characters
-     *                            are preserved verbatim in the output. Leave false for literal text input.
+     *                            URLs are then matched against the decoded form (including inside attribute values
+     *                            of decoded tags), while the original encoded characters are preserved verbatim in
+     *                            the output. Leave false for literal text input.
      */
     public function highlight(string $string, Linker $linker = new SimpleLinker(), bool $isHtmlEncoded = false): string
     {
-        return $this->highlighter->highlight($string, $linker, $isHtmlEncoded);
+        return $isHtmlEncoded
+            ? $this->encodedHighlighter->highlight($string, $linker)
+            : $this->plainHighlighter->highlight($string, $linker);
     }
 }
