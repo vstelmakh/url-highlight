@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight;
 
 use VStelmakh\UrlHighlight\Highlighter\Encoder\EntityDecoder;
-use VStelmakh\UrlHighlight\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Highlighter\EncodedHighlighter;
+use VStelmakh\UrlHighlight\Highlighter\PlainHighlighter;
 use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 use VStelmakh\UrlHighlight\Highlighter\Linker\SimpleLinker;
-use VStelmakh\UrlHighlight\Highlighter\Replacer\EncodedReplacer;
-use VStelmakh\UrlHighlight\Highlighter\Replacer\PlainReplacer;
+use VStelmakh\UrlHighlight\Highlighter\Renderer;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
@@ -23,18 +23,16 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 readonly class UrlHighlight
 {
     private Matcher $matcher;
-    private Highlighter $plainHighlighter;
-    private Highlighter $encodedHighlighter;
+    private PlainHighlighter $plainHighlighter;
+    private EncodedHighlighter $encodedHighlighter;
 
     public function __construct()
     {
         $this->matcher = new Matcher();
         $tokenizer = new Tokenizer();
-        $this->plainHighlighter = new Highlighter($tokenizer, new PlainReplacer($this->matcher));
-        $this->encodedHighlighter = new Highlighter(
-            $tokenizer,
-            new EncodedReplacer($this->matcher, $tokenizer, new EntityDecoder()),
-        );
+        $renderer = new Renderer();
+        $this->plainHighlighter = new PlainHighlighter($tokenizer, $this->matcher, $renderer);
+        $this->encodedHighlighter = new EncodedHighlighter(new EntityDecoder(), $tokenizer, $this->matcher, $renderer);
     }
 
     /**
