@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight;
 
-use VStelmakh\UrlHighlight\Highlighter\Encoder\EntityDecoder;
+use VStelmakh\UrlHighlight\Highlighter\Decoder\Decoder;
 use VStelmakh\UrlHighlight\Highlighter\EncodedHighlighter;
 use VStelmakh\UrlHighlight\Highlighter\PlainHighlighter;
 use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
@@ -32,7 +32,7 @@ readonly class UrlHighlight
         $tokenizer = new Tokenizer();
         $renderer = new Renderer();
         $this->plainHighlighter = new PlainHighlighter($tokenizer, $this->matcher, $renderer);
-        $this->encodedHighlighter = new EncodedHighlighter(new EntityDecoder(), $tokenizer, $this->matcher, $renderer);
+        $this->encodedHighlighter = new EncodedHighlighter(new Decoder(), $tokenizer, $this->matcher, $renderer);
     }
 
     /**

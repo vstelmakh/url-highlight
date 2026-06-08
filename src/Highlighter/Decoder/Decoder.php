@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter\Encoder;
+namespace VStelmakh\UrlHighlight\Highlighter\Decoder;
 
 /**
  * Decodes HTML entities while preserving a sparse map from decoded byte offsets back to the original
@@ -11,7 +11,7 @@ namespace VStelmakh\UrlHighlight\Highlighter\Encoder;
  *
  * @internal
  */
-final class EntityDecoder
+final class Decoder
 {
     private const string ENTITY_REGEX = '/&(?:[a-z][a-z0-9]*|#\d+|#x[0-9a-f]+);/i';
 

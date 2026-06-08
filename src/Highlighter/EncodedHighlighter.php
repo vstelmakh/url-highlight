@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Highlighter\Encoder\DecodedString;
-use VStelmakh\UrlHighlight\Highlighter\Encoder\EntityDecoder;
+use VStelmakh\UrlHighlight\Highlighter\Decoder\DecodedString;
+use VStelmakh\UrlHighlight\Highlighter\Decoder\Decoder;
 use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
@@ -23,7 +23,7 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 final readonly class EncodedHighlighter
 {
     public function __construct(
-        private EntityDecoder $entityDecoder,
+        private Decoder $decoder,
         private Tokenizer $tokenizer,
         private Matcher $matcher,
         private Renderer $renderer,
@@ -31,7 +31,7 @@ final readonly class EncodedHighlighter
 
     public function highlight(string $encoded, Linker $linker): string
     {
-        $decoded = $this->entityDecoder->decode($encoded);
+        $decoded = $this->decoder->decode($encoded);
         return $this->renderer->render($encoded, $this->collectMatches($decoded), $linker);
     }
 

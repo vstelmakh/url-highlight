@@ -7,7 +7,7 @@ namespace VStelmakh\UrlHighlight\Highlighter;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
- * A URL match located by its byte range [start, end) within the string it will be rendered into.
+ * A URL match located by its byte range [start, end] within the string it will be rendered into.
  *
  * @internal
  */
