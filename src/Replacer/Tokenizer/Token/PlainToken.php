@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token;
+namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
 
 /**
  * @internal

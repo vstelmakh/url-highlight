@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter\Strategy;
+namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
-use VStelmakh\UrlHighlight\Highlighter\Decoder\DecodedString;
-use VStelmakh\UrlHighlight\Highlighter\Decoder\Decoder;
-use VStelmakh\UrlHighlight\Highlighter\RangeMatch;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
+use VStelmakh\UrlHighlight\Replacer\Decoder\DecodedString;
+use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
+use VStelmakh\UrlHighlight\Replacer\RangeMatch;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 

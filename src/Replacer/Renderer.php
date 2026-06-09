@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter;
+namespace VStelmakh\UrlHighlight\Replacer;
 
-use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
+use VStelmakh\UrlHighlight\Replacer\Highlighter\Highlighter;
 
 /**
  * Splices rendered links into a source string: the bytes between matches are kept verbatim, and each
@@ -18,14 +18,14 @@ final readonly class Renderer
     /**
      * @param iterable<RangeMatch> $matches Ranges into $source, ascending by start, non-overlapping.
      */
-    public function render(string $source, iterable $matches, Linker $linker): string
+    public function render(string $source, iterable $matches, Highlighter $highlighter): string
     {
         $result = '';
         $cursor = 0;
 
         foreach ($matches as $rangeMatch) {
             $result .= substr($source, $cursor, $rangeMatch->start - $cursor);
-            $result .= $linker->render($rangeMatch->match);
+            $result .= $highlighter->render($rangeMatch->match);
             $cursor = $rangeMatch->end;
         }
 

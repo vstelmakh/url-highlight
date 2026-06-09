@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter\Decoder;
+namespace VStelmakh\UrlHighlight\Replacer\Decoder;
 
 /**
  * Decodes HTML entities while preserving a sparse map from decoded byte offsets back to the original

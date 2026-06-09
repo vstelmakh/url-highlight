@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter\Strategy;
+namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
-use VStelmakh\UrlHighlight\Highlighter\RangeMatch;
+use VStelmakh\UrlHighlight\Replacer\RangeMatch;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 
 /**

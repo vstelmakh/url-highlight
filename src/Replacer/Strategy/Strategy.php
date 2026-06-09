@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter\Strategy;
+namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
-use VStelmakh\UrlHighlight\Highlighter\RangeMatch;
+use VStelmakh\UrlHighlight\Replacer\RangeMatch;
 
 /**
  * Strategy for locating URLs within a single visible text run, returning each as a range into the

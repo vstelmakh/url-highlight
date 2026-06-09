@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter;
+namespace VStelmakh\UrlHighlight\Replacer;
 
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 

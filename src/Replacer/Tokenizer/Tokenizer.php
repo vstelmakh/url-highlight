@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter\Tokenizer;
+namespace VStelmakh\UrlHighlight\Replacer\Tokenizer;
 
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\CommentToken;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\PlainToken;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\Token;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\CommentToken;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\PlainToken;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\Token;
 
 /**
  * @internal

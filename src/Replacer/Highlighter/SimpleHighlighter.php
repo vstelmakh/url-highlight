@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter\Linker;
+namespace VStelmakh\UrlHighlight\Replacer\Highlighter;
 
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
-final readonly class SimpleLinker implements Linker
+final readonly class SimpleHighlighter implements Highlighter
 {
     #[\Override]
     public function render(UrlMatch $match): string

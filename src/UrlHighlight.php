@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight;
 
-use VStelmakh\UrlHighlight\Highlighter\Decoder\Decoder;
-use VStelmakh\UrlHighlight\Highlighter\Highlighter;
-use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
-use VStelmakh\UrlHighlight\Highlighter\Linker\SimpleLinker;
-use VStelmakh\UrlHighlight\Highlighter\Renderer;
-use VStelmakh\UrlHighlight\Highlighter\Strategy\EncodedStrategy;
-use VStelmakh\UrlHighlight\Highlighter\Strategy\PlainStrategy;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
+use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
+use VStelmakh\UrlHighlight\Replacer\Replacer;
+use VStelmakh\UrlHighlight\Replacer\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Replacer\Highlighter\SimpleHighlighter;
+use VStelmakh\UrlHighlight\Replacer\Renderer;
+use VStelmakh\UrlHighlight\Replacer\Strategy\EncodedStrategy;
+use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
@@ -24,8 +24,8 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 readonly class UrlHighlight
 {
     private Matcher $matcher;
-    private Highlighter $plainHighlighter;
-    private Highlighter $encodedHighlighter;
+    private Replacer $plainReplacer;
+    private Replacer $encodedReplacer;
 
     public function __construct()
     {
@@ -34,8 +34,8 @@ readonly class UrlHighlight
         $renderer = new Renderer();
         $plainStrategy = new PlainStrategy($this->matcher);
         $encodedStrategy = new EncodedStrategy(new Decoder(), $tokenizer, $this->matcher);
-        $this->plainHighlighter = new Highlighter($tokenizer, $plainStrategy, $renderer);
-        $this->encodedHighlighter = new Highlighter($tokenizer, $encodedStrategy, $renderer);
+        $this->plainReplacer = new Replacer($tokenizer, $plainStrategy, $renderer);
+        $this->encodedReplacer = new Replacer($tokenizer, $encodedStrategy, $renderer);
     }
 
     /**
@@ -52,16 +52,16 @@ readonly class UrlHighlight
      * Replace URLs in the input with rendered links.
      * Example: "Check the example.com website." -> "Check the <a href="http://example.com">example.com</a> website."
      *
-     * @param Linker $linker Renderer used to produce the link for each URL match.
+     * @param Highlighter $highlighter Renderer used to produce the link for each URL match.
      * @param bool $isHtmlEncoded Set to true when the input contains HTML entities (e.g. produced by htmlspecialchars).
      *                            URLs are then matched against the decoded form (including inside attribute values
      *                            of decoded tags), while the original encoded characters are preserved verbatim in
      *                            the output. Leave false for literal text input.
      */
-    public function highlight(string $string, Linker $linker = new SimpleLinker(), bool $isHtmlEncoded = false): string
+    public function highlight(string $string, Highlighter $highlighter = new SimpleHighlighter(), bool $isHtmlEncoded = false): string
     {
         return $isHtmlEncoded
-            ? $this->encodedHighlighter->highlight($string, $linker)
-            : $this->plainHighlighter->highlight($string, $linker);
+            ? $this->encodedReplacer->highlight($string, $highlighter)
+            : $this->plainReplacer->highlight($string, $highlighter);
     }
 }

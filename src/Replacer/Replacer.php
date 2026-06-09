@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter;
+namespace VStelmakh\UrlHighlight\Replacer;
 
-use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
-use VStelmakh\UrlHighlight\Highlighter\Strategy\Strategy;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\PlainToken;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
-use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
+use VStelmakh\UrlHighlight\Replacer\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\PlainToken;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
  * Renders URLs in HTML as links: tokenizes the input and collects URL matches only in visible text runs
@@ -18,7 +18,7 @@ use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
  *
  * @internal
  */
-final readonly class Highlighter
+final readonly class Replacer
 {
     /**
      * Tags whose content must not be highlighted (an existing link, or non-visible content).
@@ -32,10 +32,10 @@ final readonly class Highlighter
         private Renderer $renderer,
     ) {}
 
-    public function highlight(string $html, Linker $linker): string
+    public function highlight(string $html, Highlighter $highlighter): string
     {
         $matches = $this->collectMatches($html);
-        return $this->renderer->render($html, $matches, $linker);
+        return $this->renderer->render($html, $matches, $highlighter);
     }
 
     /**
