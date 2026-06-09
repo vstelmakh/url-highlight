@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight;
 
+use VStelmakh\UrlHighlight\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Highlighter\SimpleHighlighter;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
-use VStelmakh\UrlHighlight\Replacer\Replacer;
-use VStelmakh\UrlHighlight\Replacer\Highlighter\Highlighter;
-use VStelmakh\UrlHighlight\Replacer\Highlighter\SimpleHighlighter;
 use VStelmakh\UrlHighlight\Replacer\Renderer;
+use VStelmakh\UrlHighlight\Replacer\Replacer;
 use VStelmakh\UrlHighlight\Replacer\Strategy\EncodedStrategy;
 use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
-use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
  * Url highlight - library to parse URLs from string input and render them as HTML links.

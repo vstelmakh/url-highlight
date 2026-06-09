@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Replacer;
 
-use VStelmakh\UrlHighlight\Replacer\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 
 /**
  * Splices rendered links into a source string: the bytes between matches are kept verbatim, and each

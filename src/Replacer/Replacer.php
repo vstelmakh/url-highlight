@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Replacer;
 
-use VStelmakh\UrlHighlight\Replacer\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\PlainToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
