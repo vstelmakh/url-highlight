@@ -39,13 +39,12 @@ final readonly class Highlighter
     }
 
     /**
-     * Walk the tokens, skip the content of skip tags, and collect URL matches in every visible text run.
+     * Walk the tokens, skip the content of skip tags, and yield URL matches from every visible text run.
      *
-     * @return list<OffsetMatch>
+     * @return \Generator<OffsetMatch>
      */
-    private function collectMatches(string $html): array
+    private function collectMatches(string $html): \Generator
     {
-        $result = [];
         $cursor = 0;
         $skipDepth = 0;
 
@@ -53,9 +52,7 @@ final readonly class Highlighter
             $contents = $token->toString();
 
             if ($token instanceof PlainToken && $skipDepth === 0) {
-                foreach ($this->strategy->match($contents, $cursor) as $offsetMatch) {
-                    $result[] = $offsetMatch;
-                }
+                yield from $this->strategy->match($contents, $cursor);
             } elseif ($token instanceof TagToken && $this->isSkipTag($token->name)) {
                 if ($token->isClosing) {
                     $skipDepth = max(0, $skipDepth - 1);
@@ -66,8 +63,6 @@ final readonly class Highlighter
 
             $cursor += strlen($contents);
         }
-
-        return $result;
     }
 
     private function isSkipTag(string $tag): bool

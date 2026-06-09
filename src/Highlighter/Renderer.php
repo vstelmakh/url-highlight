@@ -16,9 +16,9 @@ use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 final readonly class Renderer
 {
     /**
-     * @param list<OffsetMatch> $matches Ranges into $source, ascending by start, non-overlapping.
+     * @param iterable<OffsetMatch> $matches Ranges into $source, ascending by start, non-overlapping.
      */
-    public function render(string $source, array $matches, Linker $linker): string
+    public function render(string $source, iterable $matches, Linker $linker): string
     {
         $result = '';
         $cursor = 0;

@@ -29,48 +29,38 @@ final readonly class EncodedStrategy implements Strategy
     ) {}
 
     /**
-     * @return list<OffsetMatch>
+     * @return \Generator<OffsetMatch>
      */
     #[\Override]
-    public function match(string $span, int $offset): array
+    public function match(string $span, int $offset): \Generator
     {
         $decoded = $this->decoder->decode($span);
-
-        $result = [];
         $cursor = 0;
 
         foreach ($this->tokenizer->tokenize($decoded->value) as $token) {
             $contents = $token->toString();
-            $matches = $token instanceof TagToken
+            yield from $token instanceof TagToken
                 ? $this->attributeMatches($contents, $decoded, $offset, $cursor)
                 : $this->textMatches($contents, $decoded, $offset, $cursor);
 
-            foreach ($matches as $offsetMatch) {
-                $result[] = $offsetMatch;
-            }
-
             $cursor += strlen($contents);
         }
-
-        return $result;
     }
 
     /**
-     * @return list<OffsetMatch>
+     * @return \Generator<OffsetMatch>
      */
-    private function textMatches(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): array
+    private function textMatches(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
     {
-        $result = [];
         foreach ($this->matcher->match($text) as $match) {
-            $result[] = $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $match->offset, $match);
+            yield $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $match->offset, $match);
         }
-        return $result;
     }
 
     /**
-     * @return list<OffsetMatch>
+     * @return \Generator<OffsetMatch>
      */
-    private function attributeMatches(string $tagContents, DecodedString $decoded, int $spanOffset, int $baseOffset): array
+    private function attributeMatches(string $tagContents, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
     {
         $found = preg_match_all(
             '/=\s*(?:"([^"]*)"|\'([^\']*)\')/',
@@ -79,10 +69,9 @@ final readonly class EncodedStrategy implements Strategy
             PREG_OFFSET_CAPTURE | PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL,
         );
         if ($found === false || $found === 0) {
-            return [];
+            return;
         }
 
-        $result = [];
         foreach ($attributes as $attribute) {
             // Exactly one quote branch matches; the other capture group is null (PREG_UNMATCHED_AS_NULL).
             $quoted = $attribute[1][1] !== -1 ? $attribute[1] : $attribute[2];
@@ -91,10 +80,9 @@ final readonly class EncodedStrategy implements Strategy
                 continue;
             }
             foreach ($this->matcher->match($value) as $match) {
-                $result[] = $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $quoted[1] + $match->offset, $match);
+                yield $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $quoted[1] + $match->offset, $match);
             }
         }
-        return $result;
     }
 
     private function toEncodedMatch(DecodedString $decoded, int $spanOffset, int $decodedStart, UrlMatch $match): OffsetMatch

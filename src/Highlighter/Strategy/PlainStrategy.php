@@ -19,17 +19,15 @@ final readonly class PlainStrategy implements Strategy
     ) {}
 
     /**
-     * @return list<OffsetMatch>
+     * @return \Generator<OffsetMatch>
      */
     #[\Override]
-    public function match(string $span, int $offset): array
+    public function match(string $span, int $offset): \Generator
     {
-        $result = [];
         foreach ($this->matcher->match($span) as $match) {
             $start = $offset + $match->offset;
             $end = $start + strlen($match->match);
-            $result[] = new OffsetMatch($start, $end, $match);
+            yield new OffsetMatch($start, $end, $match);
         }
-        return $result;
     }
 }

@@ -18,7 +18,7 @@ interface Strategy
     /**
      * @param string $span Run of visible text from the source.
      * @param int $offset Byte offset of $span within the original source, used to map matches back into it.
-     * @return list<OffsetMatch>
+     * @return iterable<OffsetMatch>
      */
-    public function match(string $span, int $offset): array;
+    public function match(string $span, int $offset): iterable;
 }
