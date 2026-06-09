@@ -6,7 +6,7 @@ namespace VStelmakh\UrlHighlight\Highlighter\Strategy;
 
 use VStelmakh\UrlHighlight\Highlighter\Decoder\DecodedString;
 use VStelmakh\UrlHighlight\Highlighter\Decoder\Decoder;
-use VStelmakh\UrlHighlight\Highlighter\OffsetMatch;
+use VStelmakh\UrlHighlight\Highlighter\RangeMatch;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
@@ -29,7 +29,7 @@ final readonly class EncodedStrategy implements Strategy
     ) {}
 
     /**
-     * @return \Generator<OffsetMatch>
+     * @return \Generator<RangeMatch>
      */
     #[\Override]
     public function match(string $span, int $offset): \Generator
@@ -48,7 +48,7 @@ final readonly class EncodedStrategy implements Strategy
     }
 
     /**
-     * @return \Generator<OffsetMatch>
+     * @return \Generator<RangeMatch>
      */
     private function textMatches(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
     {
@@ -58,7 +58,7 @@ final readonly class EncodedStrategy implements Strategy
     }
 
     /**
-     * @return \Generator<OffsetMatch>
+     * @return \Generator<RangeMatch>
      */
     private function attributeMatches(string $tagContents, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
     {
@@ -85,10 +85,10 @@ final readonly class EncodedStrategy implements Strategy
         }
     }
 
-    private function toEncodedMatch(DecodedString $decoded, int $spanOffset, int $decodedStart, UrlMatch $match): OffsetMatch
+    private function toEncodedMatch(DecodedString $decoded, int $spanOffset, int $decodedStart, UrlMatch $match): RangeMatch
     {
         $start = $spanOffset + $decoded->toEncodedOffset($decodedStart);
         $end = $spanOffset + $decoded->toEncodedOffset($decodedStart + strlen($match->match));
-        return new OffsetMatch($start, $end, $match);
+        return new RangeMatch($start, $end, $match);
     }
 }

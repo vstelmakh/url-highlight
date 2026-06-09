@@ -16,17 +16,17 @@ use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 final readonly class Renderer
 {
     /**
-     * @param iterable<OffsetMatch> $matches Ranges into $source, ascending by start, non-overlapping.
+     * @param iterable<RangeMatch> $matches Ranges into $source, ascending by start, non-overlapping.
      */
     public function render(string $source, iterable $matches, Linker $linker): string
     {
         $result = '';
         $cursor = 0;
 
-        foreach ($matches as $offsetMatch) {
-            $result .= substr($source, $cursor, $offsetMatch->start - $cursor);
-            $result .= $linker->render($offsetMatch->match);
-            $cursor = $offsetMatch->end;
+        foreach ($matches as $rangeMatch) {
+            $result .= substr($source, $cursor, $rangeMatch->start - $cursor);
+            $result .= $linker->render($rangeMatch->match);
+            $cursor = $rangeMatch->end;
         }
 
         return $result . substr($source, $cursor);

@@ -41,7 +41,7 @@ final readonly class Highlighter
     /**
      * Walk the tokens, skip the content of skip tags, and yield URL matches from every visible text run.
      *
-     * @return \Generator<OffsetMatch>
+     * @return \Generator<RangeMatch>
      */
     private function collectMatches(string $html): \Generator
     {

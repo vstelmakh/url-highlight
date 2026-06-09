@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Highlighter\Strategy;
 
-use VStelmakh\UrlHighlight\Highlighter\OffsetMatch;
+use VStelmakh\UrlHighlight\Highlighter\RangeMatch;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 
 /**
@@ -19,7 +19,7 @@ final readonly class PlainStrategy implements Strategy
     ) {}
 
     /**
-     * @return \Generator<OffsetMatch>
+     * @return \Generator<RangeMatch>
      */
     #[\Override]
     public function match(string $span, int $offset): \Generator
@@ -27,7 +27,7 @@ final readonly class PlainStrategy implements Strategy
         foreach ($this->matcher->match($span) as $match) {
             $start = $offset + $match->offset;
             $end = $start + strlen($match->match);
-            yield new OffsetMatch($start, $end, $match);
+            yield new RangeMatch($start, $end, $match);
         }
     }
 }

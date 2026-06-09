@@ -11,7 +11,7 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
  *
  * @internal
  */
-final readonly class OffsetMatch
+final readonly class RangeMatch
 {
     public function __construct(
         public int $start,
