@@ -126,6 +126,13 @@ class UrlHighlightTest extends TestCase
                 '&lt;a href=&quot;<a href="http://example.com?q=query">http://example.com?q=query</a>&quot;&gt;'
                     . '<a href="http://example.com?q=query">example.com?q=query</a>&lt;/a&gt;',
             ],
+            'mixed encoded and raw html' => [
+                '&lt;a href=&quot;http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt;'
+                    . '<a href="http://example.com">example.com</a>',
+                '&lt;a href=&quot;<a href="http://example.com?q=query">http://example.com?q=query</a>&quot;&gt;'
+                    . '<a href="http://example.com?q=query">example.com?q=query</a>&lt;/a&gt;'
+                    . '<a href="http://example.com">example.com</a>',
+            ],
         ];
     }
 }

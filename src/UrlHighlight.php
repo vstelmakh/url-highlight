@@ -10,6 +10,7 @@ use VStelmakh\UrlHighlight\Highlighter\PlainHighlighter;
 use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
 use VStelmakh\UrlHighlight\Highlighter\Linker\SimpleLinker;
 use VStelmakh\UrlHighlight\Highlighter\Renderer;
+use VStelmakh\UrlHighlight\Highlighter\TextSpanExtractor;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
@@ -31,8 +32,9 @@ readonly class UrlHighlight
         $this->matcher = new Matcher();
         $tokenizer = new Tokenizer();
         $renderer = new Renderer();
-        $this->plainHighlighter = new PlainHighlighter($tokenizer, $this->matcher, $renderer);
-        $this->encodedHighlighter = new EncodedHighlighter(new Decoder(), $tokenizer, $this->matcher, $renderer);
+        $spanExtractor = new TextSpanExtractor($tokenizer);
+        $this->plainHighlighter = new PlainHighlighter($spanExtractor, $this->matcher, $renderer);
+        $this->encodedHighlighter = new EncodedHighlighter(new Decoder(), $spanExtractor, $tokenizer, $this->matcher, $renderer);
     }
 
     /**

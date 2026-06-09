@@ -13,10 +13,14 @@ use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
- * Highlights URLs in HTML-entity encoded input. URLs are matched against the decoded form (so
- * entities like &amp; do not break matching) and everywhere it appears - in plain text and inside
- * attribute values of decoded tags (bounded by the attribute's quote characters so a trailing quote
- * is not swallowed). The original encoded characters are kept verbatim in the output.
+ * Highlights URLs in partially HTML-entity encoded input. The input may mix genuine HTML markup with
+ * HTML-escaped text (e.g. a fragment produced by htmlspecialchars embedded in a real page). Genuine
+ * tags keep their literal "<"..">", while escaped markup stays inside the text runs as entities like
+ * &lt;. The same skip-tag rules as plain mode apply (the content of existing links, scripts and styles
+ * is left untouched) - this is handled by the shared TextSpanExtractor. Each remaining text run is then
+ * decoded so URLs are matched against their true characters (so entities like &amp; do not break
+ * matching) both in escaped tag attribute values and in escaped link text, while the original encoded
+ * characters are kept verbatim in the output.
  *
  * @internal
  */
@@ -24,6 +28,7 @@ final readonly class EncodedHighlighter
 {
     public function __construct(
         private Decoder $decoder,
+        private TextSpanExtractor $spanExtractor,
         private Tokenizer $tokenizer,
         private Matcher $matcher,
         private Renderer $renderer,
@@ -31,26 +36,41 @@ final readonly class EncodedHighlighter
 
     public function highlight(string $encoded, Linker $linker): string
     {
-        $decoded = $this->decoder->decode($encoded);
-        return $this->renderer->render($encoded, $this->collectMatches($decoded), $linker);
+        return $this->renderer->render($encoded, $this->collectMatches($encoded), $linker);
     }
 
     /**
-     * Tokenize the decoded form and find URLs in plain text spans and inside attribute values,
-     * returning each as an OffsetMatch whose range is mapped back into the encoded string.
+     * @return list<OffsetMatch>
+     */
+    private function collectMatches(string $encoded): array
+    {
+        $result = [];
+        foreach ($this->spanExtractor->extract($encoded) as $span) {
+            foreach ($this->encodedSpanMatches($span->content, $span->offset) as $offsetMatch) {
+                $result[] = $offsetMatch;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Decode a span of escaped text, then find URLs in its plain text spans and inside the attribute
+     * values of any escaped tags it contains, mapping each range back into the original encoded input.
      *
      * @return list<OffsetMatch>
      */
-    private function collectMatches(DecodedString $decoded): array
+    private function encodedSpanMatches(string $encodedSpan, int $spanOffset): array
     {
+        $decoded = $this->decoder->decode($encodedSpan);
+
         $result = [];
         $cursor = 0;
 
         foreach ($this->tokenizer->tokenize($decoded->value) as $token) {
             $contents = $token->toString();
             $matches = $token instanceof TagToken
-                ? $this->attributeMatches($contents, $decoded, $cursor)
-                : $this->textMatches($contents, $decoded, $cursor);
+                ? $this->attributeMatches($contents, $decoded, $spanOffset, $cursor)
+                : $this->textMatches($contents, $decoded, $spanOffset, $cursor);
 
             foreach ($matches as $offsetMatch) {
                 $result[] = $offsetMatch;
@@ -65,11 +85,11 @@ final readonly class EncodedHighlighter
     /**
      * @return list<OffsetMatch>
      */
-    private function textMatches(string $text, DecodedString $decoded, int $baseOffset): array
+    private function textMatches(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): array
     {
         $result = [];
         foreach ($this->matcher->match($text) as $match) {
-            $result[] = $this->toEncodedMatch($decoded, $baseOffset + $match->offset, $match);
+            $result[] = $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $match->offset, $match);
         }
         return $result;
     }
@@ -77,7 +97,7 @@ final readonly class EncodedHighlighter
     /**
      * @return list<OffsetMatch>
      */
-    private function attributeMatches(string $tagContents, DecodedString $decoded, int $baseOffset): array
+    private function attributeMatches(string $tagContents, DecodedString $decoded, int $spanOffset, int $baseOffset): array
     {
         $found = preg_match_all(
             '/=\s*(?:"([^"]*)"|\'([^\']*)\')/',
@@ -98,16 +118,16 @@ final readonly class EncodedHighlighter
                 continue;
             }
             foreach ($this->matcher->match($value) as $match) {
-                $result[] = $this->toEncodedMatch($decoded, $baseOffset + $quoted[1] + $match->offset, $match);
+                $result[] = $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $quoted[1] + $match->offset, $match);
             }
         }
         return $result;
     }
 
-    private function toEncodedMatch(DecodedString $decoded, int $decodedStart, UrlMatch $match): OffsetMatch
+    private function toEncodedMatch(DecodedString $decoded, int $spanOffset, int $decodedStart, UrlMatch $match): OffsetMatch
     {
-        $start = $decoded->toEncodedOffset($decodedStart);
-        $end = $decoded->toEncodedOffset($decodedStart + strlen($match->match));
+        $start = $spanOffset + $decoded->toEncodedOffset($decodedStart);
+        $end = $spanOffset + $decoded->toEncodedOffset($decodedStart + strlen($match->match));
         return new OffsetMatch($start, $end, $match);
     }
 }
