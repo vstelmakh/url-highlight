@@ -2,66 +2,39 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Highlighter;
+namespace VStelmakh\UrlHighlight\Highlighter\Strategy;
 
 use VStelmakh\UrlHighlight\Highlighter\Decoder\DecodedString;
 use VStelmakh\UrlHighlight\Highlighter\Decoder\Decoder;
-use VStelmakh\UrlHighlight\Highlighter\Linker\Linker;
+use VStelmakh\UrlHighlight\Highlighter\OffsetMatch;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Highlighter\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
- * Highlights URLs in partially HTML-entity encoded input. The input may mix genuine HTML markup with
- * HTML-escaped text (e.g. a fragment produced by htmlspecialchars embedded in a real page). Genuine
- * tags keep their literal "<"..">", while escaped markup stays inside the text runs as entities like
- * &lt;. The same skip-tag rules as plain mode apply (the content of existing links, scripts and styles
- * is left untouched) - this is handled by the shared TextSpanExtractor. Each remaining text run is then
- * decoded so URLs are matched against their true characters (so entities like &amp; do not break
- * matching) both in escaped tag attribute values and in escaped link text, while the original encoded
- * characters are kept verbatim in the output.
+ * Matches URLs in a run of HTML-escaped text (e.g. from htmlspecialchars). The run is decoded so URLs
+ * are matched against their true characters (so entities like &amp; do not break matching) - both in
+ * escaped link text and inside escaped tag attribute values - while each match is mapped back onto the
+ * original encoded characters so they stay verbatim in the output.
  *
  * @internal
  */
-final readonly class EncodedHighlighter
+final readonly class EncodedStrategy implements Strategy
 {
     public function __construct(
         private Decoder $decoder,
-        private TextSpanExtractor $spanExtractor,
         private Tokenizer $tokenizer,
         private Matcher $matcher,
-        private Renderer $renderer,
     ) {}
 
-    public function highlight(string $encoded, Linker $linker): string
-    {
-        return $this->renderer->render($encoded, $this->collectMatches($encoded), $linker);
-    }
-
     /**
      * @return list<OffsetMatch>
      */
-    private function collectMatches(string $encoded): array
+    #[\Override]
+    public function match(string $span, int $offset): array
     {
-        $result = [];
-        foreach ($this->spanExtractor->extract($encoded) as $span) {
-            foreach ($this->encodedSpanMatches($span->content, $span->offset) as $offsetMatch) {
-                $result[] = $offsetMatch;
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Decode a span of escaped text, then find URLs in its plain text spans and inside the attribute
-     * values of any escaped tags it contains, mapping each range back into the original encoded input.
-     *
-     * @return list<OffsetMatch>
-     */
-    private function encodedSpanMatches(string $encodedSpan, int $spanOffset): array
-    {
-        $decoded = $this->decoder->decode($encodedSpan);
+        $decoded = $this->decoder->decode($span);
 
         $result = [];
         $cursor = 0;
@@ -69,8 +42,8 @@ final readonly class EncodedHighlighter
         foreach ($this->tokenizer->tokenize($decoded->value) as $token) {
             $contents = $token->toString();
             $matches = $token instanceof TagToken
-                ? $this->attributeMatches($contents, $decoded, $spanOffset, $cursor)
-                : $this->textMatches($contents, $decoded, $spanOffset, $cursor);
+                ? $this->attributeMatches($contents, $decoded, $offset, $cursor)
+                : $this->textMatches($contents, $decoded, $offset, $cursor);
 
             foreach ($matches as $offsetMatch) {
                 $result[] = $offsetMatch;
