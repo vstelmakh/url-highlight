@@ -13,7 +13,7 @@ final readonly class SimpleHighlighter implements Highlighter
     {
         return sprintf(
             '<a href="%s">%s</a>',
-            $match->toHref(),
+            htmlspecialchars($match->toHref(), ENT_QUOTES | ENT_HTML5),
             htmlspecialchars($match->match, ENT_QUOTES | ENT_HTML5),
         );
     }
