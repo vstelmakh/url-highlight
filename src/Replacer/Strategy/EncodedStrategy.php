@@ -52,7 +52,7 @@ final readonly class EncodedStrategy implements Strategy
     private function textMatches(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
     {
         foreach ($this->matcher->match($text) as $match) {
-            yield $this->toEncodedMatch($decoded, $spanOffset, $baseOffset, $match);
+            yield $this->mapToSource($decoded, $spanOffset, $baseOffset, $match);
         }
     }
 
@@ -79,12 +79,12 @@ final readonly class EncodedStrategy implements Strategy
                 continue;
             }
             foreach ($this->matcher->match($value) as $match) {
-                yield $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $quoted[1], $match);
+                yield $this->mapToSource($decoded, $spanOffset, $baseOffset + $quoted[1], $match);
             }
         }
     }
 
-    private function toEncodedMatch(DecodedString $decoded, int $spanOffset, int $baseOffset, UrlMatch $match): UrlMatch
+    private function mapToSource(DecodedString $decoded, int $spanOffset, int $baseOffset, UrlMatch $match): UrlMatch
     {
         $start = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->start);
         $end = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->end);
