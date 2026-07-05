@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer;
 
 use VStelmakh\UrlHighlight\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\PlainToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
@@ -41,7 +42,7 @@ final readonly class Replacer
     /**
      * Walk the tokens, skip the content of skip tags, and yield URL matches from every visible text run.
      *
-     * @return \Generator<RangeMatch>
+     * @return \Generator<UrlMatch>
      */
     private function collectMatches(string $html): \Generator
     {

@@ -6,7 +6,7 @@ namespace VStelmakh\UrlHighlight\Tests;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VStelmakh\UrlHighlight\Url;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
 /**
@@ -30,7 +30,7 @@ class UrlHighlightTest extends TestCase
     public function testFind(string $input, array $expected): void
     {
         $matches = $this->urlHighlight->find($input);
-        $actual = array_map(static fn (UrlMatch $match): string => $match->match, $matches);
+        $actual = array_map(static fn (Url $url): string => $url->value, $matches);
         self::assertSame($expected, $actual);
     }
 

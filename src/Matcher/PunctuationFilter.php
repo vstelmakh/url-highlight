@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Url;
+
 /**
  * Strips trailing unbalanced brackets, quotes, and punctuation from URL match.
  *
@@ -19,19 +21,19 @@ final readonly class PunctuationFilter
     private const array SYMMETRIC = ['"' => true, '\'' => true];
     private const array SINGLE = ['.' => true, ',' => true, '!' => true, '?' => true, ';' => true, ':' => true];
 
-    public function filter(UrlMatch $match): UrlMatch
+    public function filter(Url $url): Url
     {
-        $component = $match->fragment ?? $match->query ?? $match->path;
+        $component = $url->fragment ?? $url->query ?? $url->path;
         if ($component === null) {
-            return $match;
+            return $url;
         }
 
         $filtered = $this->filterTrailing($component);
         if ($filtered === $component) {
-            return $match;
+            return $url;
         }
 
-        [$path, $query, $fragment] = [$match->path, $match->query, $match->fragment];
+        [$path, $query, $fragment] = [$url->path, $url->query, $url->fragment];
         if ($fragment !== null) {
             $fragment = $filtered;
         } elseif ($query !== null) {
@@ -40,13 +42,12 @@ final readonly class PunctuationFilter
             $path = $filtered;
         }
 
-        return new UrlMatch(
-            match: substr($match->match, 0, -strlen($component)) . $filtered,
-            offset: $match->offset,
-            scheme: $match->scheme,
-            userinfo: $match->userinfo,
-            host: $match->host,
-            port: $match->port,
+        return new Url(
+            value: substr($url->value, 0, -strlen($component)) . $filtered,
+            scheme: $url->scheme,
+            userinfo: $url->userinfo,
+            host: $url->host,
+            port: $url->port,
             path: $path,
             query: $query,
             fragment: $fragment,

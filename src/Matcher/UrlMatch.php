@@ -4,47 +4,18 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Url;
+
+/**
+ * A URL matched in a source string, located by its byte range [start, end] within it.
+ *
+ * @internal
+ */
 final readonly class UrlMatch
 {
     public function __construct(
-        public string $match,
-        public int $offset,
-        public ?string $scheme,
-        public ?string $userinfo,
-        public string $host,
-        public ?int $port,
-        public ?string $path,
-        public ?string $query,
-        public ?string $fragment,
+        public int $start,
+        public int $end,
+        public Url $url,
     ) {}
-
-    public function isEmail(): bool
-    {
-        if (!in_array($this->scheme, [null, 'mailto'], true)) {
-            return false;
-        }
-
-        if ($this->userinfo === null) {
-            return false;
-        }
-
-        if ($this->port !== null || $this->path !== null || $this->query !== null || $this->fragment !== null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function toHref(string $fallbackScheme = 'http'): string
-    {
-        if ($this->isEmail()) {
-            return $this->scheme === null ? "mailto:{$this->match}" : $this->match;
-        }
-
-        if ($this->scheme !== null) {
-            return $this->match;
-        }
-
-        return "{$fallbackScheme}://{$this->match}";
-    }
 }

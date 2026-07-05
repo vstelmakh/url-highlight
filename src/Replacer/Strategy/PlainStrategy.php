@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
-use VStelmakh\UrlHighlight\Replacer\RangeMatch;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
+use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
  * Matches URLs in a run of literal text.
@@ -19,15 +19,13 @@ final readonly class PlainStrategy implements Strategy
     ) {}
 
     /**
-     * @return \Generator<RangeMatch>
+     * @return \Generator<UrlMatch>
      */
     #[\Override]
     public function match(string $span, int $offset): \Generator
     {
         foreach ($this->matcher->match($span) as $match) {
-            $start = $offset + $match->offset;
-            $end = $start + strlen($match->match);
-            yield new RangeMatch($start, $end, $match);
+            yield new UrlMatch($offset + $match->start, $offset + $match->end, $match->url);
         }
     }
 }

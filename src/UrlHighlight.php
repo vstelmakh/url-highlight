@@ -9,6 +9,7 @@ use VStelmakh\UrlHighlight\Highlighter\SimpleHighlighter;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
+use VStelmakh\UrlHighlight\Url;
 use VStelmakh\UrlHighlight\Replacer\Renderer;
 use VStelmakh\UrlHighlight\Replacer\Replacer;
 use VStelmakh\UrlHighlight\Replacer\Strategy\EncodedStrategy;
@@ -41,11 +42,14 @@ readonly class UrlHighlight
     /**
      * Find all URLs in the input string.
      *
-     * @return array<UrlMatch>
+     * @return array<Url>
      */
     public function find(string $string): array
     {
-        return $this->matcher->match($string);
+        return array_map(
+            static fn (UrlMatch $match): Url => $match->url,
+            $this->matcher->match($string),
+        );
     }
 
     /**

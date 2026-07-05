@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Matcher;
 
 use VStelmakh\UrlHighlight\Domains;
+use VStelmakh\UrlHighlight\Url;
 
 /**
  * @internal
  */
 final readonly class HostValidator
 {
-    public function isValid(UrlMatch $match): bool
+    public function isValid(Url $url): bool
     {
-        if ($match->scheme !== null) {
+        if ($url->scheme !== null) {
             return true;
         }
 
-        $last = strrchr($match->host, '.');
+        $last = strrchr($url->host, '.');
         $tld = $last !== false ? substr($last, 1) : null;
 
         if ($tld === null) {

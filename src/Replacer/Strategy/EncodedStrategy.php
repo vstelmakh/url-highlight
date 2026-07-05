@@ -6,7 +6,6 @@ namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
 use VStelmakh\UrlHighlight\Replacer\Decoder\DecodedString;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
-use VStelmakh\UrlHighlight\Replacer\RangeMatch;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
@@ -29,7 +28,7 @@ final readonly class EncodedStrategy implements Strategy
     ) {}
 
     /**
-     * @return \Generator<RangeMatch>
+     * @return \Generator<UrlMatch>
      */
     #[\Override]
     public function match(string $span, int $offset): \Generator
@@ -48,17 +47,17 @@ final readonly class EncodedStrategy implements Strategy
     }
 
     /**
-     * @return \Generator<RangeMatch>
+     * @return \Generator<UrlMatch>
      */
     private function textMatches(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
     {
         foreach ($this->matcher->match($text) as $match) {
-            yield $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $match->offset, $match);
+            yield $this->toEncodedMatch($decoded, $spanOffset, $baseOffset, $match);
         }
     }
 
     /**
-     * @return \Generator<RangeMatch>
+     * @return \Generator<UrlMatch>
      */
     private function attributeMatches(string $tagContents, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
     {
@@ -80,15 +79,15 @@ final readonly class EncodedStrategy implements Strategy
                 continue;
             }
             foreach ($this->matcher->match($value) as $match) {
-                yield $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $quoted[1] + $match->offset, $match);
+                yield $this->toEncodedMatch($decoded, $spanOffset, $baseOffset + $quoted[1], $match);
             }
         }
     }
 
-    private function toEncodedMatch(DecodedString $decoded, int $spanOffset, int $decodedStart, UrlMatch $match): RangeMatch
+    private function toEncodedMatch(DecodedString $decoded, int $spanOffset, int $baseOffset, UrlMatch $match): UrlMatch
     {
-        $start = $spanOffset + $decoded->toEncodedOffset($decodedStart);
-        $end = $spanOffset + $decoded->toEncodedOffset($decodedStart + strlen($match->match));
-        return new RangeMatch($start, $end, $match);
+        $start = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->start);
+        $end = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->end);
+        return new UrlMatch($start, $end, $match->url);
     }
 }

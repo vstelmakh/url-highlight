@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Highlighter;
 
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VStelmakh\UrlHighlight\Url;
 
 interface Highlighter
 {
-    public function render(UrlMatch $match): string;
+    public function render(Url $url): string;
 }

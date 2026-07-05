@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Url;
+
 /**
  * @internal
  */
@@ -24,31 +26,23 @@ final readonly class Matcher
     public function match(string $string): array
     {
         $result = [];
-        $urlRegex = $this->regex(false);
+        $urlRegex = $this->regex();
         /** @var $matches array<array{0: ?string, 1: int}> */
         preg_match_all($urlRegex, $string, $matches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE + PREG_UNMATCHED_AS_NULL);
         foreach ($matches as $rawMatch) {
-            $match = $this->normalize($rawMatch);
-            if ($match !== null) {
-                $result[] = $match;
+            $url = $this->normalize($rawMatch);
+            if ($url !== null) {
+                $start = $rawMatch[0][1];
+                $result[] = new UrlMatch($start, $start + strlen($url->value), $url);
             }
         }
         return $result;
     }
 
-    public function matchStrict(string $string): ?UrlMatch
-    {
-        $urlRegex = $this->regex(true);
-        /** @var $rawMatch array<array{0: ?string, 1: int}> */
-        preg_match($urlRegex, $string, $rawMatch, PREG_OFFSET_CAPTURE + PREG_UNMATCHED_AS_NULL);
-        return $rawMatch === [] ? null : $this->normalize($rawMatch);
-    }
-
-    private function regex(bool $strict): string
+    private function regex(): string
     {
         return implode("\n", [
             '/',
-            $strict ? '^' : '',     // start anchor, if strict
             $this->schemeRegex(),   // scheme, optional
             $this->userinfoRegex(), // userinfo, optional
             $this->hostRegex(),     // host, required
@@ -56,7 +50,6 @@ final readonly class Matcher
             $this->pathRegex(),     // path, optional
             $this->queryRegex(),    // query, optional
             $this->fragmentRegex(), // fragment, optional
-            $strict ? '$' : '',     // end anchor, if strict
             '/ixuJ',                // case-insensitive, extended, unicode, j-changed
         ]);
     }
@@ -182,11 +175,10 @@ final readonly class Matcher
     /**
      * @param array<array{0: ?string, 1: int}> $rawMatch [0 => (string) value, 1 => (int) offset]
      */
-    private function normalize(array $rawMatch): ?UrlMatch
+    private function normalize(array $rawMatch): ?Url
     {
-        $match = new UrlMatch(
-            match: $rawMatch[0][0] ?? '',
-            offset: $rawMatch[0][1],
+        $url = new Url(
+            value: $rawMatch[0][0] ?? '',
             scheme: $rawMatch['scheme'][0],
             userinfo: $rawMatch['userinfo'][0],
             host: $rawMatch['host'][0] ?? '',
@@ -196,10 +188,10 @@ final readonly class Matcher
             fragment: $rawMatch['fragment'][0],
         );
 
-        if (!$this->hostValidator->isValid($match)) {
+        if (!$this->hostValidator->isValid($url)) {
             return null;
         }
 
-        return $this->punctuationFilter->filter($match);
+        return $this->punctuationFilter->filter($url);
     }
 }
