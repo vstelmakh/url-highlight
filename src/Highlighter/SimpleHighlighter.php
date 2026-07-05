@@ -6,6 +6,9 @@ namespace VStelmakh\UrlHighlight\Highlighter;
 
 use VStelmakh\UrlHighlight\Url;
 
+/**
+ * @api
+ */
 final readonly class SimpleHighlighter implements Highlighter
 {
     #[\Override]
