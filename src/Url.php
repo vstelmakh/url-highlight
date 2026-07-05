@@ -12,7 +12,7 @@ namespace VStelmakh\UrlHighlight;
 final readonly class Url
 {
     public function __construct(
-        public string $value,
+        public string $full,
         public ?string $scheme,
         public ?string $userinfo,
         public string $host,
@@ -42,13 +42,13 @@ final readonly class Url
     public function toHref(string $fallbackScheme = 'http'): string
     {
         if ($this->isEmail()) {
-            return $this->scheme === null ? "mailto:{$this->value}" : $this->value;
+            return $this->scheme === null ? "mailto:{$this->full}" : $this->full;
         }
 
         if ($this->scheme !== null) {
-            return $this->value;
+            return $this->full;
         }
 
-        return "{$fallbackScheme}://{$this->value}";
+        return "{$fallbackScheme}://{$this->full}";
     }
 }

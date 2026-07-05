@@ -14,7 +14,7 @@ final readonly class SimpleHighlighter implements Highlighter
         return sprintf(
             '<a href="%s">%s</a>',
             htmlspecialchars($url->toHref(), ENT_QUOTES | ENT_HTML5),
-            htmlspecialchars($url->value, ENT_QUOTES | ENT_HTML5),
+            htmlspecialchars($url->full, ENT_QUOTES | ENT_HTML5),
         );
     }
 }

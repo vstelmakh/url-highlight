@@ -43,7 +43,7 @@ final readonly class PunctuationFilter
         }
 
         return new Url(
-            value: substr($url->value, 0, -strlen($component)) . $filtered,
+            full: substr($url->full, 0, -strlen($component)) . $filtered,
             scheme: $url->scheme,
             userinfo: $url->userinfo,
             host: $url->host,

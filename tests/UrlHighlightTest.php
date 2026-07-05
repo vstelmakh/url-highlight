@@ -30,7 +30,7 @@ class UrlHighlightTest extends TestCase
     public function testFind(string $input, array $expected): void
     {
         $matches = $this->urlHighlight->find($input);
-        $actual = array_map(static fn (Url $url): string => $url->value, $matches);
+        $actual = array_map(static fn (Url $url): string => $url->full, $matches);
         self::assertSame($expected, $actual);
     }
 

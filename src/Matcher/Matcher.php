@@ -33,7 +33,7 @@ final readonly class Matcher
             $url = $this->normalize($rawMatch);
             if ($url !== null) {
                 $start = $rawMatch[0][1];
-                $result[] = new UrlMatch($start, $start + strlen($url->value), $url);
+                $result[] = new UrlMatch($start, $start + strlen($url->full), $url);
             }
         }
         return $result;
@@ -178,7 +178,7 @@ final readonly class Matcher
     private function normalize(array $rawMatch): ?Url
     {
         $url = new Url(
-            value: $rawMatch[0][0] ?? '',
+            full: $rawMatch[0][0] ?? '',
             scheme: $rawMatch['scheme'][0],
             userinfo: $rawMatch['userinfo'][0],
             host: $rawMatch['host'][0] ?? '',
