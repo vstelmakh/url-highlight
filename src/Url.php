@@ -9,7 +9,7 @@ namespace VStelmakh\UrlHighlight;
  *
  * @api
  */
-final readonly class Url
+final readonly class Url implements \Stringable
 {
     public function __construct(
         public string $full,
@@ -50,5 +50,11 @@ final readonly class Url
         }
 
         return "{$fallbackScheme}://{$this->full}";
+    }
+
+    #[\Override]
+    public function __toString(): string
+    {
+        return $this->full;
     }
 }
