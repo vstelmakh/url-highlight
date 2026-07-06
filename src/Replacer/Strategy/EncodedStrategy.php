@@ -39,8 +39,8 @@ final readonly class EncodedStrategy implements Strategy
         foreach ($this->tokenizer->tokenize($decoded->value) as $token) {
             $contents = $token->toString();
             yield from $token instanceof TagToken
-                ? $this->attributeMatches($contents, $decoded, $offset, $cursor)
-                : $this->textMatches($contents, $decoded, $offset, $cursor);
+                ? $this->matchTagAttributes($contents, $decoded, $offset, $cursor)
+                : $this->matchPlainText($contents, $decoded, $offset, $cursor);
 
             $cursor += strlen($contents);
         }
@@ -49,45 +49,39 @@ final readonly class EncodedStrategy implements Strategy
     /**
      * @return \Generator<UrlMatch>
      */
-    private function textMatches(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
+    private function matchPlainText(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
     {
         foreach ($this->matcher->match($text) as $match) {
-            yield $this->mapToSource($decoded, $spanOffset, $baseOffset, $match);
+            $start = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->start);
+            $end = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->end);
+            yield new UrlMatch($start, $end, $match->url);
         }
     }
 
     /**
      * @return \Generator<UrlMatch>
      */
-    private function attributeMatches(string $tagContents, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
-    {
-        $found = preg_match_all(
-            '/=\s*(?:"([^"]*)"|\'([^\']*)\')/',
+    private function matchTagAttributes(
+        string $tagContents,
+        DecodedString $decoded,
+        int $spanOffset,
+        int $baseOffset,
+    ): \Generator {
+        // Backreference (\1) makes the closing quote match the opening one, so a single
+        // "value" group is enough - no need to branch on which quote style matched.
+        $found = (bool) preg_match_all(
+            '/=\s*(["\'])(?<value>(?:(?!\1).)*)\1/s',
             $tagContents,
             $attributes,
-            PREG_OFFSET_CAPTURE | PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL,
+            PREG_OFFSET_CAPTURE | PREG_SET_ORDER,
         );
-        if ($found === false || $found === 0) {
+        if (!$found) {
             return;
         }
 
         foreach ($attributes as $attribute) {
-            // Exactly one quote branch matches; the other capture group is null (PREG_UNMATCHED_AS_NULL).
-            $quoted = $attribute[1][1] !== -1 ? $attribute[1] : $attribute[2];
-            $value = $quoted[0];
-            if ($value === null) {
-                continue;
-            }
-            foreach ($this->matcher->match($value) as $match) {
-                yield $this->mapToSource($decoded, $spanOffset, $baseOffset + $quoted[1], $match);
-            }
+            [$value, $valueOffset] = $attribute['value'];
+            yield from $this->matchPlainText($value, $decoded, $spanOffset, $baseOffset + $valueOffset);
         }
-    }
-
-    private function mapToSource(DecodedString $decoded, int $spanOffset, int $baseOffset, UrlMatch $match): UrlMatch
-    {
-        $start = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->start);
-        $end = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->end);
-        return new UrlMatch($start, $end, $match->url);
     }
 }
