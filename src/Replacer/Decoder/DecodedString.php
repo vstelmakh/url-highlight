@@ -19,12 +19,15 @@ final readonly class DecodedString
     public function __construct(
         public string $value,
         private array $shifts,
+        private int $absoluteStart = 0,
     ) {}
 
-    /**
-     * Translate a byte offset within the decoded string back to its position in the original encoded string.
-     */
-    public function toEncodedOffset(int $decodedOffset): int
+    public function withAbsoluteStart(int $absoluteStart): static
+    {
+        return new static($this->value, $this->shifts, $absoluteStart);
+    }
+
+    public function toAbsoluteOffset(int $decodedOffset): int
     {
         $shift = 0;
         foreach ($this->shifts as $boundary => $cumulativeShift) {
@@ -33,6 +36,6 @@ final readonly class DecodedString
             }
             $shift = $cumulativeShift;
         }
-        return $decodedOffset + $shift;
+        return $this->absoluteStart + $decodedOffset + $shift;
     }
 }

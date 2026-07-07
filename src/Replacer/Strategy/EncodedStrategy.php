@@ -33,27 +33,28 @@ final readonly class EncodedStrategy implements Strategy
     #[\Override]
     public function match(string $span, int $offset): \Generator
     {
-        $decoded = $this->decoder->decode($span);
-        $cursor = 0;
+        $decoded = $this->decoder->decode($span)->withAbsoluteStart($offset);
+        $decodedCursor = 0;
 
         foreach ($this->tokenizer->tokenize($decoded->value) as $token) {
             $contents = $token->toString();
-            yield from $token instanceof TagToken
-                ? $this->matchTagAttributes($contents, $decoded, $offset, $cursor)
-                : $this->matchPlainText($contents, $decoded, $offset, $cursor);
 
-            $cursor += strlen($contents);
+            yield from $token instanceof TagToken
+                ? $this->matchTagAttributes($contents, $decoded, $decodedCursor)
+                : $this->matchPlainText($contents, $decoded, $decodedCursor);
+
+            $decodedCursor += strlen($contents);
         }
     }
 
     /**
      * @return \Generator<UrlMatch>
      */
-    private function matchPlainText(string $text, DecodedString $decoded, int $spanOffset, int $baseOffset): \Generator
+    private function matchPlainText(string $text, DecodedString $decoded, int $decodedCursor): \Generator
     {
         foreach ($this->matcher->match($text) as $match) {
-            $start = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->start);
-            $end = $spanOffset + $decoded->toEncodedOffset($baseOffset + $match->end);
+            $start = $decoded->toAbsoluteOffset($decodedCursor + $match->start);
+            $end = $decoded->toAbsoluteOffset($decodedCursor + $match->end);
             yield new UrlMatch($start, $end, $match->url);
         }
     }
@@ -64,8 +65,7 @@ final readonly class EncodedStrategy implements Strategy
     private function matchTagAttributes(
         string $tagContents,
         DecodedString $decoded,
-        int $spanOffset,
-        int $baseOffset,
+        int $decodedCursor,
     ): \Generator {
         // Backreference (\1) makes the closing quote match the opening one, so a single
         // "value" group is enough - no need to branch on which quote style matched.
@@ -75,13 +75,14 @@ final readonly class EncodedStrategy implements Strategy
             $attributes,
             PREG_OFFSET_CAPTURE | PREG_SET_ORDER,
         );
+
         if (!$found) {
             return;
         }
 
         foreach ($attributes as $attribute) {
-            [$value, $valueOffset] = $attribute['value'];
-            yield from $this->matchPlainText($value, $decoded, $spanOffset, $baseOffset + $valueOffset);
+            [$value, $offset] = $attribute['value'];
+            yield from $this->matchPlainText($value, $decoded, $decodedCursor + $offset);
         }
     }
 }
