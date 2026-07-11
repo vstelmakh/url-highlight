@@ -19,15 +19,9 @@ final readonly class DecodedString
     public function __construct(
         public string $value,
         private array $shifts,
-        private int $absoluteStart = 0,
     ) {}
 
-    public function withAbsoluteStart(int $absoluteStart): static
-    {
-        return new static($this->value, $this->shifts, $absoluteStart);
-    }
-
-    public function toAbsoluteOffset(int $decodedOffset): int
+    public function toEncodedOffset(int $decodedOffset): int
     {
         $shift = 0;
         foreach ($this->shifts as $boundary => $cumulativeShift) {
@@ -36,6 +30,6 @@ final readonly class DecodedString
             }
             $shift = $cumulativeShift;
         }
-        return $this->absoluteStart + $decodedOffset + $shift;
+        return $decodedOffset + $shift;
     }
 }
