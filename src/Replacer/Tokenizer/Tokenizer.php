@@ -10,6 +10,8 @@ use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\Token;
 
 /**
+ * Splits an HTML string into a sequence of {@see Token}.
+ *
  * @internal
  */
 final class Tokenizer

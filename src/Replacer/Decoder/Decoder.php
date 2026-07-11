@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Decoder;
 
 /**
- * Decodes HTML entities while preserving a sparse map from decoded byte offsets back to the original
- * encoded positions. Used so that URLs inside HTML-escaped input (e.g. via htmlspecialchars) are
- * matched against their true characters while the encoded form is kept verbatim in the output.
+ * Decodes HTML entities while preserving a sparse map from decoded byte offsets back to the original encoded positions.
+ * Used so that URLs inside HTML-escaped input (e.g. via htmlspecialchars) are matched against their true characters
+ * while the encoded form is left unchanged in the output.
  *
  * @internal
  */

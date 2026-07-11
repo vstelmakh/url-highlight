@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
 
 /**
+ * A plain text segment containing no HTML markup.
+ *
  * @internal
  */
 final readonly class PlainToken implements Token

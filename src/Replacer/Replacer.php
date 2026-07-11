@@ -12,10 +12,9 @@ use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
- * Renders URLs in HTML as links: tokenizes the input and collects URL matches only in visible text runs
- * - leaving the content of existing links, scripts and styles untouched - then splices the rendered
- * links back in. How a run is matched is delegated to the injected Strategy, so a new input mode is
- * supported by providing a different strategy rather than changing this class.
+ * Tokenizes HTML input, collects URL matches from visible text runs (skipping `<a>`, `<script>`, and `<style>`
+ * content), and splices the rendered links back in. Matching within each run is delegated to the injected Strategy,
+ * making new input modes possible without modifying this class.
  *
  * @internal
  */

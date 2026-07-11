@@ -9,9 +9,9 @@ use VStelmakh\UrlHighlight\Url;
 /**
  * Strips trailing unbalanced brackets, quotes, and punctuation from URL match.
  *
- * When a URL is extracted from surrounding text, trailing characters from the enclosing
- * context may be incorrectly included in the match, e.g. "(see example.com/path)."
- * matches "example.com/path).", this filter transforms such a match to "example.com/path".
+ * When a URL is extracted from surrounding text, trailing characters from the enclosing context may be incorrectly
+ * included in the match, e.g. "(see example.com/path)." matches "example.com/path).", this filter transforms
+ * such a match to "example.com/path".
  *
  * @internal
  */

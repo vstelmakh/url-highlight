@@ -9,7 +9,6 @@ use VStelmakh\UrlHighlight\Highlighter\SimpleHighlighter;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
-use VStelmakh\UrlHighlight\Url;
 use VStelmakh\UrlHighlight\Replacer\Renderer;
 use VStelmakh\UrlHighlight\Replacer\Replacer;
 use VStelmakh\UrlHighlight\Replacer\Strategy\EncodedStrategy;
@@ -17,8 +16,8 @@ use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
- * Url highlight - library to parse URLs from string input and render them as HTML links.
- * Works with complex URLs, edge cases, and encoded input.
+ * Library for parsing URLs from text input and rendering them as HTML links. Handles complex URLs, edge cases,
+ * and HTML-encoded input.
  *
  * @api
  */
@@ -40,8 +39,35 @@ readonly class UrlHighlight
     }
 
     /**
-     * Find all URLs in the input string.
+     * Replace URLs in `$string` with rendered links (or anything else).
      *
+     * Example: `Check the example.com website.` -> `Check the <a href="http://example.com">example.com</a> website.`
+     * For any custom replacement logic - implement your own {@see Highlighter}, and provide it as argument to this
+     * method call.
+     *
+     * @param string $string Input text to search for URLs.
+     * @param Highlighter $highlighter Produces the replacement for each detected URL.
+     * @param bool $isHtmlEncoded Set to `true` for HTML entity-encoded input (e.g. from `htmlspecialchars`).
+     *     URLs are then matched against the decoded text, to prevent invalid matching, but output keeps the original
+     *     encoding. Defaults to `false` for plain text input.
+     */
+    public function highlight(
+        string $string,
+        Highlighter $highlighter = new SimpleHighlighter(),
+        bool $isHtmlEncoded = false
+    ): string {
+        return $isHtmlEncoded
+            ? $this->encodedReplacer->highlight($string, $highlighter)
+            : $this->plainReplacer->highlight($string, $highlighter);
+    }
+
+    /**
+     * Find all URLs in `$string`.
+     *
+     * Supports plain text input only. For HTML-encoded input, decode it first (e.g. via `html_entity_decode`)
+     * and pass the decoded string here.
+     *
+     * @param string $string Input to search.
      * @return array<Url>
      */
     public function find(string $string): array
@@ -50,22 +76,5 @@ readonly class UrlHighlight
             static fn (UrlMatch $match): Url => $match->url,
             $this->matcher->match($string),
         );
-    }
-
-    /**
-     * Replace URLs in the input with rendered links.
-     * Example: "Check the example.com website." -> "Check the <a href="http://example.com">example.com</a> website."
-     *
-     * @param Highlighter $highlighter Renderer used to produce the link for each URL match.
-     * @param bool $isHtmlEncoded Set to true when the input contains HTML entities (e.g. produced by htmlspecialchars).
-     *                            URLs are then matched against the decoded form (including inside attribute values
-     *                            of decoded tags), while the original encoded characters are preserved verbatim in
-     *                            the output. Leave false for literal text input.
-     */
-    public function highlight(string $string, Highlighter $highlighter = new SimpleHighlighter(), bool $isHtmlEncoded = false): string
-    {
-        return $isHtmlEncoded
-            ? $this->encodedReplacer->highlight($string, $highlighter)
-            : $this->plainReplacer->highlight($string, $highlighter);
     }
 }

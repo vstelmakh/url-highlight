@@ -12,10 +12,10 @@ use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
- * Matches URLs in a run of HTML-escaped text (e.g. from htmlspecialchars). The run is decoded so URLs
- * are matched against their true characters (so entities like &amp; do not break matching) - both in
- * escaped link text and inside escaped tag attribute values - while each match is mapped back onto the
- * original encoded characters so they stay verbatim in the output.
+ * Matches URLs in HTML-escaped text (e.g. from htmlspecialchars). The text is decoded so URLs are matched against
+ * their true characters (so entities like `&amp;` do not break matching), both in escaped link text and inside escaped
+ * tag attribute values, while each match is mapped back onto the original encoded characters, leaving them unchanged
+ * in the output.
  *
  * @internal
  */
@@ -72,8 +72,7 @@ final readonly class EncodedStrategy implements Strategy
         int $absoluteOffset,
         int $decodedOffset,
     ): \Generator {
-        // Backreference (\1) makes the closing quote match the opening one, so a single
-        // "value" group is enough - no need to branch on which quote style matched.
+        // Matches quoted attribute values. Backreference \1 ties the closing quote to the opening one.
         $found = (bool) preg_match_all(
             '/=\s*(["\'])(?<value>(?:(?!\1).)*)\1/s',
             $tagContents,

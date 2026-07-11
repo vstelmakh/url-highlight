@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
 
 /**
+ * An HTML tag segment with its name and structural flags.
+ *
  * @internal
  */
 final readonly class TagToken implements Token

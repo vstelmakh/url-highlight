@@ -8,7 +8,7 @@ use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
- * Matches URLs in a run of literal text.
+ * Matches URLs directly in plain text, without entity decoding.
  *
  * @internal
  */

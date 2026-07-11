@@ -7,6 +7,9 @@ namespace VStelmakh\UrlHighlight\Matcher;
 use VStelmakh\UrlHighlight\Url;
 
 /**
+ * Finds URLs in a string via a URI regex, normalizes each match into a Url, and filters out
+ * invalid hosts and trailing punctuation.
+ *
  * @internal
  */
 final readonly class Matcher

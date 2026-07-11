@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
 
 /**
+ * An HTML comment segment (`<!-- ... -->`).
+ *
  * @internal
  */
 final readonly class CommentToken implements Token
