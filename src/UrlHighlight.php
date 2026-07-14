@@ -8,12 +8,7 @@ use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Highlighter\SimpleHighlighter;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
-use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
-use VStelmakh\UrlHighlight\Replacer\Renderer;
 use VStelmakh\UrlHighlight\Replacer\Replacer;
-use VStelmakh\UrlHighlight\Replacer\Strategy\EncodedStrategy;
-use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
-use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
  * Library for parsing URLs from text input and rendering them as HTML links. Handles complex URLs, edge cases,
@@ -30,12 +25,8 @@ readonly class UrlHighlight
     public function __construct()
     {
         $this->matcher = new Matcher();
-        $tokenizer = new Tokenizer();
-        $renderer = new Renderer();
-        $plainStrategy = new PlainStrategy($this->matcher);
-        $encodedStrategy = new EncodedStrategy(new Decoder(), $tokenizer, $this->matcher);
-        $this->plainReplacer = new Replacer($tokenizer, $plainStrategy, $renderer);
-        $this->encodedReplacer = new Replacer($tokenizer, $encodedStrategy, $renderer);
+        $this->plainReplacer = Replacer::createPlain($this->matcher);
+        $this->encodedReplacer = Replacer::createEncoded($this->matcher);
     }
 
     /**

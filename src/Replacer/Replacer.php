@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer;
 
 use VStelmakh\UrlHighlight\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
+use VStelmakh\UrlHighlight\Replacer\Strategy\EncodedStrategy;
+use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
 use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\PlainToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
@@ -22,9 +26,22 @@ final readonly class Replacer
 {
     /**
      * Tags whose content must not be highlighted (an existing link, or non-visible content).
+     *
      * @var array<string, true>
      */
     private const array SKIP_TAG_MAP = ['a' => true, 'script' => true, 'style' => true];
+
+    public static function createPlain(Matcher $matcher): self
+    {
+        $plainStrategy = new PlainStrategy($matcher);
+        return new self(new Tokenizer(), $plainStrategy, new Renderer());
+    }
+
+    public static function createEncoded(Matcher $matcher): self
+    {
+        $encodedStrategy = new EncodedStrategy(new Decoder(), new Tokenizer(), $matcher);
+        return new self(new Tokenizer(), $encodedStrategy, new Renderer());
+    }
 
     public function __construct(
         private Tokenizer $tokenizer,

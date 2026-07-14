@@ -31,7 +31,7 @@ final class Decoder
         $cursor = 0;
         $shift = 0;
 
-        /** @var array<array{0: string, 1: int}> $matches */
+        /** @var non-empty-list<array{0: string, 1: int<-1, max>}> $matches */
         $matches = $entities[0];
         foreach ($matches as [$entity, $offset]) {
             $decoded .= substr($encoded, $cursor, $offset - $cursor);

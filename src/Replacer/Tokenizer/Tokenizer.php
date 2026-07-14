@@ -14,7 +14,7 @@ use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\Token;
  *
  * @internal
  */
-final class Tokenizer
+final readonly class Tokenizer
 {
     /**
      * @return \Generator<Token>
