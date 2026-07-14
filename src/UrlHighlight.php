@@ -34,7 +34,7 @@ readonly class UrlHighlight
      *
      * Example: `Check the example.com website.` -> `Check the <a href="http://example.com">example.com</a> website.`
      * For any custom replacement logic - implement your own {@see Highlighter}, and provide it as argument to this
-     * method call.
+     * method call. For implementation examples, see {@see SimpleHighlighter}.
      *
      * @param string $string Input text to search for URLs.
      * @param Highlighter $highlighter Produces the replacement for each detected URL.
