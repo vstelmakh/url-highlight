@@ -19,7 +19,7 @@ final readonly class Tokenizer
     /**
      * @return \Generator<Token>
      */
-    public function tokenize(string $string): \Generator
+    public function tokenize(string $html): \Generator
     {
         // Matches HTML comments and tags, handling quoted attributes so that ">" inside values is not treated as tag.
         $regex = implode('', [
@@ -39,11 +39,11 @@ final readonly class Tokenizer
             ')',                          // close group
             '/s',                     // single-line (dot matches newline)
         ]);
-        $split = preg_split($regex, $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $split = preg_split($regex, $html, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         if ($split === false) {
             // Tokenization failed (e.g. backtrack limit exceeded). Fallback to treat the input string as plain text.
-            yield new PlainToken($string);
+            yield new PlainToken($html);
             return;
         }
 

@@ -26,12 +26,12 @@ final readonly class Matcher
     /**
      * @return array<UrlMatch>
      */
-    public function match(string $string): array
+    public function match(string $text): array
     {
         $result = [];
         $urlRegex = $this->regex();
         /** @var $matches array<array{0: ?string, 1: int}> */
-        preg_match_all($urlRegex, $string, $matches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE + PREG_UNMATCHED_AS_NULL);
+        preg_match_all($urlRegex, $text, $matches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE + PREG_UNMATCHED_AS_NULL);
         foreach ($matches as $rawMatch) {
             $url = $this->normalize($rawMatch);
             if ($url !== null) {

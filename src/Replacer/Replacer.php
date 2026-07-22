@@ -49,10 +49,10 @@ final readonly class Replacer
         private Renderer $renderer,
     ) {}
 
-    public function highlight(string $html, Highlighter $highlighter): string
+    public function highlight(string $text, Highlighter $highlighter): string
     {
-        $matches = $this->collectMatches($html);
-        return $this->renderer->render($html, $matches, $highlighter);
+        $matches = $this->collectMatches($text);
+        return $this->renderer->render($text, $matches, $highlighter);
     }
 
     /**
@@ -60,12 +60,12 @@ final readonly class Replacer
      *
      * @return \Generator<UrlMatch>
      */
-    private function collectMatches(string $html): \Generator
+    private function collectMatches(string $text): \Generator
     {
         $cursor = 0;
         $skipDepth = 0;
 
-        foreach ($this->tokenizer->tokenize($html) as $token) {
+        foreach ($this->tokenizer->tokenize($text) as $token) {
             $contents = $token->toString();
 
             if ($token instanceof PlainToken && $skipDepth === 0) {
