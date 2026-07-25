@@ -12,10 +12,9 @@ use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
- * Matches URLs in HTML-escaped text (e.g. from htmlspecialchars). The text is decoded so URLs are matched against
- * their true characters (so entities like `&amp;` do not break matching), both in escaped link text and inside escaped
- * tag attribute values, while each match is mapped back onto the original encoded characters, leaving them unchanged
- * in the output.
+ * Matches URLs in HTML-escaped text (e.g. from htmlspecialchars). The text is first decoded so entities like
+ * `&amp;` do not break matching, covering both escaped link text and escaped tag attribute values. Each match is
+ * then mapped back onto the original encoded characters, leaving the output unchanged.
  *
  * @internal
  */
@@ -31,9 +30,9 @@ final readonly class EncodedStrategy implements Strategy
      * @return \Generator<UrlMatch>
      */
     #[\Override]
-    public function match(string $span, int $offset): \Generator
+    public function match(string $text, int $offset): \Generator
     {
-        $decoded = $this->decoder->decode($span);
+        $decoded = $this->decoder->decode($text);
         $decodedOffset = 0;
 
         foreach ($this->tokenizer->tokenize($decoded->value) as $token) {

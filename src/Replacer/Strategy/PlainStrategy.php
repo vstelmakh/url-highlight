@@ -22,9 +22,9 @@ final readonly class PlainStrategy implements Strategy
      * @return \Generator<UrlMatch>
      */
     #[\Override]
-    public function match(string $span, int $offset): \Generator
+    public function match(string $text, int $offset): \Generator
     {
-        foreach ($this->matcher->match($span) as $match) {
+        foreach ($this->matcher->match($text) as $match) {
             yield new UrlMatch($offset + $match->start, $offset + $match->end, $match->url);
         }
     }

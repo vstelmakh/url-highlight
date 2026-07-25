@@ -7,18 +7,18 @@ namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
- * Strategy for locating URLs within a single visible text run, returning each as a range into the original source.
- * Implementations define how a run is interpreted (e.g. literal text vs HTML-encoded), which is the point of variation
- * the Highlighter is open to without modification.
+ * Locates URLs within a single run of visible text, returning each as a range into the original source.
+ * Implementations decide how the text is interpreted (e.g. literal vs HTML-encoded); this is the point of
+ * variation that lets the Replacer support new input modes without being changed.
  *
  * @internal
  */
 interface Strategy
 {
     /**
-     * @param string $span Run of visible text from the source.
-     * @param int $offset Byte offset of `$span` within the original source, used to map matches back into it.
+     * @param string $text Run of visible text from the source.
+     * @param int $offset Byte offset of `$text` within the original source, used to map matches back into it.
      * @return iterable<UrlMatch>
      */
-    public function match(string $span, int $offset): iterable;
+    public function match(string $text, int $offset): iterable;
 }

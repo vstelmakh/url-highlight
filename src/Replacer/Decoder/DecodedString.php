@@ -12,8 +12,9 @@ namespace VStelmakh\UrlHighlight\Replacer\Decoder;
 final readonly class DecodedString
 {
     /**
-     * @param array<int, int> $shifts Sparse map from the decoded byte offset just after each entity to the
-     *     cumulative byte shift (encoded minus decoded length) at that point. Empty when no entities.
+     * @param array<int, int> $shifts Maps a decoded byte offset (the position right after a decoded entity) to the
+     *     number of bytes to add back to reach the original encoded offset. Keys are sorted ascending. Empty when the
+     *     input had no entities.
      */
     public function __construct(
         public string $value,
