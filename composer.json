@@ -43,7 +43,7 @@
         ],
         "test:covelyzer": "vendor/bin/covelyzer var/coverage.xml --ansi",
 
-        "test:phpbench": "vendor/bin/phpbench run --report=url_highlight --time-unit=milliseconds --progress=plain --ansi",
+        "test:phpbench": "vendor/bin/phpbench run --report=custom_compact --time-unit=milliseconds --progress=plain --ansi",
 
         "test:all": [
             "@test:phpcs",
