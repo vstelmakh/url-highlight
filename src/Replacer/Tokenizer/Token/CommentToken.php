@@ -16,7 +16,7 @@ final readonly class CommentToken implements Token
     ) {}
 
     #[\Override]
-    public function toString(): string
+    public function __toString(): string
     {
         return $this->contents;
     }

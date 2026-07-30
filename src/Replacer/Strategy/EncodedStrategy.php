@@ -36,7 +36,7 @@ final readonly class EncodedStrategy implements Strategy
         $decodedOffset = 0;
 
         foreach ($this->tokenizer->tokenize($decoded->value) as $token) {
-            $contents = $token->toString();
+            $contents = $token->__toString();
 
             yield from $token instanceof TagToken
                 ? $this->matchTagAttributes($contents, $decoded, $offset, $decodedOffset)

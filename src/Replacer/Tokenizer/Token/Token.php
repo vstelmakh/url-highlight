@@ -9,7 +9,6 @@ namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
  *
  * @internal
  */
-interface Token
+interface Token extends \Stringable
 {
-    public function toString(): string;
 }

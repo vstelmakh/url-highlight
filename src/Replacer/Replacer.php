@@ -66,7 +66,7 @@ final readonly class Replacer
         $skipDepth = 0;
 
         foreach ($this->tokenizer->tokenize($text) as $token) {
-            $contents = $token->toString();
+            $contents = $token->__toString();
 
             if ($token instanceof PlainToken && $skipDepth === 0) {
                 yield from $this->strategy->match($contents, $cursor);
