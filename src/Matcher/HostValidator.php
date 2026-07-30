@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
-use VStelmakh\UrlHighlight\Domains;
 use VStelmakh\UrlHighlight\Url;
 
 /**
