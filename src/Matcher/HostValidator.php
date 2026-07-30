@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Matcher;
 
+use VStelmakh\UrlHighlight\Matcher\Domains\TopLevelDomains;
 use VStelmakh\UrlHighlight\Url;
 
 /**
@@ -26,7 +27,6 @@ final readonly class HostValidator
             return false;
         }
 
-        $normalized = mb_strtolower($tld);
-        return isset(Domains::TOP_LEVEL_DOMAINS[$normalized]);
+        return TopLevelDomains::contains($tld);
     }
 }
