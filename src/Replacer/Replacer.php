@@ -17,21 +17,14 @@ use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagType;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
- * Tokenizes HTML input, collects URL matches from visible text runs (skipping `<a>`, `<script>`, and `<style>`
- * content), and splices the rendered links back in. Matching within each run is delegated to the injected Strategy,
- * making new input modes possible without modifying this class.
+ * Tokenizes HTML input, collects URL matches from visible text runs (skipping the content of the tags listed in
+ * {@see self::isSkipTag()}), and splices the rendered links back in. Matching within each run is delegated to the
+ * injected Strategy, making new input modes possible without modifying this class.
  *
  * @internal
  */
 final readonly class Replacer
 {
-    /**
-     * Tags whose content must not be highlighted (an existing link, or non-visible content).
-     *
-     * @var array<string, true>
-     */
-    private const array SKIP_TAG_MAP = ['a' => true, 'script' => true, 'style' => true];
-
     public static function createPlain(Matcher $matcher): self
     {
         $plainStrategy = new PlainStrategy($matcher);
@@ -85,6 +78,18 @@ final readonly class Replacer
 
     private function isSkipTag(string $tag): bool
     {
-        return isset(self::SKIP_TAG_MAP[$tag]);
+        return match ($tag) {
+            'a' => true,        // already a link
+            'button' => true,   // content model forbids interactive descendants
+            'datalist' => true, // text-only content model (covers the nested option elements)
+            'math' => true,     // foreign content, an HTML anchor becomes a MathML element
+            'script' => true,   // raw text
+            'select' => true,   // text-only content model (covers the nested option and optgroup elements)
+            'style' => true,    // raw text
+            'svg' => true,      // foreign content, an HTML anchor becomes an SVG element
+            'textarea' => true, // raw text
+            'title' => true,    // raw text
+            default => false,
+        };
     }
 }
