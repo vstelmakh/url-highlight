@@ -13,7 +13,7 @@ interface Domains
      * List of valid top-level domains provided by IANA
      * Source: http://data.iana.org/TLD/tlds-alpha-by-domain.txt
      *
-     * @var array<string, bool>
+     * @var array<string, true>
      */
     public const array TOP_LEVEL_DOMAINS = [
         'aaa' => true,
