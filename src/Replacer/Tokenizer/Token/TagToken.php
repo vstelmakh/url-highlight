@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
 
 /**
- * An HTML tag segment with its name and structural flags.
+ * An HTML tag segment with its name and structural type.
  *
  * @internal
  */
@@ -14,8 +14,7 @@ final readonly class TagToken implements Token
     public function __construct(
         public string $contents,
         public string $name,
-        public bool $isClosing,
-        public bool $isSelfClosing,
+        public TagType $type,
     ) {}
 
     #[\Override]

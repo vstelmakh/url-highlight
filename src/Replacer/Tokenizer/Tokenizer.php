@@ -7,6 +7,7 @@ namespace VStelmakh\UrlHighlight\Replacer\Tokenizer;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\CommentToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\PlainToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagType;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\Token;
 
 /**
@@ -72,9 +73,18 @@ final readonly class Tokenizer
             yield new TagToken(
                 contents: $contents,
                 name: strtolower($matches['name'] ?? ''),
-                isClosing: $isClosing,
-                isSelfClosing: !$isClosing && (bool) preg_match('/\/\s*>$/', $contents),
+                type: $this->resolveType($contents, $isClosing),
             );
         }
+    }
+
+    private function resolveType(string $contents, bool $isClosing): TagType
+    {
+        if ($isClosing) {
+            return TagType::Closing;
+        }
+
+        $isSelfClosing = (bool) preg_match('/\/\s*>$/', $contents);
+        return $isSelfClosing ? TagType::SelfClosing : TagType::Opening;
     }
 }

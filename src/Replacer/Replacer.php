@@ -13,6 +13,7 @@ use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
 use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\PlainToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagType;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
@@ -71,11 +72,11 @@ final readonly class Replacer
             if ($token instanceof PlainToken && $skipDepth === 0) {
                 yield from $this->strategy->match($contents, $cursor);
             } elseif ($token instanceof TagToken && $this->isSkipTag($token->name)) {
-                if ($token->isClosing) {
-                    $skipDepth = max(0, $skipDepth - 1);
-                } elseif (!$token->isSelfClosing) {
-                    $skipDepth++;
-                }
+                $skipDepth = match ($token->type) {
+                    TagType::Opening => $skipDepth + 1,
+                    TagType::Closing => max(0, $skipDepth - 1),
+                    TagType::SelfClosing => $skipDepth,
+                };
             }
 
             $cursor += strlen($contents);
