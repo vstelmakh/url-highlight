@@ -61,30 +61,27 @@ final readonly class Tokenizer
                 continue;
             }
 
-            preg_match(
-                '/^<(?<closing>\/)?(?<name>[a-z][a-z0-9]*)/i',
-                $contents,
-                $matches,
-                PREG_UNMATCHED_AS_NULL
-            );
-
-            $isClosing = ($matches['closing'] ?? null) !== null;
-
-            yield new TagToken(
-                contents: $contents,
-                name: strtolower($matches['name'] ?? ''),
-                type: $this->resolveType($contents, $isClosing),
-            );
+            yield $this->createTagToken($contents);
         }
     }
 
-    private function resolveType(string $contents, bool $isClosing): TagType
+    private function createTagToken(string $contents): TagToken
     {
-        if ($isClosing) {
-            return TagType::Closing;
-        }
+        preg_match(
+            '/^<(?<closing>\/)?(?<name>[a-z][a-z0-9]*)/i',
+            $contents,
+            $matches,
+            PREG_UNMATCHED_AS_NULL,
+        );
 
-        $isSelfClosing = (bool) preg_match('/\/\s*>$/', $contents);
-        return $isSelfClosing ? TagType::SelfClosing : TagType::Opening;
+        $name = strtolower($matches['name'] ?? '');
+
+        $type = match (true) {
+            ($matches['closing'] ?? null) !== null => TagType::Closing,
+            (bool) preg_match('/\/\s*>$/', $contents) => TagType::SelfClosing,
+            default => TagType::Opening,
+        };
+
+        return new TagToken($contents, $name, $type);
     }
 }
