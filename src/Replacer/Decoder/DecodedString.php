@@ -5,31 +5,42 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Decoder;
 
 /**
- * Result of HTML entity decoding: the decoded text and a mapping back to the original encoded positions.
+ * Result of HTML entity decoding: the decoded text, plus a mapping from its byte offsets back onto the encoded text
+ * it came from.
  *
  * @internal
  */
 final readonly class DecodedString
 {
     /**
-     * @param array<int, int> $shifts Maps a decoded byte offset (the position right after a decoded entity) to the
-     *     number of bytes to add back to reach the original encoded offset. Keys are sorted ascending. Empty when the
-     *     input had no entities.
+     * @param list<int> $decodedOffsets
+     * @param list<int> $encodedOffsets
      */
     public function __construct(
         public string $value,
-        private array $shifts,
+        private array $decodedOffsets,
+        private array $encodedOffsets,
     ) {}
 
     public function toEncodedOffset(int $decodedOffset): int
     {
+        $low = 0;
+        $high = count($this->decodedOffsets) - 1;
         $shift = 0;
-        foreach ($this->shifts as $boundary => $cumulativeShift) {
-            if ($boundary > $decodedOffset) {
-                break;
+
+        // Binary search rather than a scan, because it's much more performant for big offset lists.
+        while ($low <= $high) {
+            $middle = intdiv($low + $high, 2);
+
+            if ($this->decodedOffsets[$middle] > $decodedOffset) {
+                $high = $middle - 1;
+                continue;
             }
-            $shift = $cumulativeShift;
+
+            $shift = $this->encodedOffsets[$middle] - $this->decodedOffsets[$middle];
+            $low = $middle + 1;
         }
-        return $decodedOffset + $shift;
+
+        return $shift + $decodedOffset;
     }
 }

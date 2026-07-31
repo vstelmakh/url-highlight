@@ -36,7 +36,7 @@ final readonly class Tokenizer
                         '|',                          // or
                         '\'[^\']*\'',                 // single-quoted attribute value
                     ')*',                         // close group, optional
-                '>',                          // end tag
+                '>',                          // tag end
             ')',                          // close group
             '/s',                     // single-line (dot matches newline)
         ]);

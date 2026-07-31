@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Decoder;
 
 /**
- * Decodes HTML entities while preserving a sparse map from decoded byte offsets back to the original encoded positions.
+ * Decodes HTML entities while preserving a map from decoded byte offsets back to the original encoded positions.
  * Used so that URLs inside HTML-escaped input (e.g. via htmlspecialchars) are matched against their true characters
  * while the encoded form is left unchanged in the output.
  *
@@ -13,36 +13,39 @@ namespace VStelmakh\UrlHighlight\Replacer\Decoder;
  */
 final class Decoder
 {
-    private const string ENTITY_REGEX = '/&(?:[a-z][a-z0-9]*|#\d+|#x[0-9a-f]+);/i';
-
     public function decode(string $encoded): DecodedString
     {
         if (!str_contains($encoded, '&')) {
-            return new DecodedString($encoded, []);
-        }
-
-        preg_match_all(self::ENTITY_REGEX, $encoded, $entities, PREG_OFFSET_CAPTURE);
-        if ($entities[0] === []) {
-            return new DecodedString($encoded, []);
+            return new DecodedString($encoded, [], []);
         }
 
         $decoded = '';
-        $shifts = [];
         $cursor = 0;
-        $shift = 0;
+        $decodedOffsets = [];
+        $encodedOffsets = [];
 
-        /** @var non-empty-list<array{0: string, 1: int<-1, max>}> $matches */
-        $matches = $entities[0];
-        foreach ($matches as [$entity, $offset]) {
-            $decoded .= substr($encoded, $cursor, $offset - $cursor);
-            $decodedEntity = html_entity_decode($entity, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $decoded .= $decodedEntity;
-            $shift += strlen($entity) - strlen($decodedEntity);
-            $shifts[strlen($decoded)] = $shift;
-            $cursor = $offset + strlen($entity);
+        // Lots of the same HTML entities may repeat throughout an input.
+        // Decoding entity once and keeping the result in a map for further use makes the process noticeably faster.
+        $decodedEntities = [];
+
+        // Matches HTML entities: named, decimal numeric and hexadecimal numeric.
+        $pattern = '/&(?:[a-z][a-z0-9]*|#\d+|#x[0-9a-f]+);/i';
+
+        // Matching one entity at a time from a moving cursor, rather than collecting them all up front, keeps only
+        // the current match in memory. This approach, significantly saves memory for entity-dense inputs.
+        while (preg_match($pattern, $encoded, $match, PREG_OFFSET_CAPTURE, $cursor) === 1) {
+            [$entity, $encodedOffset] = $match[0];
+
+            $decoded .= substr($encoded, $cursor, $encodedOffset - $cursor);
+            $decoded .= $decodedEntities[$entity] ??= html_entity_decode($entity, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $cursor = $encodedOffset + strlen($entity);
+
+            // Record the position right after the entity, where both strings line up again.
+            $decodedOffsets[] = strlen($decoded);
+            $encodedOffsets[] = $cursor;
         }
-        $decoded .= substr($encoded, $cursor);
 
-        return new DecodedString($decoded, $shifts);
+        // On PCRE failure add the remaining input, which leaves the value correct and simply unmapped from there on.
+        return new DecodedString($decoded . substr($encoded, $cursor), $decodedOffsets, $encodedOffsets);
     }
 }
