@@ -9,7 +9,7 @@
     "report.generators": {
         "custom_compact": {
             "extends": "aggregate",
-            "cols": ["benchmark", "subject", "mem_peak", "mean"],
+            "cols": ["benchmark", "subject", "set", "mem_peak", "mean", "rstdev"],
             "baseline_expressions": []
         }
     }
