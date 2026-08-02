@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer;
 
 use VStelmakh\UrlHighlight\Highlighter\Highlighter;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 
 /**
  * Replaces each URL match in a source string with the output of {@see Highlighter}, leaving the surrounding text
@@ -16,17 +15,17 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 final readonly class Renderer
 {
     /**
-     * @param iterable<UrlMatch> $matches Ranges into $source, ascending by start, non-overlapping.
+     * @param iterable<Replacement> $replacements
      */
-    public function render(string $source, iterable $matches, Highlighter $highlighter): string
+    public function render(string $source, iterable $replacements, Highlighter $highlighter): string
     {
         $result = '';
         $cursor = 0;
 
-        foreach ($matches as $match) {
-            $result .= substr($source, $cursor, $match->start - $cursor);
-            $result .= $highlighter->render($match->url);
-            $cursor = $match->end;
+        foreach ($replacements as $replacement) {
+            $result .= substr($source, $cursor, $replacement->start - $cursor);
+            $result .= $highlighter->render($replacement->url);
+            $cursor = $replacement->end;
         }
 
         return $result . substr($source, $cursor);

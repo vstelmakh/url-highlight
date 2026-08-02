@@ -9,7 +9,7 @@ use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VStelmakh\UrlHighlight\Replacer\Replacement;
 
 /**
  * Matches URLs in HTML-escaped text (e.g. from htmlspecialchars). The text is first decoded so entities like
@@ -27,10 +27,10 @@ final readonly class EncodedStrategy implements Strategy
     ) {}
 
     /**
-     * @return \Generator<UrlMatch>
+     * @return \Generator<Replacement>
      */
     #[\Override]
-    public function match(string $text, int $offset): \Generator
+    public function findReplacements(string $text, int $offset): \Generator
     {
         $decoded = $this->decoder->decode($text);
         $decodedOffset = 0;
@@ -39,17 +39,17 @@ final readonly class EncodedStrategy implements Strategy
             $contents = $token->__toString();
 
             yield from $token instanceof TagToken
-                ? $this->matchTagAttributes($contents, $decoded, $offset, $decodedOffset)
-                : $this->matchPlainText($contents, $decoded, $offset, $decodedOffset);
+                ? $this->findInTagAttributes($contents, $decoded, $offset, $decodedOffset)
+                : $this->findInPlainText($contents, $decoded, $offset, $decodedOffset);
 
             $decodedOffset += strlen($contents);
         }
     }
 
     /**
-     * @return \Generator<UrlMatch>
+     * @return \Generator<Replacement>
      */
-    private function matchPlainText(
+    private function findInPlainText(
         string $text,
         DecodedString $decoded,
         int $absoluteOffset,
@@ -58,14 +58,14 @@ final readonly class EncodedStrategy implements Strategy
         foreach ($this->matcher->match($text) as $match) {
             $start = $absoluteOffset + $decoded->toEncodedOffset($decodedOffset + $match->start);
             $end = $absoluteOffset + $decoded->toEncodedOffset($decodedOffset + $match->end);
-            yield new UrlMatch($start, $end, $match->url);
+            yield new Replacement($start, $end, $match->url);
         }
     }
 
     /**
-     * @return \Generator<UrlMatch>
+     * @return \Generator<Replacement>
      */
-    private function matchTagAttributes(
+    private function findInTagAttributes(
         string $tagContents,
         DecodedString $decoded,
         int $absoluteOffset,
@@ -85,7 +85,7 @@ final readonly class EncodedStrategy implements Strategy
 
         foreach ($attributes as $attribute) {
             [$value, $offset] = $attribute['value'];
-            yield from $this->matchPlainText($value, $decoded, $absoluteOffset, $decodedOffset + $offset);
+            yield from $this->findInPlainText($value, $decoded, $absoluteOffset, $decodedOffset + $offset);
         }
     }
 }

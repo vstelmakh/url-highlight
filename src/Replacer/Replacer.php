@@ -6,7 +6,6 @@ namespace VStelmakh\UrlHighlight\Replacer;
 
 use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
 use VStelmakh\UrlHighlight\Replacer\Strategy\EncodedStrategy;
 use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
@@ -17,9 +16,9 @@ use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagType;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
- * Tokenizes HTML input, collects URL matches from visible text runs (skipping the content of the tags listed in
- * {@see self::isSkipTag()}), and splices the rendered links back in. Matching within each run is delegated to the
- * injected Strategy, making new input modes possible without modifying this class.
+ * Tokenizes HTML input, collects replacements for every URL in a visible text run (skipping the content of
+ * the tags listed in {@see self::isSkipTag()}), and splices the rendered links back in. Matching within each run is
+ * delegated to the injected Strategy, making new input modes possible without modifying this class.
  *
  * @internal
  */
@@ -45,16 +44,14 @@ final readonly class Replacer
 
     public function highlight(string $text, Highlighter $highlighter): string
     {
-        $matches = $this->collectMatches($text);
-        return $this->renderer->render($text, $matches, $highlighter);
+        $replacements = $this->collectReplacements($text);
+        return $this->renderer->render($text, $replacements, $highlighter);
     }
 
     /**
-     * Walk the tokens, skip the content of skip tags, and yield URL matches from every visible text run.
-     *
-     * @return \Generator<UrlMatch>
+     * @return \Generator<Replacement>
      */
-    private function collectMatches(string $text): \Generator
+    private function collectReplacements(string $text): \Generator
     {
         $cursor = 0;
         $skipDepth = 0;
@@ -63,7 +60,7 @@ final readonly class Replacer
             $contents = $token->__toString();
 
             if ($token instanceof PlainToken && $skipDepth === 0) {
-                yield from $this->strategy->match($contents, $cursor);
+                yield from $this->strategy->findReplacements($contents, $cursor);
             } elseif ($token instanceof TagToken && $this->isSkipTag($token->name)) {
                 $skipDepth = match ($token->type) {
                     TagType::Opening => $skipDepth + 1,

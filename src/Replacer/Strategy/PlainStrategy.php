@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
 use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
+use VStelmakh\UrlHighlight\Replacer\Replacement;
 
 /**
  * Matches URLs directly in plain text, without entity decoding.
@@ -19,13 +19,13 @@ final readonly class PlainStrategy implements Strategy
     ) {}
 
     /**
-     * @return \Generator<UrlMatch>
+     * @return \Generator<Replacement>
      */
     #[\Override]
-    public function match(string $text, int $offset): \Generator
+    public function findReplacements(string $text, int $offset): \Generator
     {
         foreach ($this->matcher->match($text) as $match) {
-            yield new UrlMatch($offset + $match->start, $offset + $match->end, $match->url);
+            yield new Replacement($offset + $match->start, $offset + $match->end, $match->url);
         }
     }
 }
