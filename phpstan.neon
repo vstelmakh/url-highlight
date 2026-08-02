@@ -16,5 +16,5 @@ parameters:
   checkStrictPrintfPlaceholderTypes: true
 
   ignoreErrors:
-    - identifier: missingType.iterableValue
-      path: tests/*Test.php
+#    - identifier: missingType.iterableValue
+#      path: tests/*Test.php

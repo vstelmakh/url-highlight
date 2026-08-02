@@ -32,32 +32,5 @@
             "VStelmakh\\UrlHighlight\\Tests\\": "tests/",
             "VStelmakh\\UrlHighlight\\Benchmarks\\": "benchmarks/"
         }
-    },
-    "scripts": {
-        "test:phpcs": "vendor/bin/phpcs -n",
-        "test:phpstan": "vendor/bin/phpstan analyse --ansi --no-progress",
-        "test:phpunit": "vendor/bin/phpunit --colors=always",
-
-        "test:phpunit-coverage": [
-            "@test:phpunit --coverage-clover var/coverage.xml"
-        ],
-        "test:covelyzer": "vendor/bin/covelyzer var/coverage.xml --ansi",
-
-        "test:phpbench": "vendor/bin/phpbench run --report=custom_compact --time-unit=milliseconds --progress=plain --ansi",
-
-        "test:all": [
-            "@test:phpcs",
-            "@test:phpstan",
-            "@test:phpunit-coverage",
-            "@test:covelyzer",
-            "@test:phpbench"
-        ]
-    },
-    "scripts-descriptions": {
-        "test:phpcs": "Run PHP Code Sniffer",
-        "test:phpstan": "Run PHPStan",
-        "test:phpunit": "Run PHPUnit",
-        "test:phpunit-coverage": "Run PHPUnit with coverage",
-        "test:all": "Run all code analysis and tests"
     }
 }
