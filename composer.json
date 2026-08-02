@@ -1,6 +1,6 @@
 {
     "name": "vstelmakh/url-highlight",
-    "description": "Library to parse urls from string input",
+    "description": "Library to parse URLs from string input",
     "keywords": ["url", "parser", "html", "extract", "clickable", "linkify"],
     "type": "library",
     "license": "MIT",
@@ -18,9 +18,9 @@
     "require-dev" : {
         "phpunit/phpunit": "^13",
         "phpstan/phpstan": "^2.1",
-        "squizlabs/php_codesniffer": "^4.0",
         "phpbench/phpbench": "^1.6",
-        "phpstan/phpstan-strict-rules": "^2.0"
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.95"
     },
     "autoload": {
         "psr-4": {
