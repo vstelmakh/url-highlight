@@ -11,8 +11,10 @@ return new PhpCsFixer\Config()
     ->setFinder($finder)
     ->setCacheFile(__DIR__ . '/var/phpcs')
     ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
+    ->setRiskyAllowed(true)
     ->setRules([
         '@PER-CS' => true,
+
         '@Symfony' => true,
         'blank_line_before_statement' => false,
         'concat_space' => ['spacing' => 'one'],
@@ -25,5 +27,11 @@ return new PhpCsFixer\Config()
         'single_line_empty_body' => true,
         'single_line_throw' => false,
         'yoda_style' => false,
+
+        '@Symfony:risky' => true,
+        'declare_strict_types' => ['strategy' => 'enforce'],
+        'fopen_flags' => ['b_mode' => true],
+        'native_constant_invocation' => false,
+        'native_function_invocation' => false,
     ])
 ;

@@ -10,10 +10,10 @@ help: ## Show available commands
 		| awk 'BEGIN {FS = ":.*## "}; {printf "  \033[32m%-17s\033[0m %s\n", $$1, $$2}'
 
 phpcs: ## Check code style
-	vendor/bin/php-cs-fixer --config=phpcs.php --ansi --show-progress=dots --diff check $(ARGS)
+	vendor/bin/php-cs-fixer check --config=phpcs.php --ansi --show-progress=dots --diff $(ARGS)
 
 phpcs-fix: ## Fix code style violations
-	vendor/bin/php-cs-fixer --config=phpcs.php --ansi --show-progress=dots --diff fix $(ARGS)
+	vendor/bin/php-cs-fixer fix --config=phpcs.php --ansi --show-progress=dots --diff $(ARGS)
 
 phpstan: ## Run static analysis
 	vendor/bin/phpstan analyse --ansi --no-progress $(ARGS)
