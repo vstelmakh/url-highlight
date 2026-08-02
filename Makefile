@@ -2,9 +2,6 @@
 .SILENT:
 .PHONY: help phpcs phpcs-fix phpstan phpunit phpunit-coverage phpbench check check-full
 
-# Extra arguments forwarded to the underlying tool, example: make phpunit ARGS="--filter=UrlHighlightTest"
-ARGS ?=
-
 # Step headline, example: $(HEADLINE) 'Example headline'
 # Uses printf, because escape handling in echo differs per shell and may not expand \033
 HEADLINE = printf '\n\033[7m \# \033[0m \033[1m%s\033[0m\n'
@@ -15,27 +12,27 @@ help: ## Show available commands
 
 phpcs: ## Check code style
 	$(HEADLINE) 'PHP CS Fixer'
-	vendor/bin/php-cs-fixer check --config=phpcs.php --ansi --show-progress=dots --diff $(ARGS)
+	vendor/bin/php-cs-fixer check --config=phpcs.php --ansi --show-progress=dots --diff
 
 phpcs-fix: ## Fix code style violations
 	$(HEADLINE) 'PHP CS Fixer'
-	vendor/bin/php-cs-fixer fix --config=phpcs.php --ansi --show-progress=dots --diff $(ARGS)
+	vendor/bin/php-cs-fixer fix --config=phpcs.php --ansi --show-progress=dots --diff
 
 phpstan: ## Run static analysis
 	$(HEADLINE) 'PHPStan'
-	vendor/bin/phpstan analyse --ansi --no-progress $(ARGS)
+	vendor/bin/phpstan analyse --ansi --no-progress
 
 phpunit: ## Run tests
 	$(HEADLINE) 'PHPUnit'
-	vendor/bin/phpunit $(ARGS)
+	vendor/bin/phpunit
 
 phpunit-coverage: ## Run tests and report code coverage
 	$(HEADLINE) 'PHPUnit'
-	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text --only-summary-for-coverage-text $(ARGS)
+	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text --only-summary-for-coverage-text
 
 phpbench: ## Run benchmarks
 	$(HEADLINE) 'PHPBench'
-	vendor/bin/phpbench run --report=custom_compact --time-unit=milliseconds --progress=plain --ansi $(ARGS)
+	vendor/bin/phpbench run --report=custom_compact --time-unit=milliseconds --progress=plain --ansi
 
 check: ## Run quick check
 	$(MAKE) phpcs
