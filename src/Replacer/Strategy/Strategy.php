@@ -18,6 +18,7 @@ interface Strategy
     /**
      * @param string $text Run of visible text from the source.
      * @param int $offset Byte offset of `$text` within the original source, used to map replacements back into it.
+     *
      * @return iterable<Replacement>
      */
     public function findReplacements(string $text, int $offset): iterable;

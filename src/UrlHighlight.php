@@ -39,8 +39,8 @@ readonly class UrlHighlight
      * @param string $text Input text to search for URLs.
      * @param Highlighter $highlighter Produces the replacement for each detected URL.
      * @param bool $isHtmlEncoded Set to `true` for HTML entity-encoded input (e.g. from `htmlspecialchars`).
-     *     URLs are then matched against the decoded text, to prevent invalid matching, but output keeps the original
-     *     encoding. Defaults to `false` for plain text input.
+     *                            URLs are then matched against the decoded text, to prevent invalid matching, but
+     *                            output keeps the original encoding. Defaults to `false` for plain text input.
      */
     public function highlight(
         string $text,
@@ -59,6 +59,7 @@ readonly class UrlHighlight
      * and pass the decoded string here.
      *
      * @param string $text Input to search.
+     *
      * @return array<Url>
      */
     public function find(string $text): array

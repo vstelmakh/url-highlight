@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
+use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Replacer\Decoder\DecodedString;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
+use VStelmakh\UrlHighlight\Replacer\Replacement;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
-use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Replacer\Replacement;
 
 /**
  * Matches URLs in HTML-escaped text (e.g. from htmlspecialchars). The text is first decoded so entities like

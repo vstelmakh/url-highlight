@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// @php-cs-fixer-ignore array_indentation
+
 namespace VStelmakh\UrlHighlight\Matcher;
 
 use VStelmakh\UrlHighlight\Url;

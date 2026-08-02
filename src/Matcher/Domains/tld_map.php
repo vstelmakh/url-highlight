@@ -1,8 +1,10 @@
 <?php
 
 /**
- * List of valid top-level domains provided by IANA
- * @link http://data.iana.org/TLD/tlds-alpha-by-domain.txt
+ * List of valid top-level domains provided by IANA.
+ *
+ * @see http://data.iana.org/TLD/tlds-alpha-by-domain.txt
+ *
  * @internal
  */
 

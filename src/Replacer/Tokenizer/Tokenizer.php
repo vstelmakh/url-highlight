@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// @php-cs-fixer-ignore array_indentation
+
 namespace VStelmakh\UrlHighlight\Replacer\Tokenizer;
 
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\CommentToken;

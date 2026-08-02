@@ -36,7 +36,7 @@ final readonly class Url implements \Stringable
      * Build a value for an `href` attribute pointing to this URL.
      *
      * @param string $fallbackScheme Scheme prepended when the URL has none.
-     *     Example: `example.com` -> `http://example.com`.
+     *                               Example: `example.com` -> `http://example.com`.
      */
     public function toHref(string $fallbackScheme = 'http'): string
     {

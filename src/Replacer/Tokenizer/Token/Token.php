@@ -9,6 +9,4 @@ namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
  *
  * @internal
  */
-interface Token extends \Stringable
-{
-}
+interface Token extends \Stringable {}
