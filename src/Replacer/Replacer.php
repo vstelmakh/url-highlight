@@ -42,7 +42,7 @@ final readonly class Replacer
         private Renderer $renderer,
     ) {}
 
-    public function highlight(string $text, Highlighter $highlighter): string
+    public function replace(string $text, Highlighter $highlighter): string
     {
         $replacements = $this->collectReplacements($text);
         return $this->renderer->render($text, $replacements, $highlighter);

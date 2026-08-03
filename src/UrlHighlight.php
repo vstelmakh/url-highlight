@@ -59,7 +59,7 @@ final readonly class UrlHighlight
             Format::HtmlEncoded => $this->encodedReplacer,
         };
 
-        return $replacer->highlight($text, $highlighter);
+        return $replacer->replace($text, $highlighter);
     }
 
     /**
