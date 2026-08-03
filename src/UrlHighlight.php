@@ -11,8 +11,13 @@ use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\Replacer;
 
 /**
- * Library for parsing URLs from text input and rendering them as HTML links. Handles complex URLs, edge cases,
- * and HTML-encoded input.
+ * Entry point of the library. Finds URLs in text input and renders them as links.
+ *
+ * Usage example:
+ * ```
+ * $urlHighlight = new UrlHighlight();
+ * echo $urlHighlight->highlight('Check the example.com website.');
+ *  ```
  *
  * @api
  */
@@ -30,16 +35,19 @@ readonly class UrlHighlight
     }
 
     /**
-     * Replace URLs in `$text` with rendered links (or anything else).
+     * Replace URLs in `$text` with rendered links.
      *
      * Example: `Check the example.com website.` -> `Check the <a href="http://example.com">example.com</a> website.`
-     * For any custom replacement logic - implement your own {@see Highlighter}, and provide it as argument to this
-     * method call. For implementation example, see {@see SimpleHighlighter}.
+     * For custom replacement logic implement your own {@see Highlighter}, see {@see SimpleHighlighter} for example.
+     *
+     * HTML entity-encoded input (e.g. from `htmlspecialchars`) must be passed with {@see Format::HtmlEncoded}.
+     * Otherwise entities count as literal URL characters and the match runs past the URL end, for example
+     * `example.com?a=1&quot;` matches as `example.com?a=1&quot`. The encoded format matches against the decoded
+     * text, and keeps the original encoding in the output.
      *
      * @param string $text Input text to search for URLs.
      * @param Highlighter $highlighter Produces the replacement for each detected URL.
-     * @param Format $format Encoding of `$text`. For HTML entity-encoded input use {@see Format::HtmlEncoded},
-     *                       to prevent invalid matching.
+     * @param Format $format Encoding of `$text`.
      */
     public function highlight(
         string $text,
@@ -57,10 +65,9 @@ readonly class UrlHighlight
     /**
      * Find all URLs in `$text`.
      *
-     * Supports plain text input only. For HTML-encoded input, decode it first (e.g. via `html_entity_decode`)
-     * and pass the decoded string here.
+     * For accurate results provide plain text input. HTML entity-encoded text must be decoded before.
      *
-     * @param string $text Input to search.
+     * @param string $text Input text to search for URLs.
      *
      * @return array<Url>
      */
