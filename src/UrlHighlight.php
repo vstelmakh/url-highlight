@@ -21,7 +21,7 @@ use VStelmakh\UrlHighlight\Replacer\Replacer;
  *
  * @api
  */
-readonly class UrlHighlight
+final readonly class UrlHighlight
 {
     private Matcher $matcher;
     private Replacer $plainReplacer;
