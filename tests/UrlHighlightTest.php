@@ -6,6 +6,7 @@ namespace VStelmakh\UrlHighlight\Tests;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use VStelmakh\UrlHighlight\Format;
 use VStelmakh\UrlHighlight\Url;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
@@ -103,7 +104,7 @@ class UrlHighlightTest extends TestCase
     #[DataProvider('highlightEncodedDataProvider')]
     public function testHighlightEncoded(string $input, string $expected): void
     {
-        $actual = $this->urlHighlight->highlight($input, isHtmlEncoded: true);
+        $actual = $this->urlHighlight->highlight($input, format: Format::HtmlEncoded);
         self::assertSame($expected, $actual);
     }
 

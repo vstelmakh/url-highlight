@@ -34,22 +34,24 @@ readonly class UrlHighlight
      *
      * Example: `Check the example.com website.` -> `Check the <a href="http://example.com">example.com</a> website.`
      * For any custom replacement logic - implement your own {@see Highlighter}, and provide it as argument to this
-     * method call. For implementation examples, see {@see SimpleHighlighter}.
+     * method call. For implementation example, see {@see SimpleHighlighter}.
      *
      * @param string $text Input text to search for URLs.
      * @param Highlighter $highlighter Produces the replacement for each detected URL.
-     * @param bool $isHtmlEncoded Set to `true` for HTML entity-encoded input (e.g. from `htmlspecialchars`).
-     *                            URLs are then matched against the decoded text, to prevent invalid matching, but
-     *                            output keeps the original encoding. Defaults to `false` for plain text input.
+     * @param Format $format Encoding of `$text`. For HTML entity-encoded input use {@see Format::HtmlEncoded},
+     *                       to prevent invalid matching.
      */
     public function highlight(
         string $text,
         Highlighter $highlighter = new SimpleHighlighter(),
-        bool $isHtmlEncoded = false,
+        Format $format = Format::Plain,
     ): string {
-        return $isHtmlEncoded
-            ? $this->encodedReplacer->highlight($text, $highlighter)
-            : $this->plainReplacer->highlight($text, $highlighter);
+        $replacer = match ($format) {
+            Format::Plain => $this->plainReplacer,
+            Format::HtmlEncoded => $this->encodedReplacer,
+        };
+
+        return $replacer->highlight($text, $highlighter);
     }
 
     /**

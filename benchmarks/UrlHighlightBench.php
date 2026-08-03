@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Benchmarks;
 
 use PhpBench\Attributes as Bench;
+use VStelmakh\UrlHighlight\Format;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
 /**
@@ -20,34 +21,34 @@ final class UrlHighlightBench
 {
     private UrlHighlight $urlHighlight;
     private string $input;
-    private bool $isHtmlEncoded;
+    private Format $inputFormat;
 
     /**
-     * @param array{file: string, isHtmlEncoded: bool} $params
+     * @param array{file: string, inputFormat: Format} $params
      */
     public function setUp(array $params): void
     {
         $this->urlHighlight = new UrlHighlight();
         $this->input = (string) file_get_contents(__DIR__ . '/' . $params['file']);
-        $this->isHtmlEncoded = $params['isHtmlEncoded'];
+        $this->inputFormat = $params['inputFormat'];
     }
 
     #[Bench\ParamProviders('highlightParamProvider')]
     public function benchHighlight(): void
     {
-        $this->urlHighlight->highlight(text: $this->input, isHtmlEncoded: $this->isHtmlEncoded);
+        $this->urlHighlight->highlight(text: $this->input, format: $this->inputFormat);
     }
 
     /**
-     * @return array<string, array{file: string, isHtmlEncoded: bool}>
+     * @return array<string, array{file: string, inputFormat: Format}>
      */
     public function highlightParamProvider(): array
     {
         return [
-            'plain' => $this->dataset('input_plain.txt', false),
-            'html' => $this->dataset('input_html.txt', false),
-            'html special chars' => $this->dataset('input_html_special_chars.txt', true),
-            'html entities' => $this->dataset('input_html_entities.txt', true),
+            'plain' => $this->dataset('input_plain.txt', Format::Plain),
+            'html' => $this->dataset('input_html.txt', Format::Plain),
+            'html special chars' => $this->dataset('input_html_special_chars.txt', Format::HtmlEncoded),
+            'html entities' => $this->dataset('input_html_entities.txt', Format::HtmlEncoded),
         ];
     }
 
@@ -58,20 +59,20 @@ final class UrlHighlightBench
     }
 
     /**
-     * @return array<string, array{file: string, isHtmlEncoded: bool}>
+     * @return array<string, array{file: string, inputFormat: Format}>
      */
     public function findParamProvider(): array
     {
         return [
-            'plain' => $this->dataset('input_plain.txt', false),
+            'plain' => $this->dataset('input_plain.txt', Format::Plain),
         ];
     }
 
     /**
-     * @return array{file: string, isHtmlEncoded: bool}
+     * @return array{file: string, inputFormat: Format}
      */
-    private function dataset(string $file, bool $isHtmlEncoded): array
+    private function dataset(string $file, Format $inputFormat): array
     {
-        return ['file' => $file, 'isHtmlEncoded' => $isHtmlEncoded];
+        return ['file' => $file, 'inputFormat' => $inputFormat];
     }
 }
