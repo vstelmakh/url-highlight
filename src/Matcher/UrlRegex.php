@@ -28,15 +28,18 @@ final readonly class UrlRegex
      */
     public function findAll(string $text): \Generator
     {
-        preg_match_all(
-            $this->pattern,
-            $text,
-            $matches,
-            PREG_SET_ORDER | PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL,
-        );
+        $cursor = 0;
+        $flags = PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL;
 
-        foreach ($matches as $rawMatch) {
-            yield new UrlMatch($rawMatch[0][1], $this->toUrl($rawMatch));
+        // Matching one URL at a time from a moving cursor, rather than collecting every match up front, keeps only
+        // the current match in memory. This significantly saves memory for URL-dense inputs.
+        while (preg_match($this->pattern, $text, $rawMatch, $flags, $cursor) === 1) {
+            [$value, $offset] = $rawMatch[0];
+
+            yield new UrlMatch($offset, $this->toUrl($rawMatch));
+
+            // The host is required, so a match is never empty and the cursor always moves forward.
+            $cursor = $offset + strlen($value ?? '');
         }
     }
 
