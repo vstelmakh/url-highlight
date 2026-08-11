@@ -25,7 +25,7 @@ final readonly class Tokenizer
     public function tokenize(string $html): \Generator
     {
         // Matches HTML comments and tags, handling quoted attributes so that ">" inside values is not treated as tag.
-        $regex = implode('', [
+        $pattern = implode('', [
             '/',
             '<!--.*?-->',             // html comment
             '|',                      // or
@@ -45,7 +45,7 @@ final readonly class Tokenizer
 
         // Matching one tag at a time from a moving cursor, rather than splitting the whole input up front, keeps only
         // the current token in memory. This significantly saves memory for markup-dense inputs.
-        while (preg_match($regex, $html, $match, PREG_OFFSET_CAPTURE, $cursor) === 1) {
+        while (preg_match($pattern, $html, $match, PREG_OFFSET_CAPTURE, $cursor) === 1) {
             [$contents, $contentsOffset] = $match[0];
 
             // Adjacent tags, e.g. "</b><i>", leave nothing in between.

@@ -24,12 +24,10 @@ final readonly class Matcher
     }
 
     /**
-     * @return array<UrlMatch>
+     * @return \Generator<UrlMatch>
      */
-    public function match(string $text): array
+    public function match(string $text): \Generator
     {
-        $result = [];
-
         foreach ($this->regex->findAll($text) as $match) {
             if (!$this->hostValidator->isValid($match->url)) {
                 continue;
@@ -37,9 +35,7 @@ final readonly class Matcher
 
             $url = $this->punctuationFilter->filter($match->url);
 
-            $result[] = $url === $match->url ? $match : new UrlMatch($match->start, $url);
+            yield $url === $match->url ? $match : new UrlMatch($match->start, $url);
         }
-
-        return $result;
     }
 }

@@ -7,7 +7,6 @@ namespace VStelmakh\UrlHighlight;
 use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Highlighter\SimpleHighlighter;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
 use VStelmakh\UrlHighlight\Replacer\Replacer;
 
 /**
@@ -73,9 +72,12 @@ final readonly class UrlHighlight
      */
     public function find(string $text): array
     {
-        return array_map(
-            static fn (UrlMatch $match): Url => $match->url,
-            $this->matcher->match($text),
-        );
+        $result = [];
+
+        foreach ($this->matcher->match($text) as $match) {
+            $result[] = $match->url;
+        }
+
+        return $result;
     }
 }
