@@ -79,7 +79,9 @@ final readonly class UrlRegex
     {
         return implode('', [
             '(?|',                               // branch reset group
-                '(?<scheme>[a-z][a-z0-9+\-.]*)',     // start with letter, consists of: letter, number, "+", "-", "."
+                // Length is capped, because an unbounded run is rescanned on every match attempt, which makes
+                // matching quadratic, e.g. for a base64 blob. 64 chars fit any registered scheme (longest is 36). // TODO: check
+                '(?<scheme>[a-z][a-z0-9+\-.]{0,63})', // start with letter, consists of: letter, number, "+", "-", "."
                 ':\/{2}',                            // followed by "://"
                 '|',                                 // or
                 '(?<scheme>mailto):',                // mailto, followed by ":"
@@ -106,7 +108,8 @@ final readonly class UrlRegex
                     '%',                     // percent encoded
                     '!$&\'()*+,;=',          // sub-delims
                     ':',                     // ":"
-                ']+)',                   // one or more, close group
+                // Length is capped for the same reason as the scheme, 64 chars is the max email local part length. // TODO: check
+                ']{1,64})',              // close group
                 '@',                     // suffixed with "@"
             ')?',                    // close group, optional
         ]);
