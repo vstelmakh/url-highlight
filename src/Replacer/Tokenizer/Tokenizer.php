@@ -27,44 +27,40 @@ final readonly class Tokenizer
         // Matches HTML comments and tags, handling quoted attributes so that ">" inside values is not treated as tag.
         $regex = implode('', [
             '/',
-            '(',                          // capturing group
-                '<!--.*?-->',                 // html comment
-                '|',                          // or
-                '<',                          // tag start
-                    '(?:',                        // non-capturing group
-                        '[^"\'<>]',                   // any chars except: "<", ">", '"', "'",
-                        '|',                          // or
-                        '"[^"]*"',                    // double-quoted attribute value
-                        '|',                          // or
-                        '\'[^\']*\'',                 // single-quoted attribute value
-                    ')*',                         // close group, optional
-                '>',                          // tag end
-            ')',                          // close group
+            '<!--.*?-->',             // html comment
+            '|',                      // or
+            '<',                      // tag start
+                '(?:',                    // non-capturing group
+                    '[^"\'<>]',               // any chars except: "<", ">", '"', "'",
+                    '|',                      // or
+                    '"[^"]*"',                // double-quoted attribute value
+                    '|',                      // or
+                    '\'[^\']*\'',             // single-quoted attribute value
+                ')*',                     // close group, optional
+            '>',                      // tag end
             '/s',                     // single-line (dot matches newline)
         ]);
-        $split = preg_split($regex, $html, -1, PREG_SPLIT_DELIM_CAPTURE);
 
-        if ($split === false) {
-            // Tokenization failed (e.g. backtrack limit exceeded). Fallback to treat the input string as plain text.
-            yield new PlainToken($html);
-            return;
-        }
+        $cursor = 0;
 
-        // preg_split with a single capture group always alternates [plain, tag, plain, tag, ...],
-        // so even indices are plain text tokens, and odd indices are tag/comment tokens.
-        foreach ($split as $i => $contents) {
-            if ($i % 2 === 0) {
-                yield new PlainToken($contents);
-                continue;
+        // Matching one tag at a time from a moving cursor, rather than splitting the whole input up front, keeps only
+        // the current token in memory. This significantly saves memory for markup-dense inputs.
+        while (preg_match($regex, $html, $match, PREG_OFFSET_CAPTURE, $cursor) === 1) {
+            [$contents, $contentsOffset] = $match[0];
+
+            // Adjacent tags, e.g. "</b><i>", leave nothing in between.
+            $plain = substr($html, $cursor, $contentsOffset - $cursor);
+            if ($plain !== '') {
+                yield new PlainToken($plain);
             }
 
-            if (str_starts_with($contents, '<!--')) {
-                yield new CommentToken($contents);
-                continue;
-            }
+            yield str_starts_with($contents, '<!--') ? new CommentToken($contents) : $this->createTagToken($contents);
 
-            yield $this->createTagToken($contents);
+            $cursor = $contentsOffset + strlen($contents);
         }
+
+        // On PCRE failure the rest is treated as plain text.
+        yield new PlainToken(substr($html, $cursor));
     }
 
     private function createTagToken(string $contents): TagToken
