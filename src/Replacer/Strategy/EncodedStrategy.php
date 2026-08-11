@@ -30,10 +30,8 @@ final readonly class EncodedStrategy implements Strategy
     {
         $decoded = $this->decoder->decode($text);
 
-        foreach ($this->splitByMarkup($decoded->value) as $segment) {
-            [$value, $decodedOffset] = $segment;
-
-            foreach ($this->matcher->match($value) as $match) {
+        foreach ($this->splitByMarkup($decoded->value) as $decodedOffset => $segment) {
+            foreach ($this->matcher->match($segment) as $match) {
                 $start = $offset + $decoded->toEncodedOffset($decodedOffset + $match->start);
                 $end = $offset + $decoded->toEncodedOffset($decodedOffset + $match->end);
                 yield new Replacement($start, $end, $match->url);
@@ -42,14 +40,32 @@ final readonly class EncodedStrategy implements Strategy
     }
 
     /**
-     * @return list<array{string, int}> Segment value and its offset in the decoded text.
+     * Splits the text into the segments a URL may span: the contents of the escaped markup, e.g. an attribute value,
+     * and the surrounding text. A lone angle bracket stays a regular character, the same as for a plain input.
+     *
+     * @return \Generator<int, string> Segment text, keyed by its offset in the given text.
      */
-    private function splitByMarkup(string $decoded): array
+    private function splitByMarkup(string $decoded): \Generator
     {
-        $flags = PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE;
-        $segments = preg_split('/<([^<>]*)>/', $decoded, -1, $flags);
+        $cursor = 0;
 
-        // On PCRE failure fallback to the whole text as a single segment.
-        return $segments === false ? [[$decoded, 0]] : $segments;
+        // Matching one markup construct at a time from a moving cursor, rather than splitting the whole text up
+        // front, keeps only the current segment in memory. This significantly saves memory for markup-dense inputs.
+        while (preg_match('/<[^<>]*>/', $decoded, $match, PREG_OFFSET_CAPTURE, $cursor) === 1) {
+            [$markup, $markupOffset] = $match[0];
+
+            $text = substr($decoded, $cursor, $markupOffset - $cursor);
+            if ($text !== '') {
+                yield $cursor => $text;
+            }
+
+            // Escaped markup is text as well, so its contents are matched too, but without the enclosing brackets.
+            yield $markupOffset + 1 => substr($markup, 1, -1);
+
+            $cursor = $markupOffset + strlen($markup);
+        }
+
+        // On PCRE failure the rest is yielded as one segment.
+        yield $cursor => substr($decoded, $cursor);
     }
 }
