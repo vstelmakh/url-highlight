@@ -32,7 +32,7 @@ final readonly class Replacer
 
     public static function createEncoded(Matcher $matcher): self
     {
-        $encodedStrategy = new EncodedStrategy(new Decoder(), new Tokenizer(), $matcher);
+        $encodedStrategy = new EncodedStrategy(new Decoder(), $matcher);
         return new self(new Tokenizer(), $encodedStrategy, new Renderer());
     }
 

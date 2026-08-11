@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
 use VStelmakh\UrlHighlight\Matcher\Matcher;
-use VStelmakh\UrlHighlight\Replacer\Decoder\DecodedString;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
 use VStelmakh\UrlHighlight\Replacer\Replacement;
-use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
-use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
  * Matches URLs in HTML-escaped text (e.g. from htmlspecialchars). The text is first decoded so entities like
@@ -22,7 +19,6 @@ final readonly class EncodedStrategy implements Strategy
 {
     public function __construct(
         private Decoder $decoder,
-        private Tokenizer $tokenizer,
         private Matcher $matcher,
     ) {}
 
@@ -33,59 +29,27 @@ final readonly class EncodedStrategy implements Strategy
     public function findReplacements(string $text, int $offset): \Generator
     {
         $decoded = $this->decoder->decode($text);
-        $decodedOffset = 0;
 
-        foreach ($this->tokenizer->tokenize($decoded->value) as $token) {
-            $contents = $token->__toString();
+        foreach ($this->splitByMarkup($decoded->value) as $segment) {
+            [$value, $decodedOffset] = $segment;
 
-            yield from $token instanceof TagToken
-                ? $this->findInTagAttributes($contents, $decoded, $offset, $decodedOffset)
-                : $this->findInPlainText($contents, $decoded, $offset, $decodedOffset);
-
-            $decodedOffset += strlen($contents);
+            foreach ($this->matcher->match($value) as $match) {
+                $start = $offset + $decoded->toEncodedOffset($decodedOffset + $match->start);
+                $end = $offset + $decoded->toEncodedOffset($decodedOffset + $match->end);
+                yield new Replacement($start, $end, $match->url);
+            }
         }
     }
 
     /**
-     * @return \Generator<Replacement>
+     * @return list<array{string, int}> Segment value and its offset in the decoded text.
      */
-    private function findInPlainText(
-        string $text,
-        DecodedString $decoded,
-        int $absoluteOffset,
-        int $decodedOffset,
-    ): \Generator {
-        foreach ($this->matcher->match($text) as $match) {
-            $start = $absoluteOffset + $decoded->toEncodedOffset($decodedOffset + $match->start);
-            $end = $absoluteOffset + $decoded->toEncodedOffset($decodedOffset + $match->end);
-            yield new Replacement($start, $end, $match->url);
-        }
-    }
+    private function splitByMarkup(string $decoded): array
+    {
+        $flags = PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE;
+        $segments = preg_split('/<([^<>]*)>/', $decoded, -1, $flags);
 
-    /**
-     * @return \Generator<Replacement>
-     */
-    private function findInTagAttributes(
-        string $tagContents,
-        DecodedString $decoded,
-        int $absoluteOffset,
-        int $decodedOffset,
-    ): \Generator {
-        // Matches quoted attribute values. Backreference \1 ties the closing quote to the opening one.
-        $found = (bool) preg_match_all(
-            '/=\s*(["\'])(?<value>(?:(?!\1).)*)\1/s',
-            $tagContents,
-            $attributes,
-            PREG_OFFSET_CAPTURE | PREG_SET_ORDER,
-        );
-
-        if (!$found) {
-            return;
-        }
-
-        foreach ($attributes as $attribute) {
-            [$value, $offset] = $attribute['value'];
-            yield from $this->findInPlainText($value, $decoded, $absoluteOffset, $decodedOffset + $offset);
-        }
+        // On PCRE failure fallback to the whole text as a single segment.
+        return $segments === false ? [[$decoded, 0]] : $segments;
     }
 }

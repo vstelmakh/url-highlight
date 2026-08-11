@@ -98,6 +98,14 @@ class UrlHighlightTest extends TestCase
                 'Skip <script>var u = "http://example.com";</script> end.',
                 'Skip <script>var u = "http://example.com";</script> end.',
             ],
+            'url enclosed in angle brackets' => [
+                'Visit <https://example.com> now.',
+                'Visit <https://example.com> now.',
+            ],
+            'custom tag attribute is not highlighted' => [
+                '<my-widget data-url="http://example.com"></my-widget>',
+                '<my-widget data-url="http://example.com"></my-widget>',
+            ],
         ];
     }
 
@@ -127,12 +135,25 @@ class UrlHighlightTest extends TestCase
                 '&lt;a href=&quot;<a href="http://example.com?q=query">http://example.com?q=query</a>&quot;&gt;'
                     . '<a href="http://example.com?q=query">example.com?q=query</a>&lt;/a&gt;',
             ],
+            'url enclosed in escaped angle brackets' => [
+                'Visit &lt;example.com&gt; now.',
+                'Visit &lt;<a href="http://example.com">example.com</a>&gt; now.',
+            ],
             'mixed encoded and raw html' => [
                 '&lt;a href=&quot;http://example.com?q=query&quot;&gt;example.com?q=query&lt;/a&gt;'
                     . '<a href="http://example.com">example.com</a>',
                 '&lt;a href=&quot;<a href="http://example.com?q=query">http://example.com?q=query</a>&quot;&gt;'
                     . '<a href="http://example.com?q=query">example.com?q=query</a>&lt;/a&gt;'
                     . '<a href="http://example.com">example.com</a>',
+            ],
+
+            'url enclosed in escaped angle brackets with quotes' => [
+                'Visit &lt;example.com?q="hello+world"&gt; now.',
+                'Visit &lt;<a href="http://example.com?q=&quot;hello+world&quot;">example.com?q=&quot;hello+world&quot;</a>&gt; now.',
+            ],
+            'url with angle bracket in path' => [
+                'Visit http://example.com/a&gt;b now.',
+                'Visit <a href="http://example.com/a&gt;b">http://example.com/a&gt;b</a> now.',
             ],
         ];
     }
