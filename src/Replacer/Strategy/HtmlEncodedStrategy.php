@@ -6,18 +6,20 @@ namespace VStelmakh\UrlHighlight\Replacer\Strategy;
 
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
+use VStelmakh\UrlHighlight\Replacer\Extractor\Extractor;
 use VStelmakh\UrlHighlight\Replacer\Replacement;
 
 /**
- * Matches URLs in HTML-escaped text (e.g. from htmlspecialchars). The text is first decoded so entities like
- * `&amp;` do not break matching, covering both escaped link text and escaped tag attribute values. Each match is
- * then mapped back onto the original encoded characters, leaving the output unchanged.
+ * Matches URLs in the entity-encoded text of an HTML input, e.g. from `htmlspecialchars`. The text is first decoded so
+ * entities like `&amp;` do not break matching, covering both escaped link text and escaped tag attribute values. Each
+ * match is then mapped back onto the original encoded characters, leaving the output unchanged.
  *
  * @internal
  */
-final readonly class EncodedStrategy implements Strategy
+final readonly class HtmlEncodedStrategy implements Strategy
 {
     public function __construct(
+        private Extractor $extractor,
         private Decoder $decoder,
         private Matcher $matcher,
     ) {}
@@ -26,9 +28,21 @@ final readonly class EncodedStrategy implements Strategy
      * @return \Generator<Replacement>
      */
     #[\Override]
-    public function findReplacements(string $text, int $offset): \Generator
+    public function findReplacements(string $text): \Generator
     {
-        $decoded = $this->decoder->decode($text);
+        foreach ($this->extractor->extract($text) as $offset => $linkableText) {
+            yield from $this->findInLinkableText($linkableText, $offset);
+        }
+    }
+
+    /**
+     * @param int $offset Byte offset of `$linkableText` within the input, used to map replacements back into it.
+     *
+     * @return \Generator<Replacement>
+     */
+    private function findInLinkableText(string $linkableText, int $offset): \Generator
+    {
+        $decoded = $this->decoder->decode($linkableText);
 
         foreach ($this->splitByMarkup($decoded->value) as $decodedOffset => $segment) {
             foreach ($this->matcher->match($segment) as $match) {

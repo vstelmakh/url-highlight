@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
+namespace VStelmakh\UrlHighlight\Replacer\Extractor\Token;
 
 /**
- * A plain text segment containing no HTML markup.
+ * An HTML tag segment with its name and structural type.
  *
  * @internal
  */
-final readonly class PlainToken implements Token
+final readonly class TagToken implements Token
 {
     public function __construct(
         public string $contents,
+        public string $name,
+        public TagType $type,
     ) {}
 
     #[\Override]

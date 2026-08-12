@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
+namespace VStelmakh\UrlHighlight\Replacer\Extractor\Token;
 
 /**
- * An HTML comment segment (`<!-- ... -->`).
+ * A plain text segment containing no HTML markup.
  *
  * @internal
  */
-final readonly class CommentToken implements Token
+final readonly class PlainToken implements Token
 {
     public function __construct(
         public string $contents,

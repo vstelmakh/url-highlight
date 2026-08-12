@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
+namespace VStelmakh\UrlHighlight\Replacer\Extractor\Token;
 
 /**
  * Structural role of an HTML tag, determining how it affects nesting depth.

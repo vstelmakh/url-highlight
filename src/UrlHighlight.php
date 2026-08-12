@@ -42,12 +42,10 @@ final readonly class UrlHighlight
      * For custom replacement logic implement your own {@see Highlighter}, see {@see SimpleHighlighter} for example.
      *
      * The `$format` must describe the input, otherwise URLs are missed or matched past their end:
-     * - {@see Format::Plain} takes the text as is, so a URL in angle brackets, e.g. `<example.com>`, is matched too.
+     * - {@see Format::Plain} takes the text as is, ignoring any markup.
      * - {@see Format::Html} leaves tags and the content of the elements that may not hold a link untouched.
      * - {@see Format::HtmlEncoded} is required for entity-encoded input, e.g. from `htmlspecialchars`. It matches
-     *   against the decoded text and keeps the original encoding in the output. Without it entities count as literal
-     *   URL characters and the match runs past the URL end, e.g. `example.com?a=1&quot;` matches as
-     *   `example.com?a=1&quot`.
+     *   against the decoded text to prevent invalid matches and keeps the original encoding in the output.
      *
      * @param string $text Input text to search for URLs.
      * @param Highlighter $highlighter Produces the replacement for each detected URL.
@@ -68,9 +66,7 @@ final readonly class UrlHighlight
     }
 
     /**
-     * Find all URLs in `$text`.
-     *
-     * For accurate results provide plain text input. HTML entity-encoded text must be decoded before.
+     * Find all URLs in `$text`, ignoring any markup.
      *
      * @param string $text Input text to search for URLs.
      *

@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace VStelmakh\UrlHighlight\Replacer\Tokenizer\Token;
+namespace VStelmakh\UrlHighlight\Replacer\Extractor\Token;
 
 /**
- * An HTML tag segment with its name and structural type.
+ * An HTML comment segment (`<!-- ... -->`).
  *
  * @internal
  */
-final readonly class TagToken implements Token
+final readonly class CommentToken implements Token
 {
     public function __construct(
         public string $contents,
-        public string $name,
-        public TagType $type,
     ) {}
 
     #[\Override]

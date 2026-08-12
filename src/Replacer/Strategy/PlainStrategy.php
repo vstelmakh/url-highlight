@@ -8,11 +8,11 @@ use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Replacer\Replacement;
 
 /**
- * Matches URLs directly in the given text, without entity decoding.
+ * Matches URLs in the input as is, ignoring any markup.
  *
  * @internal
  */
-final readonly class DirectStrategy implements Strategy
+final readonly class PlainStrategy implements Strategy
 {
     public function __construct(
         private Matcher $matcher,
@@ -22,10 +22,10 @@ final readonly class DirectStrategy implements Strategy
      * @return \Generator<Replacement>
      */
     #[\Override]
-    public function findReplacements(string $text, int $offset): \Generator
+    public function findReplacements(string $text): \Generator
     {
         foreach ($this->matcher->match($text) as $match) {
-            yield new Replacement($offset + $match->start, $offset + $match->end, $match->url);
+            yield new Replacement($match->start, $match->end, $match->url);
         }
     }
 }
