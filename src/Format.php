@@ -12,7 +12,7 @@ namespace VStelmakh\UrlHighlight;
 enum Format
 {
     /**
-     * Text without markup, taken as is. Angle brackets are ordinary characters.
+     * Text without markup, taken as is, any markup is ignored. Angle brackets are ordinary characters.
      */
     case Plain;
 

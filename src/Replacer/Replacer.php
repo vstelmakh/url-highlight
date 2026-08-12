@@ -15,8 +15,9 @@ use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
 use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
 
 /**
- * Replaces every URL of the input with a rendered link. Locating the URLs is delegated to the injected Strategy,
- * making new input formats possible without modifying this class.
+ * Replaces every URL of the input with the output of {@see Highlighter}, leaving the surrounding text unchanged.
+ * Locating the URLs is delegated to the injected {@see Strategy}, making new input formats possible without modifying
+ * this class.
  *
  * @internal
  */
@@ -24,29 +25,36 @@ final readonly class Replacer
 {
     public static function createPlain(Matcher $matcher): self
     {
-        return new self(new PlainStrategy($matcher), new Renderer());
+        return new self(new PlainStrategy($matcher));
     }
 
     public static function createHtml(Matcher $matcher): self
     {
         $htmlExtractor = new Extractor(new Tokenizer());
-        return new self(new HtmlStrategy($htmlExtractor, $matcher), new Renderer());
+        return new self(new HtmlStrategy($htmlExtractor, $matcher));
     }
 
     public static function createHtmlEncoded(Matcher $matcher): self
     {
         $htmlExtractor = new Extractor(new Tokenizer());
-        return new self(new HtmlEncodedStrategy($htmlExtractor, new Decoder(), $matcher), new Renderer());
+        return new self(new HtmlEncodedStrategy($htmlExtractor, new Decoder(), $matcher));
     }
 
     public function __construct(
         private Strategy $strategy,
-        private Renderer $renderer,
     ) {}
 
     public function replace(string $text, Highlighter $highlighter): string
     {
-        $replacements = $this->strategy->findReplacements($text);
-        return $this->renderer->render($text, $replacements, $highlighter);
+        $result = '';
+        $cursor = 0;
+
+        foreach ($this->strategy->findReplacements($text) as $replacement) {
+            $result .= substr($text, $cursor, $replacement->start - $cursor);
+            $result .= $highlighter->render($replacement->url);
+            $cursor = $replacement->end;
+        }
+
+        return $result . substr($text, $cursor);
     }
 }
