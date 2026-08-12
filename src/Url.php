@@ -52,7 +52,7 @@ final readonly class Url implements \Stringable
     }
 
     /**
-     * Whether this URL is an email address (with or without the `mailto:` scheme).
+     * Whether this URL is an email address. Either has `mailto:` scheme or looks like email e.g. `user@example.com`.
      */
     public function isEmail(): bool
     {
