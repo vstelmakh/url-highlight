@@ -24,13 +24,15 @@ final readonly class UrlHighlight
 {
     private Matcher $matcher;
     private Replacer $plainReplacer;
-    private Replacer $encodedReplacer;
+    private Replacer $htmlReplacer;
+    private Replacer $htmlEncodedReplacer;
 
     public function __construct()
     {
         $this->matcher = new Matcher();
         $this->plainReplacer = Replacer::createPlain($this->matcher);
-        $this->encodedReplacer = Replacer::createEncoded($this->matcher);
+        $this->htmlReplacer = Replacer::createHtml($this->matcher);
+        $this->htmlEncodedReplacer = Replacer::createHtmlEncoded($this->matcher);
     }
 
     /**
@@ -39,23 +41,27 @@ final readonly class UrlHighlight
      * Example: `Check the example.com website.` -> `Check the <a href="http://example.com">example.com</a> website.`
      * For custom replacement logic implement your own {@see Highlighter}, see {@see SimpleHighlighter} for example.
      *
-     * HTML entity-encoded input (e.g. from `htmlspecialchars`) must be passed with {@see Format::HtmlEncoded}.
-     * Otherwise entities count as literal URL characters and the match runs past the URL end, for example
-     * `example.com?a=1&quot;` matches as `example.com?a=1&quot`. The encoded format matches against the decoded
-     * text, and keeps the original encoding in the output.
+     * The `$format` must describe the input, otherwise URLs are missed or matched past their end:
+     * - {@see Format::Plain} takes the text as is, so a URL in angle brackets, e.g. `<example.com>`, is matched too.
+     * - {@see Format::Html} leaves tags and the content of the elements that may not hold a link untouched.
+     * - {@see Format::HtmlEncoded} is required for entity-encoded input, e.g. from `htmlspecialchars`. It matches
+     *   against the decoded text and keeps the original encoding in the output. Without it entities count as literal
+     *   URL characters and the match runs past the URL end, e.g. `example.com?a=1&quot;` matches as
+     *   `example.com?a=1&quot`.
      *
      * @param string $text Input text to search for URLs.
      * @param Highlighter $highlighter Produces the replacement for each detected URL.
-     * @param Format $format Encoding of `$text`.
+     * @param Format $format Format of `$text`.
      */
     public function highlight(
         string $text,
         Highlighter $highlighter = new SimpleHighlighter(),
-        Format $format = Format::Plain,
+        Format $format = Format::Html,
     ): string {
         $replacer = match ($format) {
             Format::Plain => $this->plainReplacer,
-            Format::HtmlEncoded => $this->encodedReplacer,
+            Format::Html => $this->htmlReplacer,
+            Format::HtmlEncoded => $this->htmlEncodedReplacer,
         };
 
         return $replacer->replace($text, $highlighter);

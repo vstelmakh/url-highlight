@@ -46,7 +46,7 @@ final class UrlHighlightBench
     {
         return [
             'plain' => $this->dataset('input_plain.txt', Format::Plain),
-            'html' => $this->dataset('input_html.txt', Format::Plain),
+            'html' => $this->dataset('input_html.txt', Format::Html),
             'html special chars' => $this->dataset('input_html_special_chars.txt', Format::HtmlEncoded),
             'html entities' => $this->dataset('input_html_entities.txt', Format::HtmlEncoded),
         ];

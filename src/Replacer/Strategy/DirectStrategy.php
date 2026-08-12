@@ -8,11 +8,11 @@ use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Replacer\Replacement;
 
 /**
- * Matches URLs directly in plain text, without entity decoding.
+ * Matches URLs directly in the given text, without entity decoding.
  *
  * @internal
  */
-final readonly class PlainStrategy implements Strategy
+final readonly class DirectStrategy implements Strategy
 {
     public function __construct(
         private Matcher $matcher,

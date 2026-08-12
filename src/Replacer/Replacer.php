@@ -7,18 +7,20 @@ namespace VStelmakh\UrlHighlight\Replacer;
 use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Replacer\Decoder\Decoder;
+use VStelmakh\UrlHighlight\Replacer\Strategy\DirectStrategy;
 use VStelmakh\UrlHighlight\Replacer\Strategy\EncodedStrategy;
-use VStelmakh\UrlHighlight\Replacer\Strategy\PlainStrategy;
 use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\HtmlTokenizer;
+use VStelmakh\UrlHighlight\Replacer\Tokenizer\PlainTokenizer;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\PlainToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagToken;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Token\TagType;
 use VStelmakh\UrlHighlight\Replacer\Tokenizer\Tokenizer;
 
 /**
- * Tokenizes HTML input, collects replacements for every URL in a visible text run (skipping the content of
- * the tags listed in {@see self::isSkipTag()}), and splices the rendered links back in. Matching within each run is
- * delegated to the injected Strategy, making new input modes possible without modifying this class.
+ * Collects replacements for every URL in a visible text run of the input (skipping the content of the tags listed in
+ * {@see self::isSkipTag()}), and splices the rendered links back in. Splitting the input and matching within each run
+ * are delegated to the injected Tokenizer and Strategy, making new input formats possible without modifying this class.
  *
  * @internal
  */
@@ -26,14 +28,20 @@ final readonly class Replacer
 {
     public static function createPlain(Matcher $matcher): self
     {
-        $plainStrategy = new PlainStrategy($matcher);
-        return new self(new Tokenizer(), $plainStrategy, new Renderer());
+        $directStrategy = new DirectStrategy($matcher);
+        return new self(new PlainTokenizer(), $directStrategy, new Renderer());
     }
 
-    public static function createEncoded(Matcher $matcher): self
+    public static function createHtml(Matcher $matcher): self
+    {
+        $directStrategy = new DirectStrategy($matcher);
+        return new self(new HtmlTokenizer(), $directStrategy, new Renderer());
+    }
+
+    public static function createHtmlEncoded(Matcher $matcher): self
     {
         $encodedStrategy = new EncodedStrategy(new Decoder(), $matcher);
-        return new self(new Tokenizer(), $encodedStrategy, new Renderer());
+        return new self(new HtmlTokenizer(), $encodedStrategy, new Renderer());
     }
 
     public function __construct(

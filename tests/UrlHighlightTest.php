@@ -61,17 +61,58 @@ class UrlHighlightTest extends TestCase
         ];
     }
 
-    #[DataProvider('highlightDataProvider')]
-    public function testHighlight(string $input, string $expected): void
+    public function testHighlightDefaultsToHtmlFormat(): void
     {
+        $input = 'Skip <a href="http://example.com">example.com</a> link.';
+
         $actual = $this->urlHighlight->highlight($input);
+
+        self::assertSame($input, $actual);
+    }
+
+    #[DataProvider('highlightPlainDataProvider')]
+    public function testHighlightPlain(string $input, string $expected): void
+    {
+        $actual = $this->urlHighlight->highlight($input, format: Format::Plain);
         self::assertSame($expected, $actual);
     }
 
     /**
      * @return array<string, array{string, string}>
      */
-    public static function highlightDataProvider(): array
+    public static function highlightPlainDataProvider(): array
+    {
+        return [
+            'scheme added to bare host' => [
+                'Example text before example.com and after.',
+                'Example text before <a href="http://example.com">example.com</a> and after.',
+            ],
+            'url enclosed in angle brackets' => [
+                'Visit <https://example.com> now.',
+                'Visit <<a href="https://example.com">https://example.com</a>> now.',
+            ],
+            'markup is not interpreted' => [
+                '<my-widget data-url="http://example.com"></my-widget>',
+                '<my-widget data-url="<a href="http://example.com">http://example.com</a>"></my-widget>',
+            ],
+            'script content is highlighted' => [
+                'Skip <script>var u = "http://example.com";</script> end.',
+                'Skip <script>var u = "<a href="http://example.com">http://example.com</a>";</script> end.',
+            ],
+        ];
+    }
+
+    #[DataProvider('highlightHtmlDataProvider')]
+    public function testHighlightHtml(string $input, string $expected): void
+    {
+        $actual = $this->urlHighlight->highlight($input, format: Format::Html);
+        self::assertSame($expected, $actual);
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function highlightHtmlDataProvider(): array
     {
         return [
             'absolute url' => [
@@ -109,8 +150,8 @@ class UrlHighlightTest extends TestCase
         ];
     }
 
-    #[DataProvider('highlightEncodedDataProvider')]
-    public function testHighlightEncoded(string $input, string $expected): void
+    #[DataProvider('highlightHtmlEncodedDataProvider')]
+    public function testHighlightHtmlEncoded(string $input, string $expected): void
     {
         $actual = $this->urlHighlight->highlight($input, format: Format::HtmlEncoded);
         self::assertSame($expected, $actual);
@@ -119,7 +160,7 @@ class UrlHighlightTest extends TestCase
     /**
      * @return array<string, array{string, string}>
      */
-    public static function highlightEncodedDataProvider(): array
+    public static function highlightHtmlEncodedDataProvider(): array
     {
         return [
             'plain text in encoded mode' => [

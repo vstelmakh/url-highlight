@@ -5,19 +5,24 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight;
 
 /**
- * Encoding of the input, defining how it is interpreted while matching URLs.
+ * Format of the input, defining how it is interpreted while matching URLs.
  *
  * @api
  */
 enum Format
 {
     /**
-     * Plain text or raw HTML, taken as is.
+     * Text without markup, taken as is. Angle brackets are ordinary characters.
      */
     case Plain;
 
     /**
-     * HTML entity-encoded input, e.g. from `htmlspecialchars`. Matched against the decoded text.
+     * HTML markup. Tags and the content of the elements that may not hold a link are left untouched.
+     */
+    case Html;
+
+    /**
+     * HTML markup with entity-encoded text, e.g. from `htmlspecialchars`. Matched against the decoded text.
      */
     case HtmlEncoded;
 }
