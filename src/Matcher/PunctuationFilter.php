@@ -7,7 +7,7 @@ namespace VStelmakh\UrlHighlight\Matcher;
 use VStelmakh\UrlHighlight\Url;
 
 /**
- * Strips trailing unbalanced brackets, quotes, and punctuation from URL match.
+ * Strips trailing unbalanced brackets, quotes, and punctuation from URL match, dropping an empty query or fragment.
  *
  * When a URL is extracted from surrounding text, trailing characters from the enclosing context may be incorrectly
  * included in the match, e.g. "(see example.com/path)." matches "example.com/path).", this filter transforms
@@ -29,11 +29,18 @@ final readonly class PunctuationFilter
         }
 
         $filtered = $this->filterTrailing($component);
+
+        // A query or fragment left with nothing but its delimiter carries no value.
+        $filtered = ($filtered === '?' || $filtered === '#') ? null : $filtered;
+
         if ($filtered === $component) {
             return $url;
         }
 
-        [$path, $query, $fragment] = [$url->path, $url->query, $url->fragment];
+        $path = $url->path;
+        $query = $url->query;
+        $fragment = $url->fragment;
+
         if ($fragment !== null) {
             $fragment = $filtered;
         } elseif ($query !== null) {
@@ -43,7 +50,7 @@ final readonly class PunctuationFilter
         }
 
         return new Url(
-            full: substr($url->full, 0, -strlen($component)) . $filtered,
+            full: substr($url->full, 0, -strlen($component)) . ($filtered ?? ''),
             scheme: $url->scheme,
             userinfo: $url->userinfo,
             host: $url->host,
@@ -56,7 +63,8 @@ final readonly class PunctuationFilter
 
     private function filterTrailing(string $value): string
     {
-        while ($value !== '' && $this->hasToFilter($value)) {
+        // The leading delimiter ("/", "?" or "#") belongs to the component, never to the surrounding text.
+        while (mb_strlen($value) > 1 && $this->hasToFilter($value)) {
             $value = mb_substr($value, 0, -1);
         }
 
