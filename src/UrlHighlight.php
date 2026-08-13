@@ -23,16 +23,12 @@ use VStelmakh\UrlHighlight\Replacer\Replacer;
 final readonly class UrlHighlight
 {
     private Matcher $matcher;
-    private Replacer $plainReplacer;
-    private Replacer $htmlReplacer;
-    private Replacer $htmlEncodedReplacer;
+    private Replacer $replacer;
 
     public function __construct()
     {
         $this->matcher = new Matcher();
-        $this->plainReplacer = Replacer::createPlain($this->matcher);
-        $this->htmlReplacer = Replacer::createHtml($this->matcher);
-        $this->htmlEncodedReplacer = Replacer::createHtmlEncoded($this->matcher);
+        $this->replacer = Replacer::create($this->matcher);
     }
 
     /**
@@ -56,13 +52,7 @@ final readonly class UrlHighlight
         Highlighter $highlighter = new SimpleHighlighter(),
         Format $format = Format::Html,
     ): string {
-        $replacer = match ($format) {
-            Format::Plain => $this->plainReplacer,
-            Format::Html => $this->htmlReplacer,
-            Format::HtmlEncoded => $this->htmlEncodedReplacer,
-        };
-
-        return $replacer->replace($text, $highlighter);
+        return $this->replacer->replace($text, $highlighter, $format);
     }
 
     /**
