@@ -8,6 +8,7 @@ use VStelmakh\UrlHighlight\Highlighter\Highlighter;
 use VStelmakh\UrlHighlight\Highlighter\SimpleHighlighter;
 use VStelmakh\UrlHighlight\Matcher\Matcher;
 use VStelmakh\UrlHighlight\Replacer\Replacer;
+use VStelmakh\UrlHighlight\Replacer\StrategyFactory;
 
 /**
  * Entry point of the library. Finds URLs in text input and renders them as links.
@@ -23,12 +24,14 @@ use VStelmakh\UrlHighlight\Replacer\Replacer;
 final readonly class UrlHighlight
 {
     private Matcher $matcher;
+    private StrategyFactory $strategyFactory;
     private Replacer $replacer;
 
     public function __construct()
     {
         $this->matcher = new Matcher();
-        $this->replacer = Replacer::create($this->matcher);
+        $this->strategyFactory = StrategyFactory::create($this->matcher);
+        $this->replacer = new Replacer();
     }
 
     /**
@@ -52,7 +55,8 @@ final readonly class UrlHighlight
         Highlighter $highlighter = new SimpleHighlighter(),
         Format $format = Format::Html,
     ): string {
-        return $this->replacer->replace($text, $highlighter, $format);
+        $strategy = $this->strategyFactory->createStrategy($format);
+        return $this->replacer->replace($text, $highlighter, $strategy);
     }
 
     /**
