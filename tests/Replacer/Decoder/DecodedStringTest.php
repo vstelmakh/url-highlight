@@ -35,14 +35,14 @@ class DecodedStringTest extends TestCase
         $encodedOffsets = [6, 12, 21];
 
         return [
-            'nothing decoded, offset zero' => [[], [], 0, 0],
-            'nothing decoded, offset beyond' => [[], [], 7, 7],
+            'no boundaries at offset zero' => [[], [], 0, 0],
+            'no boundaries past the last offset' => [[], [], 7, 7],
 
-            'one pair, ahead of it' => [[3], [8], 2, 2],
-            'one pair, exactly on it' => [[3], [8], 3, 8],
-            'one pair, past it' => [[3], [8], 4, 9],
+            'ahead of the only boundary' => [[3], [8], 2, 2],
+            'exactly on the only boundary' => [[3], [8], 3, 8],
+            'past the only boundary' => [[3], [8], 4, 9],
 
-            'ahead of every pair' => [$decodedOffsets, $encodedOffsets, 0, 0],
+            'ahead of every boundary' => [$decodedOffsets, $encodedOffsets, 0, 0],
             'just ahead of the first' => [$decodedOffsets, $encodedOffsets, 1, 1],
             'exactly on the first' => [$decodedOffsets, $encodedOffsets, 2, 6],
             'between first and second' => [$decodedOffsets, $encodedOffsets, 3, 7],

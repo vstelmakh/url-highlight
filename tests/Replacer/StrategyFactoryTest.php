@@ -40,9 +40,9 @@ class StrategyFactoryTest extends TestCase
     public static function createStrategyDataProvider(): array
     {
         return [
-            'plain' => [Format::Plain, PlainStrategy::class],
-            'html' => [Format::Html, HtmlStrategy::class],
-            'html encoded' => [Format::HtmlEncoded, HtmlEncodedStrategy::class],
+            'plain format' => [Format::Plain, PlainStrategy::class],
+            'html format' => [Format::Html, HtmlStrategy::class],
+            'html encoded format' => [Format::HtmlEncoded, HtmlEncodedStrategy::class],
         ];
     }
 

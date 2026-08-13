@@ -31,8 +31,8 @@ class DecoderTest extends TestCase
     {
         return [
             'empty string' => ['', ''],
-            'no entities' => ['plain text', 'plain text'],
-            'bare ampersand' => ['a & b', 'a & b'],
+            'text without entities is unchanged' => ['plain text', 'plain text'],
+            'bare ampersand is left as is' => ['a & b', 'a & b'],
             'named entity' => ['a&amp;b', 'a&b'],
             'adjacent entities' => ['&amp;&amp;', '&&'],
             'decimal entity' => ['&#66;', 'B'],
@@ -40,7 +40,7 @@ class DecoderTest extends TestCase
             'mixed numeric entities' => ['&#x41;&#66;', 'AB'],
             'uppercase named entity' => ['&AMP;', '&'],
             'multibyte entity' => ['&hellip;', '…'],
-            'unknown entity left as is' => ['&notanentity;', '&notanentity;'],
+            'unknown entity is left as is' => ['&notanentity;', '&notanentity;'],
             'encoded tag' => ['&lt;p&gt;', '<p>'],
             'entity inside url' => ['example.com/a?b=1&amp;c=2', 'example.com/a?b=1&c=2'],
         ];

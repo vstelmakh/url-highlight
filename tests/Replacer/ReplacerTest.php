@@ -50,7 +50,7 @@ class ReplacerTest extends TestCase
                 [],
                 '',
             ],
-            'no replacements' => [
+            'no replacements leaves text unchanged' => [
                 'Nothing here',
                 [],
                 'Nothing here',
