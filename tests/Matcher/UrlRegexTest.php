@@ -390,6 +390,36 @@ class UrlRegexTest extends TestCase
                 'Visit example.com:0 now.',
                 [self::urlMatch(start: 6, full: 'example.com:0', host: 'example.com', port: 0)],
             ],
+            'port: maximum' => [
+                'Visit example.com:65535 now.',
+                [self::urlMatch(start: 6, full: 'example.com:65535', host: 'example.com', port: 65535)],
+            ],
+            'port: leading zeros' => [
+                'Visit example.com:00080 now.',
+                [self::urlMatch(start: 6, full: 'example.com:00080', host: 'example.com', port: 80)],
+            ],
+            'port: above maximum is excluded' => [
+                'Visit example.com:65536 now.',
+                [self::urlMatch(start: 6, full: 'example.com', host: 'example.com')],
+            ],
+            'port: more than five digits are excluded' => [
+                'Visit example.com:123456 now.',
+                [self::urlMatch(start: 6, full: 'example.com', host: 'example.com')],
+            ],
+            'port: number larger than integer is excluded' => [
+                'Visit example.com:99999999999999999999 now.',
+                [self::urlMatch(start: 6, full: 'example.com', host: 'example.com')],
+            ],
+            'port: out of range excludes the path too' => [
+                'Visit http://user@example.com:70000/path?a=1#top now.',
+                [self::urlMatch(
+                    start: 6,
+                    full: 'http://user@example.com',
+                    host: 'example.com',
+                    scheme: 'http',
+                    userinfo: 'user',
+                )],
+            ],
             'port: colon without digits is excluded' => [
                 'Visit example.com: now.',
                 [self::urlMatch(start: 6, full: 'example.com', host: 'example.com')],

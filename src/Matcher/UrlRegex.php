@@ -9,8 +9,8 @@ namespace VStelmakh\UrlHighlight\Matcher;
 use VStelmakh\UrlHighlight\Url;
 
 /**
- * Matches everything URL-shaped, which may be wider than the URLs actually is. May include trailing punctuation
- * carried over from the surrounding text or matches that look like URLs (for example file names).
+ * Matches everything URL-shaped, which may be wider than the URLs actually are. May include trailing punctuation
+ * carried over from the surrounding text or matches that look like URLs (for example, file names).
  *
  * @internal
  */
@@ -156,10 +156,21 @@ final readonly class UrlRegex
     private function portRegex(): string
     {
         return implode('', [
-            '(?:',              // non-capturing group
-                ':',                // prefixed with: ":"
-                '(?<port>\d+)',     // capturing group, at least 1 digit
-            ')?',               // close group, optional
+            '(?:',                      // non-capturing group
+                ':',                        // prefixed with: ":"
+                '(?<port>',                 // capturing group, 0-65535:
+                    '0*',                       // leading zeros, "00080" is port 80
+                    '(?:',                      // non-capturing group
+                        '6553[0-5]',                // 65530-65535
+                        '|655[0-2]\d',              // 65500-65529
+                        '|65[0-4]\d{2}',            // 65000-65499
+                        '|6[0-4]\d{3}',             // 60000-64999
+                        '|[1-5]\d{4}',              // 10000-59999
+                        '|\d{1,4}',                 // 0-9999
+                    ')',                        // close group
+                ')',                        // close group
+                '(?!\d)',                   // not followed by a digit, a longer number is not a port
+            ')?',                       // close group, optional
         ]);
     }
 
