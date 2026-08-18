@@ -71,6 +71,16 @@ class UrlRegexTest extends TestCase
                 'Visit HTTP://example.com now.',
                 [self::urlMatch(start: 6, full: 'HTTP://example.com', host: 'example.com', scheme: 'HTTP')],
             ],
+            'scheme: mailto uppercase' => [
+                'Visit MAILTO:user@example.com now.',
+                [self::urlMatch(
+                    start: 6,
+                    full: 'MAILTO:user@example.com',
+                    host: 'example.com',
+                    scheme: 'MAILTO',
+                    userinfo: 'user',
+                )],
+            ],
             'scheme: absent' => [
                 'Visit example.com now.',
                 [self::urlMatch(start: 6, full: 'example.com', host: 'example.com')],
@@ -161,9 +171,20 @@ class UrlRegexTest extends TestCase
                 'Mail to =user@example.com now.',
                 [self::urlMatch(start: 9, full: 'user@example.com', host: 'example.com', userinfo: 'user')],
             ],
+            'userinfo: leading modifier symbol is excluded' => [
+                'Mail to ^user@example.com now.',
+                [self::urlMatch(start: 9, full: 'user@example.com', host: 'example.com', userinfo: 'user')],
+            ],
             'userinfo: empty' => [
                 'Visit @example.com now.',
                 [self::urlMatch(start: 7, full: 'example.com', host: 'example.com')],
+            ],
+            'userinfo: second at sign starts a new match' => [
+                'Visit a@b@example.com now.',
+                [
+                    self::urlMatch(start: 6, full: 'a@b', host: 'b', userinfo: 'a'),
+                    self::urlMatch(start: 10, full: 'example.com', host: 'example.com'),
+                ],
             ],
 
             'host: subdomains' => [
@@ -206,11 +227,19 @@ class UrlRegexTest extends TestCase
                 'Visit example.c"om now.',
                 [self::urlMatch(start: 6, full: 'example.c', host: 'example.c')],
             ],
+            'host: mathematical symbol ends the match' => [
+                'Visit example.c+om now.',
+                [self::urlMatch(start: 6, full: 'example.c', host: 'example.c')],
+            ],
+            'host: currency symbol ends the match' => [
+                'Visit example.c$om now.',
+                [self::urlMatch(start: 6, full: 'example.c', host: 'example.c')],
+            ],
             'host: empty label prevents match' => [
                 'Visit example..com now.',
                 [],
             ],
-            'host: trailing dot is excluded' => [
+            'host: trailing dot ends the match' => [
                 'Visit example.com. now.',
                 [self::urlMatch(start: 6, full: 'example.com', host: 'example.com')],
             ],
@@ -246,21 +275,61 @@ class UrlRegexTest extends TestCase
                 'Visit ★unicode.com now.',
                 [self::urlMatch(start: 6, full: '★unicode.com', host: '★unicode.com')],
             ],
-            'host: zero width joiner' => [
+            'host: zero width joiner is allowed' => [
                 "Visit a\u{200D}b.com now.",
                 [self::urlMatch(start: 6, full: "a\u{200D}b.com", host: "a\u{200D}b.com")],
             ],
-            'host: zero width joiner, unicode' => [
+            'host: zero width joiner is allowed, unicode' => [
                 'Visit ශ්‍රී.com now.',
                 [self::urlMatch(start: 6, full: 'ශ්‍රී.com', host: 'ශ්‍රී.com')],
             ],
-            'host: zero width non joiner' => [
+            'host: zero width non joiner is allowed' => [
                 "Visit a\u{200C}b.com now.",
                 [self::urlMatch(start: 6, full: "a\u{200C}b.com", host: "a\u{200C}b.com")],
             ],
-            'host: zero width non joiner, RTL' => [
+            'host: zero width non joiner is allowed, RTL' => [
                 'Visit نامه‌ای.com now.',
                 [self::urlMatch(start: 6, full: 'نامه‌ای.com', host: 'نامه‌ای.com')],
+            ],
+            'host: zero width space breaks the label' => [
+                "Visit a\u{200B}b.com now.",
+                [self::urlMatch(start: 10, full: 'b.com', host: 'b.com')],
+            ],
+            'host: middle dot is allowed' => [
+                "Visit a\u{00B7}b.com now.",
+                [self::urlMatch(start: 6, full: "a\u{00B7}b.com", host: "a\u{00B7}b.com")],
+            ],
+            'host: greek lower numeral sign is allowed' => [
+                "Visit a\u{0375}b.com now.",
+                [self::urlMatch(start: 6, full: "a\u{0375}b.com", host: "a\u{0375}b.com")],
+            ],
+            'host: hebrew punctuation geresh is allowed' => [
+                "Visit a\u{05F3}b.com now.",
+                [self::urlMatch(start: 6, full: "a\u{05F3}b.com", host: "a\u{05F3}b.com")],
+            ],
+            'host: hebrew punctuation gershayim is allowed' => [
+                "Visit a\u{05F4}b.com now.",
+                [self::urlMatch(start: 6, full: "a\u{05F4}b.com", host: "a\u{05F4}b.com")],
+            ],
+            'host: katakana middle dot is allowed' => [
+                "Visit a\u{30FB}b.com now.",
+                [self::urlMatch(start: 6, full: "a\u{30FB}b.com", host: "a\u{30FB}b.com")],
+            ],
+            'host: arabic-indic digits are allowed' => [
+                "Visit \u{0661}\u{0662}\u{0663}.com now.",
+                [self::urlMatch(
+                    start: 6,
+                    full: "\u{0661}\u{0662}\u{0663}.com",
+                    host: "\u{0661}\u{0662}\u{0663}.com",
+                )],
+            ],
+            'host: extended arabic-indic digits are allowed' => [
+                "Visit \u{06F1}\u{06F2}\u{06F3}.com now.",
+                [self::urlMatch(
+                    start: 6,
+                    full: "\u{06F1}\u{06F2}\u{06F3}.com",
+                    host: "\u{06F1}\u{06F2}\u{06F3}.com",
+                )],
             ],
             'host: uppercase is preserved' => [
                 'Visit EXAMPLE.COM now.',
@@ -274,7 +343,7 @@ class UrlRegexTest extends TestCase
                     host: str_repeat('a', 63) . '.com',
                 )],
             ],
-            'host: label longer than maximum is truncated' => [
+            'host: label longer than maximum drops leading characters' => [
                 'Visit ' . str_repeat('a', 64) . '.com now.',
                 [self::urlMatch(
                     start: 7,
@@ -305,6 +374,16 @@ class UrlRegexTest extends TestCase
                     host: 'example.com',
                     port: 8080,
                     path: '/path',
+                )],
+            ],
+            'port: followed by query' => [
+                'Visit example.com:8080?a=1 now.',
+                [self::urlMatch(
+                    start: 6,
+                    full: 'example.com:8080?a=1',
+                    host: 'example.com',
+                    port: 8080,
+                    query: '?a=1',
                 )],
             ],
             'port: zero' => [
@@ -516,6 +595,15 @@ class UrlRegexTest extends TestCase
                 'D:/path/to/filename.txt',
                 [self::urlMatch(start: 11, full: 'filename.txt', host: 'filename.txt')],
             ],
+            'over match: file scheme url' => [
+                'Open file:///home/user/note.txt please.',
+                [self::urlMatch(
+                    start: 13,
+                    full: 'home/user/note.txt',
+                    host: 'home',
+                    path: '/user/note.txt',
+                )],
+            ],
 
             'enclosed: angle brackets' => [
                 '<example.com>',
@@ -533,20 +621,20 @@ class UrlRegexTest extends TestCase
                 '«example.com»',
                 [self::urlMatch(start: 2, full: 'example.com', host: 'example.com')],
             ],
-            'enclosed: underscore' => [
+            'preceded by: underscore' => [
                 '_example.com',
                 [self::urlMatch(start: 1, full: 'example.com', host: 'example.com')],
             ],
-            'enclosed: slash' => [
+            'preceded by: slash' => [
                 '/example.com',
                 [self::urlMatch(start: 1, full: 'example.com', host: 'example.com')],
             ],
-            'enclosed: backslash' => [
+            'preceded by: backslash' => [
                 '\\example.com',
                 [self::urlMatch(start: 1, full: 'example.com', host: 'example.com')],
             ],
 
-            'multiple: order of appearance' => [
+            'find all: order of appearance' => [
                 'See a.com,b.com and http://c.com/x end',
                 [
                     self::urlMatch(start: 4, full: 'a.com', host: 'a.com'),
@@ -554,7 +642,12 @@ class UrlRegexTest extends TestCase
                     self::urlMatch(start: 20, full: 'http://c.com/x', host: 'c.com', scheme: 'http', path: '/x'),
                 ],
             ],
-            'multiple: offset is counted in bytes' => [
+
+            'find all: offset at the start of text' => [
+                'example.com is here',
+                [self::urlMatch(start: 0, full: 'example.com', host: 'example.com')],
+            ],
+            'find all: offset counted in bytes' => [
                 'Тест example.com кінець.',
                 [self::urlMatch(start: 9, full: 'example.com', host: 'example.com')],
             ],
