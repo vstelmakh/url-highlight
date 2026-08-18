@@ -64,6 +64,10 @@ class PunctuationFilterTest extends TestCase
                 self::url('example.com/path:', path: '/path:'),
                 self::url('example.com/path', path: '/path'),
             ],
+            'trailing question mark' => [
+                self::url('example.com/path?a=1?', path: '/path', query: '?a=1?'),
+                self::url('example.com/path?a=1', path: '/path', query: '?a=1'),
+            ],
             'unbalanced parenthesis' => [
                 self::url('example.com/path)', path: '/path)'),
                 self::url('example.com/path', path: '/path'),
@@ -80,9 +84,21 @@ class PunctuationFilterTest extends TestCase
                 self::url('example.com/path»', path: '/path»'),
                 self::url('example.com/path', path: '/path'),
             ],
-            'unbalanced typographic quote' => [
+            'unbalanced typographic double quote' => [
                 self::url('example.com/path”', path: '/path”'),
                 self::url('example.com/path', path: '/path'),
+            ],
+            'unbalanced typographic single quote' => [
+                self::url('example.com/path’', path: '/path’'),
+                self::url('example.com/path', path: '/path'),
+            ],
+            'extra closing parenthesis' => [
+                self::url('example.com/path_(a))', path: '/path_(a))'),
+                self::url('example.com/path_(a)', path: '/path_(a)'),
+            ],
+            'trailing opening parenthesis is kept' => [
+                self::url('example.com/path_(', path: '/path_('),
+                self::url('example.com/path_(', path: '/path_('),
             ],
             'balanced parentheses are kept' => [
                 self::url('example.com/path_(a)', path: '/path_(a)'),
@@ -91,6 +107,10 @@ class PunctuationFilterTest extends TestCase
             'balanced guillemets are kept' => [
                 self::url('example.com/«path»', path: '/«path»'),
                 self::url('example.com/«path»', path: '/«path»'),
+            ],
+            'balanced typographic single quotes are kept' => [
+                self::url('example.com/‘path’', path: '/‘path’'),
+                self::url('example.com/‘path’', path: '/‘path’'),
             ],
             'odd double quote' => [
                 self::url('example.com/path"', path: '/path"'),
@@ -103,6 +123,10 @@ class PunctuationFilterTest extends TestCase
             'odd single quote' => [
                 self::url("example.com/path'", path: "/path'"),
                 self::url('example.com/path', path: '/path'),
+            ],
+            'even single quotes are kept' => [
+                self::url("example.com/'path'", path: "/'path'"),
+                self::url("example.com/'path'", path: "/'path'"),
             ],
             'mixed trailing characters' => [
                 self::url('example.com/path).', path: '/path).'),
@@ -119,6 +143,14 @@ class PunctuationFilterTest extends TestCase
             'only the last component is filtered' => [
                 self::url('example.com/path.?a=1.', path: '/path.', query: '?a=1.'),
                 self::url('example.com/path.?a=1', path: '/path.', query: '?a=1'),
+            ],
+            'fragment takes precedence over query' => [
+                self::url('example.com/path?a=1.#top', path: '/path', query: '?a=1.', fragment: '#top'),
+                self::url('example.com/path?a=1.#top', path: '/path', query: '?a=1.', fragment: '#top'),
+            ],
+            'empty fragment is dropped keeping query' => [
+                self::url('example.com/path?a=1#.', path: '/path', query: '?a=1', fragment: '#.'),
+                self::url('example.com/path?a=1', path: '/path', query: '?a=1'),
             ],
             'empty query is dropped' => [
                 self::url('example.com?.', query: '?.'),
