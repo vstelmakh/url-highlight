@@ -102,6 +102,10 @@ class UrlHighlightTest extends TestCase
                 'Skip <script>var u = "http://example.com";</script> end.',
                 'Skip <script>var u = "http://example.com";</script> end.',
             ],
+            'multibyte url and text around it' => [
+                'Тест приклад.укр кінець.',
+                'Тест <a href="http://приклад.укр">приклад.укр</a> кінець.',
+            ],
             'url enclosed in angle brackets is not highlighted' => [
                 'Visit <https://example.com> now.',
                 'Visit <https://example.com> now.',

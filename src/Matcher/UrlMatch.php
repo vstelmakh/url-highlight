@@ -7,7 +7,7 @@ namespace VStelmakh\UrlHighlight\Matcher;
 use VStelmakh\UrlHighlight\Url;
 
 /**
- * A URL matched in a string, located by its byte range [start, end] within that same string.
+ * A URL matched in a string, located by its start and end byte offsets within that same string, end is exclusive.
  *
  * @internal
  */
