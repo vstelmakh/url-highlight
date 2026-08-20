@@ -2,18 +2,14 @@
 
 ---
 
-**Url highlight** - PHP library to find URLs in text and turn them into links. Made to handle complex URLs, HTML markup
-and edge cases.
+**Url highlight** - PHP library to find URLs in text and turn them into clickable links. Made to handle complex URLs,
+HTML markup and edge cases.
 
-Features:
-- Highlight URLs in plain text, HTML or HTML entity encoded input.
-- Match URLs without a scheme by top-level domain, from the IANA list: `example.com` is a URL, `readme.txt` is not.
-- Handle emails, IP hosts, ports, credentials and Unicode: `user@example.com`, `127.0.0.1:8080/health`, `привіт.укр/★`.
-- Drop punctuation that belongs to the text, keep brackets that belong to the URL:
-  `(see example.com/path_(1)).` matches `example.com/path_(1)`.
-- Leave existing links and HTML elements that may not contain anchors (`a`, `script`, etc.) untouched, nothing is
-  highlighted twice.
-- Render each URL your way, or extract them as parsed components.
+- **Input:** plain text, HTML or HTML entity encoded text.
+- **Matching:** URLs without a scheme by top-level domain, emails, IP hosts, Unicode and edge cases.
+- **Precision:** trailing punctuation and unbalanced brackets stay out of the match.
+- **HTML aware:** existing links and elements that may not contain anchors stay untouched.
+- **Output:** links rendered your way, or URLs as parsed components.
 
 [🚀 **See examples** 👀](./docs/examples.md)
 
@@ -39,7 +35,7 @@ It provides 2 methods:
 
 ### Highlight URLs
 
-Pass your text to `highlight()` and get it back with every URL replaced by a link. Everything else stays as it is.
+Pass your input text to `highlight()` and get it back with every URL replaced by a link. Everything else stays as it is.
 
 ```php
 <?php
@@ -55,37 +51,13 @@ echo $urlHighlight->highlight('Check the example.com website.');
 ```
 
 Two optional arguments control the result: `$highlighter` renders each URL, `$format` tells the library how to read
-the text.
-
-#### Input Format
-
-The `$format` argument must describe the text, otherwise URLs may not be highlighted correctly.
-
-| Format                   | Text                                                                         |
-|--------------------------|------------------------------------------------------------------------------|
-| `Format::Html` (default) | HTML markup. Tags and elements that may not hold a link are left untouched.  |
-| `Format::HtmlEncoded`    | HTML markup with entity encoded text, e.g. the result of `htmlspecialchars`. |
-| `Format::Plain`          | Text without markup, taken as is. Angle brackets are ordinary characters.    |
-
-```php
-<?php
-use VStelmakh\UrlHighlight\Format;
-
-$encoded = htmlspecialchars('<b>http://example.com?a=1&b=2</b>');
-echo $urlHighlight->highlight($encoded, format: Format::HtmlEncoded);
-
-// Output:
-// &lt;b&gt;<a href="http://example.com?a=1&amp;b=2">http://example.com?a=1&amp;b=2</a>&lt;/b&gt;
-```
-
-> [!NOTE]
-> `Format::HtmlEncoded` matches against the decoded text, so `&amp;` does not break the URL, and keeps the original
-> encoding in the output. It needs more work than the other formats, so use it only for encoded text.
+the input text.
 
 #### Custom Highlighter
 
-By default, each URL is wrapped in an anchor tag by [SimpleHighlighter](./src/Highlighter/SimpleHighlighter.php).
-For one-off custom logic, you can use a [CallbackHighlighter](./src/Highlighter/CallbackHighlighter.php):
+By default, each URL is simply wrapped in an anchor tag by [SimpleHighlighter](./src/Highlighter/SimpleHighlighter.php).
+For any custom logic, you can use a [CallbackHighlighter](./src/Highlighter/CallbackHighlighter.php). The example below
+adds a `nofollow` attribute and uses the host as the link text:
 
 ```php
 <?php
@@ -105,16 +77,48 @@ echo $urlHighlight->highlight('Visit http://example.com/path?q=hello today.', $h
 ```
 
 > [!TIP]
-> For the logic you want to reuse or test on its own, implement the [Highlighter](./src/Highlighter/Highlighter.php)
-> interface instead. See [SimpleHighlighter](./src/Highlighter/SimpleHighlighter.php) for implementation example.
+> There is also the [Highlighter](./src/Highlighter/Highlighter.php) interface. Implement it in a dedicated class for
+> more complex logic. Such a highlighter is reusable and testable.
+> See [SimpleHighlighter](./src/Highlighter/SimpleHighlighter.php) for an example.
 
 > [!IMPORTANT]
 > The returned string from highlighter is written to the output as is. Remember to escape HTML.
 
+#### Input Format
+
+The `$format` argument must describe the input text, otherwise URLs may not be highlighted correctly.
+
+| Format                   | Text                                                                         |
+|--------------------------|------------------------------------------------------------------------------|
+| `Format::Html` (default) | HTML markup. Tags and elements that may not hold a link are left untouched.  |
+| `Format::HtmlEncoded`    | HTML markup with entity encoded text, e.g. the result of `htmlspecialchars`. |
+| `Format::Plain`          | Text without markup, taken as is. Angle brackets are ordinary characters.    |
+
+The default `Format::Html` fits text without markup as well. Use `Format::Plain` when angle brackets in the text must
+stay ordinary characters, for example to match `<user@example.com>`.
+
+A common case is user input that you escape before rendering. Set the format to `Format::HtmlEncoded`, so the escaped
+text is processed correctly:
+
+```php
+<?php
+use VStelmakh\UrlHighlight\Format;
+
+$encoded = htmlspecialchars('<b>http://example.com?a=1&b=2</b>');
+echo $urlHighlight->highlight($encoded, format: Format::HtmlEncoded);
+
+// Output:
+// &lt;b&gt;<a href="http://example.com?a=1&amp;b=2">http://example.com?a=1&amp;b=2</a>&lt;/b&gt;
+```
+
+> [!NOTE]
+> `Format::HtmlEncoded` matches against the decoded text, so the URL ends where it really ends, instead of running into
+> the markup that follows. It does more work internally than the other formats, so use it only for encoded text.
+
 ### Find URLs
 
-Pass your text to `find()` and get the list of URLs it contains, each as a [Url](./src/Url.php) object with the
-components parsed. Markup is ignored, the text is always read as plain text.
+Pass your input text to `find()` and get the list of URLs it contains, each as a [Url](./src/Url.php) object with the
+components parsed. Markup is ignored, the text is always processed as plain text.
 
 ```php
 <?php
