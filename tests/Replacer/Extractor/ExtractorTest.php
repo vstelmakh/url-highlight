@@ -35,11 +35,11 @@ class ExtractorTest extends TestCase
     public static function extractDataProvider(): array
     {
         return [
-            'empty input' => ['', [0 => '']],
+            'empty input' => ['', []],
             'plain text only' => ['no tags here', [0 => 'no tags here']],
             'text around tags' => ['a <b>c</b> d', [0 => 'a ', 5 => 'c', 10 => ' d']],
-            'adjacent tags' => ['<b>a</b><i>b</i>', [3 => 'a', 11 => 'b', 16 => '']],
-            'text inside non skip tag' => ['<p>text</p>', [3 => 'text', 11 => '']],
+            'adjacent tags' => ['<b>a</b><i>b</i>', [3 => 'a', 11 => 'b']],
+            'text inside non skip tag' => ['<p>text</p>', [3 => 'text']],
 
             'skip tag content' => ['x <a href="#">link.com</a> y', [0 => 'x ', 26 => ' y']],
             'skip tag uppercase' => ['<SCRIPT>a</SCRIPT>b', [18 => 'b']],

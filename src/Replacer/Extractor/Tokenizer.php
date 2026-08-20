@@ -60,7 +60,10 @@ final readonly class Tokenizer
         }
 
         // On PCRE failure the rest is treated as plain text.
-        yield new PlainToken(substr($html, $cursor));
+        $rest = substr($html, $cursor);
+        if ($rest !== '') {
+            yield new PlainToken($rest);
+        }
     }
 
     private function createTagToken(string $contents): TagToken

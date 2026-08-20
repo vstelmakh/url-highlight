@@ -80,6 +80,9 @@ final readonly class HtmlEncodedStrategy implements Strategy
         }
 
         // On PCRE failure the rest is yielded as one segment.
-        yield $cursor => substr($decoded, $cursor);
+        $rest = substr($decoded, $cursor);
+        if ($rest !== '') {
+            yield $cursor => $rest;
+        }
     }
 }
