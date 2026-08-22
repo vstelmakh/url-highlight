@@ -5,11 +5,11 @@
 **Url highlight** - PHP library to find URLs in text and turn them into clickable links. Made to handle complex URLs,
 HTML markup and edge cases.
 
-- **Input:** plain text, HTML or HTML entity encoded text.
-- **Matching:** URLs without a scheme by top-level domain, emails, IP hosts, Unicode and edge cases.
-- **Precision:** trailing punctuation and unbalanced brackets stay out of the match.
-- **HTML aware:** existing links and elements that may not contain anchors stay untouched.
-- **Output:** links rendered your way, or URLs as parsed components.
+- Works with plain text, HTML or HTML entity encoded input.
+- Matches URLs without a scheme by top-level domain, emails, IP hosts, Unicode and edge cases.
+- Keeps punctuation and unbalanced brackets out of the match.
+- Leaves existing links and elements that may not contain anchors untouched.
+- Renders links your way, or returns URLs as parsed components.
 
 [🚀 **See examples** 👀](./docs/examples.md)
 
@@ -23,7 +23,7 @@ Install the latest version with [Composer](https://getcomposer.org/) from
 composer require vstelmakh/url-highlight
 ```
 
-On PHP below 8.4, use version `^3.2`. It supports PHP 7.1 - 8.x and has a different API, see the
+On PHP below 8.4, use version `^3.2`. It supports PHP 7.1 - 8.x but has a different API, see the
 [3.x readme](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/README.md).
 
 ## Usage
@@ -75,6 +75,9 @@ echo $urlHighlight->highlight('Visit http://example.com/path?q=hello today.', $h
 // Output:
 // Visit <a href="http://example.com/path?q=hello" rel="nofollow">example.com</a> today.
 ```
+
+A highlighter does not have to produce a link. The returned string replaces the URL, so it may be anything, for example
+`[redacted]` for URLs pointing to an external host.
 
 > [!TIP]
 > There is also the [Highlighter](./src/Highlighter/Highlighter.php) interface. Implement it in a dedicated class for
