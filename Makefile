@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 .SILENT:
-.PHONY: help phpcs phpcs-fix phpstan phpunit phpunit-coverage phpbench check check-full
+.PHONY: help phpcs phpcs-fix phpstan phpunit phpunit-coverage phpunit-coverage-clover phpbench check check-full
 
 # Step headline, example: $(HEADLINE) 'Example headline'
 # Uses printf, because escape handling in echo differs per shell and may not expand \033
@@ -8,7 +8,7 @@ HEADLINE = printf '\n\033[7m \# \033[0m \033[1m%s\033[0m\n'
 
 help: ## Show available commands
 	grep -hE '^[a-zA-Z][a-zA-Z-]*:.*## ' $(MAKEFILE_LIST) \
-		| awk 'BEGIN {FS = ":.*## "}; {printf "  \033[32m%-17s\033[0m %s\n", $$1, $$2}'
+		| awk 'BEGIN {FS = ":.*## "}; {printf "  \033[32m%-24s\033[0m %s\n", $$1, $$2}'
 
 phpcs: ## Check code style
 	$(HEADLINE) 'PHP CS Fixer'
@@ -26,9 +26,13 @@ phpunit: ## Run tests
 	$(HEADLINE) 'PHPUnit'
 	vendor/bin/phpunit
 
-phpunit-coverage: ## Run tests and report code coverage
-	$(HEADLINE) 'PHPUnit'
+phpunit-coverage: ## Run tests and report code coverage to standard output
+	$(HEADLINE) 'PHPUnit with coverage'
 	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text --only-summary-for-coverage-text
+
+phpunit-coverage-clover: ## Run tests and report code coverage in Clover XML format
+	$(HEADLINE) 'PHPUnit with coverage (Clover)'
+	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover var/phpunit/coverage.xml
 
 phpbench: ## Run benchmarks
 	$(HEADLINE) 'PHPBench'
