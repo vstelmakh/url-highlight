@@ -53,4 +53,34 @@ class ExtractorTest extends TestCase
             'offsets are bytes not characters' => ['<b>Тест</b> a.com', [3 => 'Тест', 15 => ' a.com']],
         ];
     }
+
+    #[DataProvider('skipTagDataProvider')]
+    public function testExtractSkipsContentOfSkipTag(string $tag): void
+    {
+        $html = "a<{$tag}>skipped.com</{$tag}>b";
+        $expected = [0 => 'a', strlen($html) - 1 => 'b'];
+
+        $actual = iterator_to_array($this->extractor->extract($html));
+
+        self::assertSame($expected, $actual);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function skipTagDataProvider(): array
+    {
+        return [
+            'a' => ['a'],
+            'button' => ['button'],
+            'datalist' => ['datalist'],
+            'math' => ['math'],
+            'script' => ['script'],
+            'select' => ['select'],
+            'style' => ['style'],
+            'svg' => ['svg'],
+            'textarea' => ['textarea'],
+            'title' => ['title'],
+        ];
+    }
 }
