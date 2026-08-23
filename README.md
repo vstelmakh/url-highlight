@@ -24,7 +24,8 @@ composer require vstelmakh/url-highlight
 ```
 
 On PHP below 8.4, use version `^3.2`. It supports PHP 7.1 - 8.x but has a different API, see the
-[3.x readme](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/README.md).
+[3.x readme](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/README.md).  
+Coming from 3.x? See [Upgrade 3.x to 4.0](./docs/upgrade-4.0.md).
 
 ## Usage
 

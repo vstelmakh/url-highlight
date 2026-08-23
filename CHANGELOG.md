@@ -5,6 +5,7 @@ Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) sp
 ## 4.0.0
 Version 4 is a major rethink of the library, based on everything learned since the first release.
 The public interface is new and much simpler, so code written using version 3.x needs changes.
+See [Upgrade 3.x to 4.0](./docs/upgrade-4.0.md) for the migration steps.
 
 - **\[BC break\]** Raised the minimum PHP version to 8.4
 - **\[BC break\]** Simplified the public interface
