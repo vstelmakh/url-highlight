@@ -7,7 +7,7 @@ HTML markup and edge cases.
 
 - Works with plain text, HTML or HTML entity encoded input.
 - Matches URLs without a scheme by top-level domain, emails, IP hosts, Unicode and edge cases.
-- Keeps punctuation and unbalanced brackets out of the match.
+- Drops punctuation that belongs to the text, keeps what belongs to the URL.
 - Leaves existing links and elements that may not contain anchors untouched.
 - Renders links your way, or returns URLs as parsed components.
 
@@ -29,8 +29,7 @@ Coming from 3.x? See [Upgrade 3.x to 4.0](./docs/upgrade-4.0.md).
 
 ## Usage
 
-[UrlHighlight](./src/UrlHighlight.php) is the only entry point. It has no state, so you can create it once and reuse it.
-It provides 2 methods:
+[UrlHighlight](./src/UrlHighlight.php) is the only entry point. It provides 2 methods:
 - [`highlight()`](#highlight-urls) to turn URLs into links.
 - [`find()`](#find-urls) to get an array of URLs found in the text.
 
@@ -86,7 +85,7 @@ A highlighter does not have to produce a link. The returned string replaces the 
 > See [SimpleHighlighter](./src/Highlighter/SimpleHighlighter.php) for an example.
 
 > [!IMPORTANT]
-> The returned string from highlighter is written to the output as is. Remember to escape HTML.
+> The returned string from highlighter is written to the output as is. Remember to escape HTML when necessary.
 
 #### Input Format
 
