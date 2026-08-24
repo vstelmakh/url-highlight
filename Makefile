@@ -20,7 +20,7 @@ phpcs-fix: ## Fix code style violations
 
 phpstan: ## Run static analysis
 	$(HEADLINE) 'PHPStan'
-	vendor/bin/phpstan analyse --ansi --no-progress
+	vendor/bin/phpstan analyse --ansi --no-progress --memory-limit=1G
 
 phpunit: ## Run tests
 	$(HEADLINE) 'PHPUnit'
