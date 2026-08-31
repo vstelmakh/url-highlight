@@ -15,7 +15,7 @@ See [Upgrade 3.x to 4.0](./docs/upgrade-4.0.md) for the migration steps.
   - Renamed methods: `highlightUrls` to `highlight` and `getUrls` to `find`
   - Removed `isUrl` method (no replacement provided)
 - Improved URL matching precision
-- Improved performance and memory consumption
+- Improved performance, most notably on large input
 - Added IP address host support (matched with a port or a path)
 - Improved HTML support, content of the elements that may not contain an anchor is skipped: `a`, `button`, `datalist`,
   `math`, `script`, `select`, `style`, `svg`, `textarea`, `title`
