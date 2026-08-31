@@ -35,16 +35,17 @@ Here are a few rules to follow when making changes to this project:
 
 All the checks run via [Makefile](./Makefile) targets. Run `make` to see the list:
 
-| Command                 | Description                                                     |
-|-------------------------|-----------------------------------------------------------------|
-| `make check`            | Code style, static analysis and tests. Use this before a PR.    |
-| `make check-full`       | Same as `check`, with code coverage and benchmarks.             |
-| `make phpcs`            | Check code style with PHP CS Fixer, config: `phpcs.php`.        |
-| `make phpcs-fix`        | Fix code style violations.                                      |
-| `make phpstan`          | Run static analysis with PHPStan, config: `phpstan.neon`.       |
-| `make phpunit`          | Run tests with PHPUnit, config: `phpunit.xml`.                  |
-| `make phpunit-coverage` | Run tests and report code coverage. Requires Xdebug.            |
-| `make phpbench`         | Run benchmarks with PHPBench, config: `phpbench.json`.          |
+| Command                        | Description                                                     |
+|--------------------------------|-----------------------------------------------------------------|
+| `make check`                   | Code style, static analysis and tests. Use this before a PR.    |
+| `make check-full`              | Same as `check`, with code coverage and benchmarks.             |
+| `make phpcs`                   | Check code style with PHP CS Fixer, config: `phpcs.php`.        |
+| `make phpcs-fix`               | Fix code style violations.                                      |
+| `make phpstan`                 | Run static analysis with PHPStan, config: `phpstan.neon`.       |
+| `make phpunit`                 | Run tests with PHPUnit, config: `phpunit.xml`.                  |
+| `make phpunit-coverage`        | Run tests and report code coverage. Requires Xdebug.            |
+| `make phpunit-coverage-clover` | Run tests and report coverage in Clover XML. Requires Xdebug.   |
+| `make phpbench`                | Run benchmarks with PHPBench, config: `phpbench.json`.          |
 
 The [CI workflow](./.github/workflows/checks.yml) runs the same targets on every pull request. Tests run on all
 supported PHP versions, and with the lowest allowed dependency versions.
