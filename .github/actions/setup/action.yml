@@ -53,7 +53,7 @@ runs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ inputs.php_version }}
-        extensions: dom, json, mbstring, libxml
+        extensions: mbstring
         coverage: xdebug
 
     - name: 'Validate composer.json and composer.lock'
