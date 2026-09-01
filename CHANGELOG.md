@@ -8,7 +8,7 @@ The public interface is new and much simpler, so code written using version 3.x 
 See [Upgrade 3.x to 4.0](./docs/upgrade-4.0.md) for the migration steps.
 
 - **\[BC break\]** Raised the minimum PHP version to 8.4
-- **\[BC break\]** Simplified the public interface
+- **\[BC break\]** Simplified the public interface:
   - Replaced `HighlighterInterface` by a [Highlighter](./src/Highlighter/Highlighter.php) interface
   - Replaced the encoder by the [Format](./src/Format.php) enum: `Plain`, `Html`, `HtmlEncoded`
   - Removed the validator
@@ -29,33 +29,33 @@ See [Upgrade 3.x to 4.0](./docs/upgrade-4.0.md) for the migration steps.
 
 ## 3.1.3
 - Updated a top-level domain list to recent changes
-- Added CI build for PHP 8.5
+- Added CI check for PHP 8.5
 
 ## 3.1.2
 - Updated a top-level domain list to recent changes
 
 ## 3.1.1
 - Updated a top-level domain list to recent changes
-- Added CI build for PHP 8.4
+- Added CI check for PHP 8.4
 
 ## 3.1.0
 - Improved userinfo matching in compliance with RFC 3986 Uniform Resource Identifier (URI): Generic Syntax
 
 ## 3.0.3
 - Updated a top-level domain list to recent changes
-- Added CI build for PHP 8.3
+- Added CI check for PHP 8.3
 
 ## 3.0.2
 - Updated a top-level domain list to recent changes
-- Added CI build for PHP 8.2
+- Added CI check for PHP 8.2
 - Added declare strict types
 
 ## 3.0.1
 - Updated a top-level domain list to recent changes
-- Added CI build for PHP 8.1
+- Added CI check for PHP 8.1
 
 ## 3.0.0
-- **\[BC break\]** Refactored [HighlighterInterface](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/src/Highlighter/HighlighterInterface.php) to be more flexible
+- **\[BC break\]** Refactored [HighlighterInterface](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/src/Highlighter/HighlighterInterface.php) to be more flexible:
   - Refactored [HtmlHighlighter](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/src/Highlighter/HtmlHighlighter.php) to follow a template method pattern (much easier to extend)
   - Refactored [MarkdownHighlighter](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/src/Highlighter/MarkdownHighlighter.php) to be aware of HTML content (extends [HtmlHighlighter](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/src/Highlighter/HtmlHighlighter.php))
 - Added [MatcherFactory](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/src/Matcher/MatcherFactory.php) and [ReplacerFactory](https://github.com/vstelmakh/url-highlight/blob/v3.2.0/src/Replacer/ReplacerFactory.php)
