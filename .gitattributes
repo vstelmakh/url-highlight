@@ -1,18 +1,7 @@
-.gitattributes export-ignore
-.gitignore export-ignore
-.editorconfig export-ignore
-
-/.github export-ignore
-/docs export-ignore
-/resources export-ignore
-/tests export-ignore
-/benchmarks export-ignore
-/CHANGELOG.md export-ignore
-/CONTRIBUTING.md export-ignore
-
-phpcs.xml export-ignore
-phpstan.neon export-ignore
-phpunit.xml export-ignore
-phpunit.xml.deprecated export-ignore
-phpbench.json export-ignore
-covelyzer.xml export-ignore
+* export-ignore
+/src/ -export-ignore
+/src/** -export-ignore
+/composer.json -export-ignore
+/README.md -export-ignore
+/CHANGELOG.md -export-ignore
+/LICENSE -export-ignore

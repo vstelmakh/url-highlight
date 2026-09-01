@@ -1,60 +1,78 @@
 <?php
 
+declare(strict_types=1);
+
 namespace VStelmakh\UrlHighlight\Benchmarks;
 
-use PhpBench\Benchmark\Metadata\Annotations\Iterations;
-use PhpBench\Benchmark\Metadata\Annotations\Revs;
-use VStelmakh\UrlHighlight\Encoder\HtmlEntitiesEncoder;
-use VStelmakh\UrlHighlight\Encoder\HtmlSpecialcharsEncoder;
+use PhpBench\Attributes as Bench;
+use VStelmakh\UrlHighlight\Format;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
-class UrlHighlightBench
+/**
+ * Important to warmup. PhpBench runs every iteration in a fresh process, so without it the first timed revolution also
+ * pays the one-time costs (class loading, TLD map load, regex compile). Which is distorting the ratios this benchmark
+ * exists to compare.
+ */
+#[Bench\Revs(10)]
+#[Bench\Iterations(5)]
+#[Bench\Warmup(1)]
+#[Bench\BeforeMethods('setUp')]
+final class UrlHighlightBench
 {
-    /**
-     * @Revs(10)
-     * @Iterations(5)
-     */
-    public function benchHighlightPlain(): void
-    {
-        $urlHighlight = new UrlHighlight();
+    private UrlHighlight $urlHighlight;
+    private string $input;
+    private Format $inputFormat;
 
-        $input = file_get_contents(__DIR__ . '/input_plain.txt');
-        $urlHighlight->highlightUrls($input);
+    /**
+     * @param array{file: string, inputFormat: Format} $params
+     */
+    public function setUp(array $params): void
+    {
+        $this->urlHighlight = new UrlHighlight();
+        $this->input = (string) file_get_contents(__DIR__ . '/' . $params['file']);
+        $this->inputFormat = $params['inputFormat'];
+    }
+
+    #[Bench\ParamProviders('highlightParamProvider')]
+    public function benchHighlight(): void
+    {
+        $this->urlHighlight->highlight(text: $this->input, format: $this->inputFormat);
     }
 
     /**
-     * @Revs(10)
-     * @Iterations(5)
+     * @return array<string, array{file: string, inputFormat: Format}>
      */
-    public function benchHighlightHtml(): void
+    public function highlightParamProvider(): array
     {
-        $urlHighlight = new UrlHighlight();
+        return [
+            'plain' => $this->dataset('input_plain.txt', Format::Plain),
+            'html' => $this->dataset('input_html.txt', Format::Html),
+            'html special chars' => $this->dataset('input_html_special_chars.txt', Format::HtmlEncoded),
+            'html entities' => $this->dataset('input_html_entities.txt', Format::HtmlEncoded),
+        ];
+    }
 
-        $input = file_get_contents(__DIR__ . '/input_html.txt');
-        $urlHighlight->highlightUrls($input);
+    #[Bench\ParamProviders('findParamProvider')]
+    public function benchFind(): void
+    {
+        $this->urlHighlight->find($this->input);
     }
 
     /**
-     * @Revs(10)
-     * @Iterations(5)
+     * @return array<string, array{file: string, inputFormat: Format}>
      */
-    public function benchHighlightHtmlSpecialChars(): void
+    public function findParamProvider(): array
     {
-        $urlHighlight = new UrlHighlight(null, null, new HtmlSpecialcharsEncoder());
-
-        $input = file_get_contents(__DIR__ . '/input_html_special_chars.txt');
-        $urlHighlight->highlightUrls($input);
+        return [
+            'plain' => $this->dataset('input_plain.txt', Format::Plain),
+        ];
     }
 
     /**
-     * @Revs(10)
-     * @Iterations(5)
+     * @return array{file: string, inputFormat: Format}
      */
-    public function benchHighlightHtmlEntities(): void
+    private function dataset(string $file, Format $inputFormat): array
     {
-        $urlHighlight = new UrlHighlight(null, null, new HtmlEntitiesEncoder());
-
-        $input = file_get_contents(__DIR__ . '/input_html_entities.txt');
-        $urlHighlight->highlightUrls($input);
+        return ['file' => $file, 'inputFormat' => $inputFormat];
     }
 }

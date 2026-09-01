@@ -4,75 +4,96 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Tests\Replacer;
 
-use PHPUnit\Framework\MockObject\MockObject;
-use VStelmakh\UrlHighlight\Matcher\UrlMatch;
-use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
-use VStelmakh\UrlHighlight\Replacer\Replacer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use VStelmakh\UrlHighlight\Highlighter\CallbackHighlighter;
+use VStelmakh\UrlHighlight\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Replacer\Replacement;
+use VStelmakh\UrlHighlight\Replacer\Replacer;
+use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
+use VStelmakh\UrlHighlight\Url;
 
 class ReplacerTest extends TestCase
 {
-    private const REPLACE = 'REPLACE';
+    private Replacer $replacer;
+    private Highlighter $highlighter;
 
-    /**
-     * @var MatcherInterface&MockObject
-     */
-    private $matcher;
-
-    /**
-     * @var Replacer
-     */
-    private $replacer;
-
+    #[\Override]
     protected function setUp(): void
     {
-        $this->matcher = $this->createMock(MatcherInterface::class);
-        $this->replacer = new Replacer($this->matcher);
+        $this->replacer = new Replacer();
+        $this->highlighter = new CallbackHighlighter(static fn (Url $url): string => "[{$url->full}]");
     }
 
     /**
-     * @dataProvider replaceCallbackDataProvider
-     *
-     * @param string $string
-     * @param array&UrlMatch[] $matches
-     * @param string $expected
+     * @param array<Replacement> $replacements
      */
-    public function testReplaceCallback(string $string, array $matches, string $expected): void
+    #[DataProvider('replaceDataProvider')]
+    public function testReplace(string $text, array $replacements, string $expected): void
     {
-        $this->matcher
-            ->expects(self::once())
-            ->method('matchAll')
-            ->willReturn($matches);
+        $strategy = self::createStub(Strategy::class);
+        $strategy->method('findReplacements')->willReturn($replacements);
 
-        $callback = static function (UrlMatch $match) {
-            return self::REPLACE;
-        };
+        $actual = $this->replacer->replace($text, $this->highlighter, $strategy);
 
-        $actual = $this->replacer->replaceCallback($string, $callback);
-        self::assertEquals($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
     /**
-     * @return mixed[]
+     * @return array<string, array{string, array<Replacement>, string}>
      */
-    public function replaceCallbackDataProvider(): array
+    public static function replaceDataProvider(): array
     {
         return [
-            [
-                'Hello ★, follow the link: http://example.com.',
-                [
-                    new UrlMatch('http://example.com', 28, 'http://example.com', 'http', null, 'example.com', 'com', null, null),
-                ],
-                sprintf('Hello ★, follow the link: %s.', self::REPLACE)
+            'empty input' => [
+                '',
+                [],
+                '',
             ],
-            [
-                'Hello ★, follow the link: http://example.com/互联网. Привіт світ (example.com).',
+            'no replacements leaves text unchanged' => [
+                'Nothing here',
+                [],
+                'Nothing here',
+            ],
+            'replacement surrounded by text' => [
+                'Visit example.com today',
+                [self::replacement(6, 17, 'example.com')],
+                'Visit [example.com] today',
+            ],
+            'replacement at the start' => [
+                'example.com is worth a visit',
+                [self::replacement(0, 11, 'example.com')],
+                '[example.com] is worth a visit',
+            ],
+            'replacement at the end' => [
+                'Today visit example.com',
+                [self::replacement(12, 23, 'example.com')],
+                'Today visit [example.com]',
+            ],
+            'adjacent replacements' => [
+                'Visit a.comb.com today',
                 [
-                    new UrlMatch('http://example.com/互联网', 28, 'http://example.com/互联网', 'http', null, 'example.com', 'com', null, '/互联网'),
-                    new UrlMatch('example.com', 81, 'example.com', null, null, 'example.com', 'com', null, null),
+                    self::replacement(6, 11, 'a.com'),
+                    self::replacement(11, 16, 'b.com'),
                 ],
-                sprintf('Hello ★, follow the link: %s. Привіт світ (%s).', self::REPLACE, self::REPLACE)
+                'Visit [a.com][b.com] today',
+            ],
+            'source span shorter than the url' => [
+                'Visit example.com today',
+                [self::replacement(6, 17, 'example.com/hello/world')],
+                'Visit [example.com/hello/world] today',
+            ],
+            'source span longer than the url' => [
+                'Visit example.com/hello/world today',
+                [self::replacement(6, 29, 'example.com')],
+                'Visit [example.com] today',
             ],
         ];
+    }
+
+    private static function replacement(int $start, int $end, string $output): Replacement
+    {
+        $url = new Url($output, null, null, 'irrelevant', null, null, null, null);
+        return new Replacement($start, $end, $url);
     }
 }

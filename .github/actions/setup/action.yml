@@ -1,0 +1,86 @@
+description: 'Set of steps to initialize the environment'
+inputs:
+  php_version:
+    description: 'PHP version to setup'
+    required: true
+  composer_prefer:
+    description: 'Composer dependencies preference. Available values: latest, lowest.'
+    required: true
+  persist_cache:
+    description: 'Whether to persist Composer cache. Available values: true, false.'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Prepare vars'
+      id: vars
+      shell: bash
+      run: |
+        case "${{ inputs.composer_prefer }}" in
+          "latest")
+            COMPOSER_PREFER=""
+            ;;
+          "lowest")
+            COMPOSER_PREFER="--prefer-lowest"
+            ;;
+          *)
+            echo "Invalid value for 'composer_prefer' input: ${{ inputs.composer_prefer }}"
+            exit 1;
+            ;;
+        esac
+        
+        echo "composer_prefer=${COMPOSER_PREFER}" >> $GITHUB_OUTPUT
+        {
+            echo "composer_cache_paths<<EOF"
+              echo "$(composer config cache-files-dir)"
+              echo "composer.lock"
+            echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+        
+        CURRENT_DATE=$(date +'%Y%m%d')
+        echo "composer_cache_key=composer-php${{ inputs.php_version }}-${{ inputs.composer_prefer }}-${CURRENT_DATE}-${{ hashFiles('composer.json') }}" >> $GITHUB_OUTPUT
+        {
+            echo "composer_cache_restore_keys<<EOF"
+              echo "composer-php${{ inputs.php_version }}-${{ inputs.composer_prefer }}-${CURRENT_DATE}"
+              echo "composer-php${{ inputs.php_version }}-${{ inputs.composer_prefer }}"
+              echo "composer-php${{ inputs.php_version }}"
+              echo "composer-"
+            echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: 'Setup PHP'
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php_version }}
+        extensions: mbstring
+        coverage: xdebug
+
+    - name: 'Validate composer.json and composer.lock'
+      shell: bash
+      run: composer validate
+
+    - name: 'Restore Composer cache'
+      id: composer_cache
+      uses: actions/cache/restore@v6
+      with:
+        path: ${{ steps.vars.outputs.composer_cache_paths }}
+        key: ${{ steps.vars.outputs.composer_cache_key }}
+        restore-keys: ${{ steps.vars.outputs.composer_cache_restore_keys }}
+
+    - name: 'Install Composer dependencies'
+      if: steps.composer_cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: composer install --prefer-dist --no-progress --no-interaction
+
+    - name: 'Update Composer dependencies'
+      if: steps.composer_cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: composer update ${{ steps.vars.outputs.composer_prefer }} --prefer-dist --no-progress --no-interaction
+
+    - name: 'Persist Composer cache'
+      if: steps.composer_cache.outputs.cache-hit != 'true' && inputs.persist_cache == 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ steps.vars.outputs.composer_cache_paths }}
+        key: ${{ steps.vars.outputs.composer_cache_key }}

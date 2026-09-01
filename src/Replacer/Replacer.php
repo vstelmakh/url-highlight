@@ -4,41 +4,28 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Replacer;
 
-use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
+use VStelmakh\UrlHighlight\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Replacer\Strategy\Strategy;
 
 /**
+ * Replaces every URL of the input with the output of {@see Highlighter}, leaving the surrounding text unchanged.
+ * Locating the URLs is delegated to the given {@see Strategy}.
+ *
  * @internal
  */
-class Replacer implements ReplacerInterface
+final readonly class Replacer
 {
-    /** @var MatcherInterface */
-    private $matcher;
-
-    /**
-     * @internal
-     * @param MatcherInterface $matcher
-     */
-    public function __construct(MatcherInterface $matcher)
+    public function replace(string $text, Highlighter $highlighter, Strategy $strategy): string
     {
-        $this->matcher = $matcher;
-    }
+        $result = '';
+        $cursor = 0;
 
-    /**
-     * @inheritdoc
-     */
-    public function replaceCallback(string $string, callable $callback): string
-    {
-        $offset = 0;
-
-        $matches = $this->matcher->matchAll($string);
-        foreach ($matches as $match) {
-            $replacement = $callback($match);
-            $position = $match->getByteOffset() + $offset;
-            $length = strlen($match->getFullMatch());
-            $string = substr_replace($string, $replacement, $position, $length);
-            $offset += strlen($replacement) - $length;
+        foreach ($strategy->findReplacements($text) as $replacement) {
+            $result .= substr($text, $cursor, $replacement->start - $cursor);
+            $result .= $highlighter->render($replacement->url);
+            $cursor = $replacement->end;
         }
 
-        return $string;
+        return $result . substr($text, $cursor);
     }
 }

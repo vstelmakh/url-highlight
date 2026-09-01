@@ -4,87 +4,76 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight;
 
-use VStelmakh\UrlHighlight\Encoder\EncoderInterface;
-use VStelmakh\UrlHighlight\Highlighter\HighlighterInterface;
-use VStelmakh\UrlHighlight\Highlighter\HtmlHighlighter;
-use VStelmakh\UrlHighlight\Matcher\MatcherFactory;
-use VStelmakh\UrlHighlight\Matcher\MatcherInterface;
-use VStelmakh\UrlHighlight\Replacer\ReplacerFactory;
-use VStelmakh\UrlHighlight\Replacer\ReplacerInterface;
-use VStelmakh\UrlHighlight\Validator\Validator;
-use VStelmakh\UrlHighlight\Validator\ValidatorInterface;
+use VStelmakh\UrlHighlight\Highlighter\Highlighter;
+use VStelmakh\UrlHighlight\Highlighter\SimpleHighlighter;
+use VStelmakh\UrlHighlight\Matcher\Matcher;
+use VStelmakh\UrlHighlight\Replacer\Replacer;
+use VStelmakh\UrlHighlight\Replacer\StrategyFactory;
 
-class UrlHighlight
+/**
+ * Entry point of the library. Finds URLs in text input and renders them as links.
+ *
+ * Usage example:
+ * ```
+ * $urlHighlight = new UrlHighlight();
+ * echo $urlHighlight->highlight('Check the example.com website.');
+ *  ```
+ *
+ * @api
+ */
+final readonly class UrlHighlight
 {
-    /** @var MatcherInterface */
-    private $matcher;
+    private Matcher $matcher;
+    private StrategyFactory $strategyFactory;
+    private Replacer $replacer;
 
-    /** @var ReplacerInterface */
-    private $replacer;
-
-    /** @var HighlighterInterface */
-    private $highlighter;
-
-    /**
-     * By default, urls without scheme will be matched by top level domain using http scheme.
-     * If you need different behavior see existent or create your own implementations of:
-     *  - ValidatorInterface - define if match is valid and should be recognized as url
-     *  - HighlighterInterface - define the way how url should be highlighted
-     *  - EncoderInterface - define how to work with encoded input (e.g. html special chars)
-     *
-     * @param ValidatorInterface|null $validator
-     * @param HighlighterInterface|null $highlighter
-     * @param EncoderInterface|null $encoder
-     */
-    public function __construct(
-        ?ValidatorInterface $validator = null,
-        ?HighlighterInterface $highlighter = null,
-        ?EncoderInterface $encoder = null
-    ) {
-        $validator = $validator ?? new Validator(true);
-        $this->matcher = MatcherFactory::createMatcher($validator, $encoder);
-        $this->replacer = ReplacerFactory::createReplacer($this->matcher);
-        $this->highlighter = $highlighter ?? new HtmlHighlighter('http');
-    }
-
-    /**
-     * Check if string is valid url.
-     * If encoder provided - string will be decoded, than check performed.
-     *
-     * @param string $string
-     * @return bool
-     */
-    public function isUrl(string $string): bool
+    public function __construct()
     {
-        return $this->matcher->match($string) !== null;
+        $this->matcher = new Matcher();
+        $this->strategyFactory = StrategyFactory::create($this->matcher);
+        $this->replacer = new Replacer();
     }
 
     /**
-     * Parse string and return array of urls found.
-     * If encoder provided - will return decoded urls.
+     * Replace URLs in `$text` with rendered links.
      *
-     * @param string $string
-     * @return array|string[]
+     * Example: `Check the example.com website.` -> `Check the <a href="http://example.com">example.com</a> website.`
+     * For custom replacement logic implement your own {@see Highlighter}, see {@see SimpleHighlighter} for example.
+     *
+     * The `$format` must describe the input, otherwise URLs are missed or matched past their end:
+     * - {@see Format::Plain} takes the text as is, ignoring any markup.
+     * - {@see Format::Html} leaves tags and the content of the elements that may not hold a link untouched.
+     * - {@see Format::HtmlEncoded} is required for entity-encoded input, e.g. from `htmlspecialchars`. It matches
+     *   against the decoded text to prevent invalid matches and keeps the original encoding in the output.
+     *
+     * @param string $text Input text to search for URLs.
+     * @param Highlighter $highlighter Produces the replacement for each detected URL.
+     * @param Format $format Format of `$text`.
      */
-    public function getUrls(string $string): array
+    public function highlight(
+        string $text,
+        Highlighter $highlighter = new SimpleHighlighter(),
+        Format $format = Format::Html,
+    ): string {
+        $strategy = $this->strategyFactory->createStrategy($format);
+        return $this->replacer->replace($text, $highlighter, $strategy);
+    }
+
+    /**
+     * Find all URLs in `$text`, ignoring any markup.
+     *
+     * @param string $text Input text to search for URLs.
+     *
+     * @return array<Url>
+     */
+    public function find(string $text): array
     {
         $result = [];
-        $matches = $this->matcher->matchAll($string);
-        foreach ($matches as $match) {
-            $result[] = $match->getUrl();
-        }
-        return $result;
-    }
 
-    /**
-     * Parse string and replace urls with highlighted links
-     * e.g. http://example.com -> <a href="http://example.com">http://example.com</a>
-     *
-     * @param string $string
-     * @return string
-     */
-    public function highlightUrls(string $string): string
-    {
-        return $this->highlighter->highlight($string, $this->replacer);
+        foreach ($this->matcher->match($text) as $match) {
+            $result[] = $match->url;
+        }
+
+        return $result;
     }
 }

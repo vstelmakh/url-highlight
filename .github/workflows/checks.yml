@@ -1,0 +1,83 @@
+name: 'Checks'
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 8 * * 0'
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  anchors: # This job is used to hold the anchors (reusable configurations). Expected not to run.
+    if: false
+    name: 'Anchors (expected to skip)'
+    strategy:
+      matrix: &php_version_matrix
+        php: ['8.4', '8.5']
+        composer: ['latest']
+        include:
+          - php: '8.4' # lowest supported PHP version
+            composer: 'lowest'
+    runs-on: &runs_on 'ubuntu-latest'
+    steps:
+      - &step_checkout
+        name: 'Git Checkout'
+        uses: actions/checkout@v7
+      - &step_setup_main
+        name: 'Setup PHP and Composer'
+        uses: ./.github/actions/setup
+        with:
+          php_version: '8.5' # main PHP version
+          composer_prefer: 'latest'
+          persist_cache: 'false'
+      - &step_setup_matrix
+        name: 'Setup PHP and Composer'
+        uses: ./.github/actions/setup
+        with:
+          php_version: ${{ matrix.php }}
+          composer_prefer: ${{ matrix.composer }}
+          persist_cache: 'true'
+
+  phpcs:
+    name: 'Code Style'
+    runs-on: *runs_on
+    steps:
+      - *step_checkout
+      - *step_setup_main
+      - name: 'Run PHP CS Fixer'
+        run: make phpcs
+
+  phpstan:
+    name: 'Static Analysis'
+    runs-on: *runs_on
+    steps:
+      - *step_checkout
+      - *step_setup_main
+      - name: 'Run PHPStan'
+        run: make phpstan
+
+  phpunit:
+    name: 'Tests'
+    runs-on: *runs_on
+    strategy:
+      matrix: *php_version_matrix
+    steps:
+      - *step_checkout
+      - *step_setup_matrix
+      - name: 'Run PHPUnit'
+        run: make phpunit-coverage
+
+  phpbench:
+    name: 'Benchmarks'
+    runs-on: *runs_on
+    steps:
+      - *step_checkout
+      - *step_setup_main
+      - name: 'Run PHPBench'
+        run: make phpbench
