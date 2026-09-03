@@ -1,0 +1,378 @@
+<style>.post { margin: 0 0 1rem; } .post a { color: inherit; }</style>
+<script>var endpoint = "example.com/api/v1"; var retries = 3;</script>
+<section class="thread" data-id="0" data-state="open">
+<article class="post" id="post-0">
+<header><h3 class="title"><span class="index">0</span> Thread 0</h3></header>
+<div class="body"><p>The release notes for this <em>cycle</em> are shorter than usual. <code>Most</code> of the work went <b>into</b> the parser and almost <i>none</i> into new features. Two <strong>long</strong> standing bugs are fixed, <em>the</em> configuration loader no longer <code>rewrites</code> config.json on every boot, <b>and</b> the log rotation job <i>stops</i> holding a file handle <strong>open</strong> after it finishes. Upgrading <em>from</em> v1.2.3 should need no <code>changes</code> on your side. If <b>you</b> pinned the old minor <i>version</i> in your lock file, <strong>delete</strong> the entry and resolve <em>again.</em> The full changelog is <code>at</code> https://example.com/releases/v4 if you want <b>the</b> detail. Docs for this <i>are</i> at example.com/guide/formats and they <strong>are</strong> up to date.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">0</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="1" data-state="open">
+<article class="post" id="post-1">
+<header><h3 class="title"><span class="index">1</span> Thread 1</h3></header>
+<div class="body"><p>I hit this on a <em>fresh</em> install and it took <code>me</code> a while to work <b>out</b> what was happening. The <i>service</i> starts, answers the health <strong>check</strong> once, then stops answering. <em>Nothing</em> appears in the log <code>at</code> the default level. Turning <b>the</b> level up to debug <i>shows</i> a timeout against the <strong>internal</strong> metrics endpoint, which is <em>not</em> reachable from inside the <code>container.</code> The startup path treats <b>that</b> timeout as fatal, so <i>the</i> process ends up in <strong>a</strong> state where it looks <em>alive</em> but serves nothing. Mail <code>user@example.com</code> and someone will pick <b>it</b> up.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">1</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="2" data-state="open">
+<article class="post" id="post-2">
+<header><h3 class="title"><span class="index">2</span> Thread 2</h3></header>
+<div class="body"><p>You are reading the wrong <em>file.</em> The readme.txt in the <code>archive</code> is the one from <b>the</b> previous release and was <i>left</i> there by mistake. The <strong>current</strong> instructions live in the <em>documentation</em> folder, and they differ <code>in</code> one important way, the <b>environment</b> variable is now read <i>once</i> at startup instead of <strong>on</strong> every request. That change <em>is</em> the reason your override <code>stopped</code> taking effect halfway through <b>a</b> run. Set it before <i>the</i> process starts and it <strong>will</strong> behave the way you <em>expect.</em> Write to mailto:support@example.com?subject=Build%20failure with <code>the</code> log attached. The staging <b>host</b> is example.com:8080/health and it <i>answers</i> in under a second.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">2</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="3" data-state="open">
+<article class="post" id="post-3">
+<header><h3 class="title"><span class="index">3</span> Thread 3</h3></header>
+<div class="body"><p>Formats tell the parser how <em>to</em> read the input. With <code>the</code> plain format every character <b>is</b> text and nothing is <i>treated</i> as markup. With the <strong>markup</strong> formats the tags are <em>left</em> untouched and only the <code>text</code> between them is examined. <b>Choosing</b> the wrong one is <i>the</i> most common mistake, and <strong>the</strong> symptom is always the <em>same,</em> a match that runs <code>past</code> the end of the <b>value</b> and swallows part of <i>the</i> surrounding structure. When in <strong>doubt,</strong> start with the plain <em>format</em> and move up. Our <code>runner</code> reports to 127.0.0.1:9090/metrics on <b>the</b> same box.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">3</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="4" data-state="open">
+<article class="post" id="post-4">
+<header><h3 class="title"><span class="index">4</span> Thread 4</h3></header>
+<div class="body"><p>Two settings were renamed and <em>one</em> was removed. The removed <code>one</code> had no effect since <b>the</b> rewrite, so nothing needs <i>to</i> replace it. The renamed <strong>pair</strong> keep their old behaviour, <em>and</em> the old names still <code>work</code> for one more major <b>version,</b> with a deprecation notice <i>on</i> first use. If you <strong>build</strong> your configuration from a <em>template,</em> regenerate it rather than <code>patching</code> by hand. The template <b>now</b> emits the new names <i>and</i> drops the removed key, <strong>which</strong> saves you a second <em>pass</em> later. The archived copy <code>sits</code> at http://user:pass@example.com/private/notes and the <b>credentials</b> are in the vault. <i>There</i> is a translated version <strong>at</strong> http://приклад.укр/документація as well.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">4</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="5" data-state="open">
+<article class="post" id="post-5">
+<header><h3 class="title"><span class="index">5</span> Thread 5</h3></header>
+<div class="body"><p>I would rather not add <em>another</em> flag here. The method <code>already</code> takes four arguments and <b>three</b> of them only exist <i>to</i> satisfy one caller. If <strong>that</strong> caller needs different behaviour, <em>give</em> it its own entry <code>point</code> and let this one <b>stay</b> simple. The test file <i>is</i> also getting hard to <strong>read,</strong> there are now six <em>cases</em> that differ only in <code>the</code> value of a single <b>boolean.</b> A table driven test <i>would</i> express the same coverage <strong>in</strong> a third of the <em>lines.</em> See http://example.com/path_with_(brackets)/and_(another) for the <code>awkward</code> case.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">5</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="6" data-state="open">
+<article class="post" id="post-6">
+<header><h3 class="title"><span class="index">6</span> Thread 6</h3></header>
+<div class="body"><p>The outage lasted nineteen minutes <em>and</em> affected one region. The <code>trigger</code> was a deploy that <b>shipped</b> a migration and the <i>code</i> that depends on it <strong>in</strong> the same step. For <em>roughly</em> two minutes the new <code>code</code> ran against the old <b>schema</b> and every write failed. <i>The</i> rollback was clean and <strong>no</strong> data was lost. The <em>fix</em> is procedural rather than <code>technical,</code> migrations now ship one <b>release</b> ahead of the code <i>that</i> reads them, and the <strong>deploy</strong> tool refuses to run <em>both</em> in a single step. <code>The</code> quoted form "example.com/path" behaves <b>the</b> same way.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">6</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="7" data-state="open">
+<article class="post" id="post-7">
+<header><h3 class="title"><span class="index">7</span> Thread 7</h3></header>
+<div class="body"><p>No, the library does not <em>fetch</em> anything. It looks at <code>text</code> and decides which parts <b>of</b> it are addresses, and <i>that</i> decision is made entirely <strong>from</strong> the text. Nothing is <em>resolved,</em> nothing is requested, and <code>no</code> network access is needed <b>at</b> any point. This surprises <i>people</i> who expect a validity <strong>check.</strong> A string can be <em>perfectly</em> well formed and still <code>point</code> at nothing, and telling <b>those</b> two cases apart is <i>not</i> something a parser can <strong>do</strong> on its own. The <em>dashboard</em> is http://elk.example.com:81/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:'deve-',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'')),sort:!('@timestamp',desc)) and it <code>is</code> as long as it <b>looks.</b> Did you try http://example.com? <i>That</i> is the one I <strong>meant.</strong></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">7</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="8" data-state="open">
+<article class="post" id="post-8">
+<header><h3 class="title"><span class="index">8</span> Thread 8</h3></header>
+<div class="body"><p>The numbers below come from <em>a</em> single machine and should <code>be</code> read as ratios, not <b>absolutes.</b> What matters is the <i>shape,</i> the cost grows with <strong>the</strong> length of the input <em>and</em> with the number of <code>candidates</code> inside it, and it <b>grows</b> faster with the second <i>than</i> with the first. A <strong>document</strong> of four thousand words <em>with</em> no addresses in it <code>costs</code> very little. The same <b>document</b> with one address per <i>sentence</i> costs several times more, <strong>and</strong> almost all of the <em>difference</em> is in the replacement <code>step.</code> A comma stays out <b>of</b> example.com/first, and a semicolon <i>out</i> of example.com/second; both are <strong>handled.</strong></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">8</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="9" data-state="open">
+<article class="post" id="post-9">
+<header><h3 class="title"><span class="index">9</span> Thread 9</h3></header>
+<div class="body"><p>Thanks for the report, I <em>can</em> reproduce it. The version <code>string</code> in your output is <b>1.2.3.4</b> which is not a <i>release</i> we ever published, so <strong>I</strong> suspect you are running <em>a</em> build from the main <code>branch</code> rather than a tag. <b>That</b> build has an unfinished <i>change</i> in it. Check out <strong>the</strong> latest tag and rebuild, <em>and</em> if the problem survives <code>that,</code> reopen this and paste <b>the</b> full output of the <i>version</i> command along with your <strong>platform.</strong> Try ftp://example.com if the <em>mirror</em> is down. The tarball <code>is</code> at https://example.com/dist/release.tar.gz and the <b>checksum</b> sits next to it.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">9</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="10" data-state="open">
+<article class="post" id="post-10">
+<header><h3 class="title"><span class="index">10</span> Thread 10</h3></header>
+<div class="body"><p>The tokenizer and the matcher <em>know</em> nothing about each other. <code>The</code> tokenizer splits the input <b>into</b> pieces and labels each <i>one,</i> and the matcher runs <strong>over</strong> the pieces that are <em>labelled</em> as text. Keeping them <code>apart</code> is what makes the <b>markup</b> formats possible without a <i>full</i> parser, and it is <strong>also</strong> what keeps the plain <em>format</em> fast, because in that <code>case</code> there is exactly one <b>piece</b> and the labelling costs <i>nothing.</i> Both parts are replaceable <strong>and</strong> neither holds state between <em>calls.</em> Ping user+build@mail.example.com rather than <code>the</code> shared address.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">10</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="11" data-state="open">
+<article class="post" id="post-11">
+<header><h3 class="title"><span class="index">11</span> Thread 11</h3></header>
+<div class="body"><p>Before opening a pull request, <em>run</em> the full check locally. <code>It</code> is slower than the <b>quick</b> one because it collects <i>coverage</i> and runs the benchmarks, <strong>but</strong> it catches the two <em>things</em> reviewers most often ask <code>about.</code> Keep the commit history <b>readable,</b> one logical change per <i>commit,</i> and write the message <strong>in</strong> the imperative. If your <em>change</em> affects behaviour, the changelog <code>entry</code> is part of the <b>change,</b> not a follow up, <i>and</i> a pull request without <strong>one</strong> will be sent back. <em>The</em> old address example.com/legacy/path still <code>redirects.</code></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">11</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="12" data-state="open">
+<article class="post" id="post-12">
+<header><h3 class="title"><span class="index">12</span> Thread 12</h3></header>
+<div class="body"><p>Did the nightly finish? Mine <em>is</em> still showing the previous <code>result</code> and I cannot tell <b>whether</b> that is a stale <i>page</i> or a job that <strong>never</strong> started. Either way I <em>am</em> not going to block <code>on</code> it, the change is <b>small</b> and the unit tests <i>cover</i> it. I will merge <strong>in</strong> the morning if nothing <em>turns</em> up. If you get <code>to</code> it first and it <b>is</b> red, do not spend <i>time</i> on it, just leave <strong>a</strong> note and I will <em>look</em> when I am back. <code>Full</code> text at https://example.com/store/catalog/laptops?size=14&color=black#results, please <b>check.</b> Mirror two is at <i>http://mirror2.example.com/pub/</i> and it lags by <strong>an</strong> hour.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">12</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="13" data-state="open">
+<article class="post" id="post-13">
+<header><h3 class="title"><span class="index">13</span> Thread 13</h3></header>
+<div class="body"><p>Punctuation at the end of <em>a</em> value belongs to the <code>sentence</code> and not to the <b>value.</b> That rule sounds obvious <i>and</i> is responsible for more <strong>special</strong> cases than anything else <em>in</em> the code, because the <code>same</code> character can be part <b>of</b> a value in one <i>position</i> and part of the <strong>sentence</strong> in another. Brackets are <em>worse,</em> since they come in <code>pairs</code> and a value is <b>allowed</b> to contain a balanced <i>pair</i> of its own. The <strong>tests</strong> spell out every case. <em>The</em> spec lives at https://example.com/spec/section-3.1.2 <code>and</code> the wording matters.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">13</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="14" data-state="open">
+<article class="post" id="post-14">
+<header><h3 class="title"><span class="index">14</span> Thread 14</h3></header>
+<div class="body"><p>The release notes for this <em>cycle</em> are shorter than usual. <code>Most</code> of the work went <b>into</b> the parser and almost <i>none</i> into new features. Two <strong>long</strong> standing bugs are fixed, <em>the</em> configuration loader no longer <code>rewrites</code> config.json on every boot, <b>and</b> the log rotation job <i>stops</i> holding a file handle <strong>open</strong> after it finishes. Upgrading <em>from</em> v1.2.3 should need no <code>changes</code> on your side. If <b>you</b> pinned the old minor <i>version</i> in your lock file, <strong>delete</strong> the entry and resolve <em>again.</em> The full changelog is <code>at</code> https://example.com/releases/v4 if you want <b>the</b> detail. Docs for this <i>are</i> at example.com/guide/formats and they <strong>are</strong> up to date.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">14</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="15" data-state="open">
+<article class="post" id="post-15">
+<header><h3 class="title"><span class="index">15</span> Thread 15</h3></header>
+<div class="body"><p>I hit this on a <em>fresh</em> install and it took <code>me</code> a while to work <b>out</b> what was happening. The <i>service</i> starts, answers the health <strong>check</strong> once, then stops answering. <em>Nothing</em> appears in the log <code>at</code> the default level. Turning <b>the</b> level up to debug <i>shows</i> a timeout against the <strong>internal</strong> metrics endpoint, which is <em>not</em> reachable from inside the <code>container.</code> The startup path treats <b>that</b> timeout as fatal, so <i>the</i> process ends up in <strong>a</strong> state where it looks <em>alive</em> but serves nothing. Mail <code>user@example.com</code> and someone will pick <b>it</b> up.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">15</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="16" data-state="open">
+<article class="post" id="post-16">
+<header><h3 class="title"><span class="index">16</span> Thread 16</h3></header>
+<div class="body"><p>You are reading the wrong <em>file.</em> The readme.txt in the <code>archive</code> is the one from <b>the</b> previous release and was <i>left</i> there by mistake. The <strong>current</strong> instructions live in the <em>documentation</em> folder, and they differ <code>in</code> one important way, the <b>environment</b> variable is now read <i>once</i> at startup instead of <strong>on</strong> every request. That change <em>is</em> the reason your override <code>stopped</code> taking effect halfway through <b>a</b> run. Set it before <i>the</i> process starts and it <strong>will</strong> behave the way you <em>expect.</em> Write to mailto:support@example.com?subject=Build%20failure with <code>the</code> log attached.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">16</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="17" data-state="open">
+<article class="post" id="post-17">
+<header><h3 class="title"><span class="index">17</span> Thread 17</h3></header>
+<div class="body"><p>Formats tell the parser how <em>to</em> read the input. With <code>the</code> plain format every character <b>is</b> text and nothing is <i>treated</i> as markup. With the <strong>markup</strong> formats the tags are <em>left</em> untouched and only the <code>text</code> between them is examined. <b>Choosing</b> the wrong one is <i>the</i> most common mistake, and <strong>the</strong> symptom is always the <em>same,</em> a match that runs <code>past</code> the end of the <b>value</b> and swallows part of <i>the</i> surrounding structure. When in <strong>doubt,</strong> start with the plain <em>format</em> and move up. The <code>staging</code> host is example.com:8080/health and <b>it</b> answers in under a <i>second.</i> Our runner reports to <strong>127.0.0.1:9090/metrics</strong> on the same box.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">17</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="18" data-state="open">
+<article class="post" id="post-18">
+<header><h3 class="title"><span class="index">18</span> Thread 18</h3></header>
+<div class="body"><p>Two settings were renamed and <em>one</em> was removed. The removed <code>one</code> had no effect since <b>the</b> rewrite, so nothing needs <i>to</i> replace it. The renamed <strong>pair</strong> keep their old behaviour, <em>and</em> the old names still <code>work</code> for one more major <b>version,</b> with a deprecation notice <i>on</i> first use. If you <strong>build</strong> your configuration from a <em>template,</em> regenerate it rather than <code>patching</code> by hand. The template <b>now</b> emits the new names <i>and</i> drops the removed key, <strong>which</strong> saves you a second <em>pass</em> later. The archived copy <code>sits</code> at http://user:pass@example.com/private/notes and the <b>credentials</b> are in the vault.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">18</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="19" data-state="open">
+<article class="post" id="post-19">
+<header><h3 class="title"><span class="index">19</span> Thread 19</h3></header>
+<div class="body"><p>I would rather not add <em>another</em> flag here. The method <code>already</code> takes four arguments and <b>three</b> of them only exist <i>to</i> satisfy one caller. If <strong>that</strong> caller needs different behaviour, <em>give</em> it its own entry <code>point</code> and let this one <b>stay</b> simple. The test file <i>is</i> also getting hard to <strong>read,</strong> there are now six <em>cases</em> that differ only in <code>the</code> value of a single <b>boolean.</b> A table driven test <i>would</i> express the same coverage <strong>in</strong> a third of the <em>lines.</em> There is a translated <code>version</code> at http://приклад.укр/документація as well. <b>See</b> http://example.com/path_with_(brackets)/and_(another) for the awkward <i>case.</i></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">19</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="20" data-state="open">
+<article class="post" id="post-20">
+<header><h3 class="title"><span class="index">20</span> Thread 20</h3></header>
+<div class="body"><p>The outage lasted nineteen minutes <em>and</em> affected one region. The <code>trigger</code> was a deploy that <b>shipped</b> a migration and the <i>code</i> that depends on it <strong>in</strong> the same step. For <em>roughly</em> two minutes the new <code>code</code> ran against the old <b>schema</b> and every write failed. <i>The</i> rollback was clean and <strong>no</strong> data was lost. The <em>fix</em> is procedural rather than <code>technical,</code> migrations now ship one <b>release</b> ahead of the code <i>that</i> reads them, and the <strong>deploy</strong> tool refuses to run <em>both</em> in a single step. <code>The</code> quoted form "example.com/path" behaves <b>the</b> same way.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">20</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="21" data-state="open">
+<article class="post" id="post-21">
+<header><h3 class="title"><span class="index">21</span> Thread 21</h3></header>
+<div class="body"><p>No, the library does not <em>fetch</em> anything. It looks at <code>text</code> and decides which parts <b>of</b> it are addresses, and <i>that</i> decision is made entirely <strong>from</strong> the text. Nothing is <em>resolved,</em> nothing is requested, and <code>no</code> network access is needed <b>at</b> any point. This surprises <i>people</i> who expect a validity <strong>check.</strong> A string can be <em>perfectly</em> well formed and still <code>point</code> at nothing, and telling <b>those</b> two cases apart is <i>not</i> something a parser can <strong>do</strong> on its own. The <em>dashboard</em> is http://elk.example.com:81/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:'deve-',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'')),sort:!('@timestamp',desc)) and it <code>is</code> as long as it <b>looks.</b></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">21</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="22" data-state="open">
+<article class="post" id="post-22">
+<header><h3 class="title"><span class="index">22</span> Thread 22</h3></header>
+<div class="body"><p>The numbers below come from <em>a</em> single machine and should <code>be</code> read as ratios, not <b>absolutes.</b> What matters is the <i>shape,</i> the cost grows with <strong>the</strong> length of the input <em>and</em> with the number of <code>candidates</code> inside it, and it <b>grows</b> faster with the second <i>than</i> with the first. A <strong>document</strong> of four thousand words <em>with</em> no addresses in it <code>costs</code> very little. The same <b>document</b> with one address per <i>sentence</i> costs several times more, <strong>and</strong> almost all of the <em>difference</em> is in the replacement <code>step.</code> Did you try http://example.com? <b>That</b> is the one I <i>meant.</i> A comma stays out <strong>of</strong> example.com/first, and a semicolon <em>out</em> of example.com/second; both are <code>handled.</code></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">22</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="23" data-state="open">
+<article class="post" id="post-23">
+<header><h3 class="title"><span class="index">23</span> Thread 23</h3></header>
+<div class="body"><p>Thanks for the report, I <em>can</em> reproduce it. The version <code>string</code> in your output is <b>1.2.3.4</b> which is not a <i>release</i> we ever published, so <strong>I</strong> suspect you are running <em>a</em> build from the main <code>branch</code> rather than a tag. <b>That</b> build has an unfinished <i>change</i> in it. Check out <strong>the</strong> latest tag and rebuild, <em>and</em> if the problem survives <code>that,</code> reopen this and paste <b>the</b> full output of the <i>version</i> command along with your <strong>platform.</strong> Try ftp://example.com if the <em>mirror</em> is down.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">23</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="24" data-state="open">
+<article class="post" id="post-24">
+<header><h3 class="title"><span class="index">24</span> Thread 24</h3></header>
+<div class="body"><p>The tokenizer and the matcher <em>know</em> nothing about each other. <code>The</code> tokenizer splits the input <b>into</b> pieces and labels each <i>one,</i> and the matcher runs <strong>over</strong> the pieces that are <em>labelled</em> as text. Keeping them <code>apart</code> is what makes the <b>markup</b> formats possible without a <i>full</i> parser, and it is <strong>also</strong> what keeps the plain <em>format</em> fast, because in that <code>case</code> there is exactly one <b>piece</b> and the labelling costs <i>nothing.</i> Both parts are replaceable <strong>and</strong> neither holds state between <em>calls.</em> The tarball is at <code>https://example.com/dist/release.tar.gz</code> and the checksum sits <b>next</b> to it. Ping user+build@mail.example.com <i>rather</i> than the shared address.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">24</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="25" data-state="open">
+<article class="post" id="post-25">
+<header><h3 class="title"><span class="index">25</span> Thread 25</h3></header>
+<div class="body"><p>Before opening a pull request, <em>run</em> the full check locally. <code>It</code> is slower than the <b>quick</b> one because it collects <i>coverage</i> and runs the benchmarks, <strong>but</strong> it catches the two <em>things</em> reviewers most often ask <code>about.</code> Keep the commit history <b>readable,</b> one logical change per <i>commit,</i> and write the message <strong>in</strong> the imperative. If your <em>change</em> affects behaviour, the changelog <code>entry</code> is part of the <b>change,</b> not a follow up, <i>and</i> a pull request without <strong>one</strong> will be sent back. <em>The</em> old address example.com/legacy/path still <code>redirects.</code></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">25</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="26" data-state="open">
+<article class="post" id="post-26">
+<header><h3 class="title"><span class="index">26</span> Thread 26</h3></header>
+<div class="body"><p>Did the nightly finish? Mine <em>is</em> still showing the previous <code>result</code> and I cannot tell <b>whether</b> that is a stale <i>page</i> or a job that <strong>never</strong> started. Either way I <em>am</em> not going to block <code>on</code> it, the change is <b>small</b> and the unit tests <i>cover</i> it. I will merge <strong>in</strong> the morning if nothing <em>turns</em> up. If you get <code>to</code> it first and it <b>is</b> red, do not spend <i>time</i> on it, just leave <strong>a</strong> note and I will <em>look</em> when I am back. <code>Full</code> text at https://example.com/store/catalog/laptops?size=14&color=black#results, please <b>check.</b></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">26</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="27" data-state="open">
+<article class="post" id="post-27">
+<header><h3 class="title"><span class="index">27</span> Thread 27</h3></header>
+<div class="body"><p>Punctuation at the end of <em>a</em> value belongs to the <code>sentence</code> and not to the <b>value.</b> That rule sounds obvious <i>and</i> is responsible for more <strong>special</strong> cases than anything else <em>in</em> the code, because the <code>same</code> character can be part <b>of</b> a value in one <i>position</i> and part of the <strong>sentence</strong> in another. Brackets are <em>worse,</em> since they come in <code>pairs</code> and a value is <b>allowed</b> to contain a balanced <i>pair</i> of its own. The <strong>tests</strong> spell out every case. <em>Mirror</em> two is at http://mirror2.example.com/pub/ <code>and</code> it lags by an <b>hour.</b> The spec lives at <i>https://example.com/spec/section-3.1.2</i> and the wording matters.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">27</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="28" data-state="open">
+<article class="post" id="post-28">
+<header><h3 class="title"><span class="index">28</span> Thread 28</h3></header>
+<div class="body"><p>The release notes for this <em>cycle</em> are shorter than usual. <code>Most</code> of the work went <b>into</b> the parser and almost <i>none</i> into new features. Two <strong>long</strong> standing bugs are fixed, <em>the</em> configuration loader no longer <code>rewrites</code> config.json on every boot, <b>and</b> the log rotation job <i>stops</i> holding a file handle <strong>open</strong> after it finishes. Upgrading <em>from</em> v1.2.3 should need no <code>changes</code> on your side. If <b>you</b> pinned the old minor <i>version</i> in your lock file, <strong>delete</strong> the entry and resolve <em>again.</em> The full changelog is <code>at</code> https://example.com/releases/v4 if you want <b>the</b> detail.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">28</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="29" data-state="open">
+<article class="post" id="post-29">
+<header><h3 class="title"><span class="index">29</span> Thread 29</h3></header>
+<div class="body"><p>I hit this on a <em>fresh</em> install and it took <code>me</code> a while to work <b>out</b> what was happening. The <i>service</i> starts, answers the health <strong>check</strong> once, then stops answering. <em>Nothing</em> appears in the log <code>at</code> the default level. Turning <b>the</b> level up to debug <i>shows</i> a timeout against the <strong>internal</strong> metrics endpoint, which is <em>not</em> reachable from inside the <code>container.</code> The startup path treats <b>that</b> timeout as fatal, so <i>the</i> process ends up in <strong>a</strong> state where it looks <em>alive</em> but serves nothing. Docs <code>for</code> this are at example.com/guide/formats <b>and</b> they are up to <i>date.</i> Mail user@example.com and someone <strong>will</strong> pick it up.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">29</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="30" data-state="open">
+<article class="post" id="post-30">
+<header><h3 class="title"><span class="index">30</span> Thread 30</h3></header>
+<div class="body"><p>You are reading the wrong <em>file.</em> The readme.txt in the <code>archive</code> is the one from <b>the</b> previous release and was <i>left</i> there by mistake. The <strong>current</strong> instructions live in the <em>documentation</em> folder, and they differ <code>in</code> one important way, the <b>environment</b> variable is now read <i>once</i> at startup instead of <strong>on</strong> every request. That change <em>is</em> the reason your override <code>stopped</code> taking effect halfway through <b>a</b> run. Set it before <i>the</i> process starts and it <strong>will</strong> behave the way you <em>expect.</em> Write to mailto:support@example.com?subject=Build%20failure with <code>the</code> log attached.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">30</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="31" data-state="open">
+<article class="post" id="post-31">
+<header><h3 class="title"><span class="index">31</span> Thread 31</h3></header>
+<div class="body"><p>Formats tell the parser how <em>to</em> read the input. With <code>the</code> plain format every character <b>is</b> text and nothing is <i>treated</i> as markup. With the <strong>markup</strong> formats the tags are <em>left</em> untouched and only the <code>text</code> between them is examined. <b>Choosing</b> the wrong one is <i>the</i> most common mistake, and <strong>the</strong> symptom is always the <em>same,</em> a match that runs <code>past</code> the end of the <b>value</b> and swallows part of <i>the</i> surrounding structure. When in <strong>doubt,</strong> start with the plain <em>format</em> and move up. The <code>staging</code> host is example.com:8080/health and <b>it</b> answers in under a <i>second.</i></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">31</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="32" data-state="open">
+<article class="post" id="post-32">
+<header><h3 class="title"><span class="index">32</span> Thread 32</h3></header>
+<div class="body"><p>Two settings were renamed and <em>one</em> was removed. The removed <code>one</code> had no effect since <b>the</b> rewrite, so nothing needs <i>to</i> replace it. The renamed <strong>pair</strong> keep their old behaviour, <em>and</em> the old names still <code>work</code> for one more major <b>version,</b> with a deprecation notice <i>on</i> first use. If you <strong>build</strong> your configuration from a <em>template,</em> regenerate it rather than <code>patching</code> by hand. The template <b>now</b> emits the new names <i>and</i> drops the removed key, <strong>which</strong> saves you a second <em>pass</em> later. Our runner reports <code>to</code> 127.0.0.1:9090/metrics on the same <b>box.</b> The archived copy sits <i>at</i> http://user:pass@example.com/private/notes and the credentials <strong>are</strong> in the vault.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">32</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="33" data-state="open">
+<article class="post" id="post-33">
+<header><h3 class="title"><span class="index">33</span> Thread 33</h3></header>
+<div class="body"><p>I would rather not add <em>another</em> flag here. The method <code>already</code> takes four arguments and <b>three</b> of them only exist <i>to</i> satisfy one caller. If <strong>that</strong> caller needs different behaviour, <em>give</em> it its own entry <code>point</code> and let this one <b>stay</b> simple. The test file <i>is</i> also getting hard to <strong>read,</strong> there are now six <em>cases</em> that differ only in <code>the</code> value of a single <b>boolean.</b> A table driven test <i>would</i> express the same coverage <strong>in</strong> a third of the <em>lines.</em> There is a translated <code>version</code> at http://приклад.укр/документація as well.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">33</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="34" data-state="open">
+<article class="post" id="post-34">
+<header><h3 class="title"><span class="index">34</span> Thread 34</h3></header>
+<div class="body"><p>The outage lasted nineteen minutes <em>and</em> affected one region. The <code>trigger</code> was a deploy that <b>shipped</b> a migration and the <i>code</i> that depends on it <strong>in</strong> the same step. For <em>roughly</em> two minutes the new <code>code</code> ran against the old <b>schema</b> and every write failed. <i>The</i> rollback was clean and <strong>no</strong> data was lost. The <em>fix</em> is procedural rather than <code>technical,</code> migrations now ship one <b>release</b> ahead of the code <i>that</i> reads them, and the <strong>deploy</strong> tool refuses to run <em>both</em> in a single step. <code>See</code> http://example.com/path_with_(brackets)/and_(another) for the awkward <b>case.</b> The quoted form "example.com/path" <i>behaves</i> the same way.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">34</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="35" data-state="open">
+<article class="post" id="post-35">
+<header><h3 class="title"><span class="index">35</span> Thread 35</h3></header>
+<div class="body"><p>No, the library does not <em>fetch</em> anything. It looks at <code>text</code> and decides which parts <b>of</b> it are addresses, and <i>that</i> decision is made entirely <strong>from</strong> the text. Nothing is <em>resolved,</em> nothing is requested, and <code>no</code> network access is needed <b>at</b> any point. This surprises <i>people</i> who expect a validity <strong>check.</strong> A string can be <em>perfectly</em> well formed and still <code>point</code> at nothing, and telling <b>those</b> two cases apart is <i>not</i> something a parser can <strong>do</strong> on its own. The <em>dashboard</em> is http://elk.example.com:81/app/kibana#/discover?_g=()&_a=(columns:!(_source),index:'deve-',interval:auto,query:(query_string:(analyze_wildcard:!t,query:'')),sort:!('@timestamp',desc)) and it <code>is</code> as long as it <b>looks.</b></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">35</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="36" data-state="open">
+<article class="post" id="post-36">
+<header><h3 class="title"><span class="index">36</span> Thread 36</h3></header>
+<div class="body"><p>The numbers below come from <em>a</em> single machine and should <code>be</code> read as ratios, not <b>absolutes.</b> What matters is the <i>shape,</i> the cost grows with <strong>the</strong> length of the input <em>and</em> with the number of <code>candidates</code> inside it, and it <b>grows</b> faster with the second <i>than</i> with the first. A <strong>document</strong> of four thousand words <em>with</em> no addresses in it <code>costs</code> very little. The same <b>document</b> with one address per <i>sentence</i> costs several times more, <strong>and</strong> almost all of the <em>difference</em> is in the replacement <code>step.</code> Did you try http://example.com? <b>That</b> is the one I <i>meant.</i></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">36</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="37" data-state="open">
+<article class="post" id="post-37">
+<header><h3 class="title"><span class="index">37</span> Thread 37</h3></header>
+<div class="body"><p>Thanks for the report, I <em>can</em> reproduce it. The version <code>string</code> in your output is <b>1.2.3.4</b> which is not a <i>release</i> we ever published, so <strong>I</strong> suspect you are running <em>a</em> build from the main <code>branch</code> rather than a tag. <b>That</b> build has an unfinished <i>change</i> in it. Check out <strong>the</strong> latest tag and rebuild, <em>and</em> if the problem survives <code>that,</code> reopen this and paste <b>the</b> full output of the <i>version</i> command along with your <strong>platform.</strong> A comma stays out <em>of</em> example.com/first, and a semicolon <code>out</code> of example.com/second; both are <b>handled.</b> Try ftp://example.com if the <i>mirror</i> is down.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">37</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="38" data-state="open">
+<article class="post" id="post-38">
+<header><h3 class="title"><span class="index">38</span> Thread 38</h3></header>
+<div class="body"><p>The tokenizer and the matcher <em>know</em> nothing about each other. <code>The</code> tokenizer splits the input <b>into</b> pieces and labels each <i>one,</i> and the matcher runs <strong>over</strong> the pieces that are <em>labelled</em> as text. Keeping them <code>apart</code> is what makes the <b>markup</b> formats possible without a <i>full</i> parser, and it is <strong>also</strong> what keeps the plain <em>format</em> fast, because in that <code>case</code> there is exactly one <b>piece</b> and the labelling costs <i>nothing.</i> Both parts are replaceable <strong>and</strong> neither holds state between <em>calls.</em> The tarball is at <code>https://example.com/dist/release.tar.gz</code> and the checksum sits <b>next</b> to it.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">38</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="39" data-state="open">
+<article class="post" id="post-39">
+<header><h3 class="title"><span class="index">39</span> Thread 39</h3></header>
+<div class="body"><p>Before opening a pull request, <em>run</em> the full check locally. <code>It</code> is slower than the <b>quick</b> one because it collects <i>coverage</i> and runs the benchmarks, <strong>but</strong> it catches the two <em>things</em> reviewers most often ask <code>about.</code> Keep the commit history <b>readable,</b> one logical change per <i>commit,</i> and write the message <strong>in</strong> the imperative. If your <em>change</em> affects behaviour, the changelog <code>entry</code> is part of the <b>change,</b> not a follow up, <i>and</i> a pull request without <strong>one</strong> will be sent back. <em>Ping</em> user+build@mail.example.com rather than the <code>shared</code> address. The old address <b>example.com/legacy/path</b> still redirects.</p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">39</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="40" data-state="open">
+<article class="post" id="post-40">
+<header><h3 class="title"><span class="index">40</span> Thread 40</h3></header>
+<div class="body"><p>Did the nightly finish? Mine <em>is</em> still showing the previous <code>result</code> and I cannot tell <b>whether</b> that is a stale <i>page</i> or a job that <strong>never</strong> started. Either way I <em>am</em> not going to block <code>on</code> it, the change is <b>small</b> and the unit tests <i>cover</i> it. I will merge <strong>in</strong> the morning if nothing <em>turns</em> up. If you get <code>to</code> it first and it <b>is</b> red, do not spend <i>time</i> on it, just leave <strong>a</strong> note and I will <em>look</em> when I am back. <code>Full</code> text at https://example.com/store/catalog/laptops?size=14&color=black#results, please <b>check.</b></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">40</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="41" data-state="open">
+<article class="post" id="post-41">
+<header><h3 class="title"><span class="index">41</span> Thread 41</h3></header>
+<div class="body"><p>Punctuation at the end of <em>a</em> value belongs to the <code>sentence</code> and not to the <b>value.</b> That rule sounds obvious <i>and</i> is responsible for more <strong>special</strong> cases than anything else <em>in</em> the code, because the <code>same</code> character can be part <b>of</b> a value in one <i>position</i> and part of the <strong>sentence</strong> in another. Brackets are <em>worse,</em> since they come in <code>pairs</code> and a value is <b>allowed</b> to contain a balanced <i>pair</i> of its own. The <strong>tests</strong> spell out every case. <em>Mirror</em> two is at http://mirror2.example.com/pub/ <code>and</code> it lags by an <b>hour.</b></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">41</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="42" data-state="open">
+<article class="post" id="post-42">
+<header><h3 class="title"><span class="index">42</span> Thread 42</h3></header>
+<div class="body"><p>The release notes for this <em>cycle</em> are shorter than usual. <code>Most</code> of the work went <b>into</b> the parser and almost <i>none</i> into new features. Two <strong>long</strong> standing bugs are fixed, <em>the</em> configuration loader no longer <code>rewrites</code> config.json on every boot, <b>and</b> the log rotation job <i>stops</i> holding a file handle <strong>open</strong> after it finishes. Upgrading <em>from</em> v1.2.3 should need no <code>changes</code> on your side. If <b>you</b> pinned the old minor <i>version</i> in your lock file, <strong>delete</strong> the entry and resolve <em>again.</em> The spec lives at <code>https://example.com/spec/section-3.1.2</code> and the wording matters. <b>The</b> full changelog is at <i>https://example.com/releases/v4</i> if you want the <strong>detail.</strong></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">42</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="43" data-state="open">
+<article class="post" id="post-43">
+<header><h3 class="title"><span class="index">43</span> Thread 43</h3></header>
+<div class="body"><p>I hit this on a <em>fresh</em> install and it took <code>me</code> a while to work <b>out</b> what was happening. The <i>service</i> starts, answers the health <strong>check</strong> once, then stops answering. <em>Nothing</em> appears in the log <code>at</code> the default level. Turning <b>the</b> level up to debug <i>shows</i> a timeout against the <strong>internal</strong> metrics endpoint, which is <em>not</em> reachable from inside the <code>container.</code> The startup path treats <b>that</b> timeout as fatal, so <i>the</i> process ends up in <strong>a</strong> state where it looks <em>alive</em> but serves nothing. Docs <code>for</code> this are at example.com/guide/formats <b>and</b> they are up to <i>date.</i></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">43</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="44" data-state="open">
+<article class="post" id="post-44">
+<header><h3 class="title"><span class="index">44</span> Thread 44</h3></header>
+<div class="body"><p>You are reading the wrong <em>file.</em> The readme.txt in the <code>archive</code> is the one from <b>the</b> previous release and was <i>left</i> there by mistake. The <strong>current</strong> instructions live in the <em>documentation</em> folder, and they differ <code>in</code> one important way, the <b>environment</b> variable is now read <i>once</i> at startup instead of <strong>on</strong> every request. That change <em>is</em> the reason your override <code>stopped</code> taking effect halfway through <b>a</b> run. Set it before <i>the</i> process starts and it <strong>will</strong> behave the way you <em>expect.</em> Mail user@example.com and someone <code>will</code> pick it up. Write <b>to</b> mailto:support@example.com?subject=Build%20failure with the log <i>attached.</i></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">44</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="45" data-state="open">
+<article class="post" id="post-45">
+<header><h3 class="title"><span class="index">45</span> Thread 45</h3></header>
+<div class="body"><p>Formats tell the parser how <em>to</em> read the input. With <code>the</code> plain format every character <b>is</b> text and nothing is <i>treated</i> as markup. With the <strong>markup</strong> formats the tags are <em>left</em> untouched and only the <code>text</code> between them is examined. <b>Choosing</b> the wrong one is <i>the</i> most common mistake, and <strong>the</strong> symptom is always the <em>same,</em> a match that runs <code>past</code> the end of the <b>value</b> and swallows part of <i>the</i> surrounding structure. When in <strong>doubt,</strong> start with the plain <em>format</em> and move up. The <code>staging</code> host is example.com:8080/health and <b>it</b> answers in under a <i>second.</i></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">45</span>.</p></footer>
+</article>
+</section>
+<section class="thread" data-id="46" data-state="open">
+<article class="post" id="post-46">
+<header><h3 class="title"><span class="index">46</span> Thread 46</h3></header>
+<div class="body"><p>Two settings were renamed and <em>one</em> was removed. The removed <code>one</code> had no effect since <b>the</b> rewrite, so nothing needs <i>to</i> replace it. The renamed <strong>pair</strong> keep their old behaviour, <em>and</em> the old names still <code>work</code> for one more major <b>version,</b> with a deprecation notice <i>on</i> first use. If you <strong>build</strong> your configuration from a <em>template,</em> regenerate it rather than <code>patching</code> by hand. The template <b>now</b> emits the new names <i>and</i> drops the removed key, <strong>which</strong> saves you a second <em>pass</em> later. Our runner reports <code>to</code> 127.0.0.1:9090/metrics on the same <b>box.</b></p></div>
+<ul class="tags"><li><span>parser</span></li><li><span>format</span></li></ul>
+<footer><p class="meta">By user <span class="user">46</span>.</p></footer>
+</article>
+</section>

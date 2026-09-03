@@ -29,7 +29,7 @@ final class UrlHighlightBench
     public function setUp(array $params): void
     {
         $this->urlHighlight = new UrlHighlight();
-        $this->input = (string) file_get_contents(__DIR__ . '/' . $params['file']);
+        $this->input = (string) file_get_contents(__DIR__ . '/input/' . $params['file']);
         $this->inputFormat = $params['inputFormat'];
     }
 
@@ -45,10 +45,15 @@ final class UrlHighlightBench
     public function highlightParamProvider(): array
     {
         return [
-            'plain' => $this->dataset('input_plain.txt', Format::Plain),
-            'html' => $this->dataset('input_html.txt', Format::Html),
-            'html special chars' => $this->dataset('input_html_special_chars.txt', Format::HtmlEncoded),
-            'html entities' => $this->dataset('input_html_entities.txt', Format::HtmlEncoded),
+            'plain no urls' => $this->dataset('plain_no_urls.txt', Format::Plain),
+            'plain low urls' => $this->dataset('plain_low_urls.txt', Format::Plain),
+            'plain medium urls' => $this->dataset('plain_medium_urls.txt', Format::Plain),
+            'plain high urls' => $this->dataset('plain_high_urls.txt', Format::Plain),
+            'html light markup' => $this->dataset('html_light_markup.txt', Format::Html),
+            'html medium markup' => $this->dataset('html_medium_markup.txt', Format::Html),
+            'html heavy markup' => $this->dataset('html_heavy_markup.txt', Format::Html),
+            'html special chars' => $this->dataset('html_special_chars.txt', Format::HtmlEncoded),
+            'html entities' => $this->dataset('html_entities.txt', Format::HtmlEncoded),
         ];
     }
 
@@ -64,7 +69,10 @@ final class UrlHighlightBench
     public function findParamProvider(): array
     {
         return [
-            'plain' => $this->dataset('input_plain.txt', Format::Plain),
+            'plain no urls' => $this->dataset('plain_no_urls.txt', Format::Plain),
+            'plain low urls' => $this->dataset('plain_low_urls.txt', Format::Plain),
+            'plain medium urls' => $this->dataset('plain_medium_urls.txt', Format::Plain),
+            'plain high urls' => $this->dataset('plain_high_urls.txt', Format::Plain),
         ];
     }
 
