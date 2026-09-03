@@ -1,6 +1,6 @@
 {
     "name": "vstelmakh/url-highlight",
-    "description": "Library to parse URLs from string input",
+    "description": "Library to find URLs in text and turn them into clickable links",
     "keywords": ["url", "parser", "html", "extract", "clickable", "linkify"],
     "type": "library",
     "license": "MIT",
