@@ -19,7 +19,7 @@ jobs:
     name: 'Anchors (expected to skip)'
     strategy:
       matrix: &php_version_matrix
-        php: ['8.4', '8.5']
+        php: ['8.4', '8.5', '8.6']
         composer: ['latest']
         include:
           - php: '8.4' # lowest supported PHP version
