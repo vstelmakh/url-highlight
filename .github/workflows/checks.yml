@@ -19,7 +19,7 @@ jobs:
     name: 'Anchors (expected to skip)'
     strategy:
       matrix: &php_version_matrix
-        php: ['8.4', '8.5']
+        php: ['8.4', '8.5', '8.6']
         composer: ['latest']
         include:
           - php: '8.4' # lowest supported PHP version
@@ -79,17 +79,21 @@ jobs:
     steps:
       - *step_checkout
       - *step_setup_main
-      - name: 'Run PHPBench (base commit)'
+      - name: 'Run PHPBench (base)'
         id: baseline
-        if: github.event_name == 'pull_request'
+        if: github.ref_name != 'main' # nothing to compare against on main itself
         continue-on-error: true
         run: |
-          git fetch --depth=1 origin ${{ github.event.pull_request.base.sha }}
-          git checkout --detach ${{ github.event.pull_request.base.sha }}
+          BASE_REF=${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || 'main' }}
+          git fetch --depth=1 origin $BASE_REF
+          git checkout --detach FETCH_HEAD
           composer update --prefer-dist --no-progress --no-interaction
           make phpbench-baseline
-      - name: 'Run PHPBench (current commit)'
+      - name: 'Run PHPBench (current)'
         run: |
           git checkout --detach ${{ github.sha }}
           composer update --prefer-dist --no-progress --no-interaction
+          if [ "${{ steps.baseline.outcome }}" = "failure" ]; then
+            echo "::warning title=Benchmark baseline failed::Skipping benchmark comparison."
+          fi
           make ${{ steps.baseline.outcome == 'success' && 'phpbench-compare' || 'phpbench' }}
