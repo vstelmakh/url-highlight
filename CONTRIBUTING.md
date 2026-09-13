@@ -46,6 +46,8 @@ All the checks run via [Makefile](./Makefile) targets. Run `make` to see the lis
 | `make phpunit-coverage`        | Run tests and report code coverage. Requires Xdebug.            |
 | `make phpunit-coverage-clover` | Run tests and report coverage in Clover XML. Requires Xdebug.   |
 | `make phpbench`                | Run benchmarks with PHPBench, config: `phpbench.json`.          |
+| `make phpbench-baseline`       | Run benchmarks and store the result to compare against.         |
+| `make phpbench-compare`        | Run benchmarks and compare against the stored baseline.         |
 
 The [CI workflow](./.github/workflows/checks.yml) runs the same targets on every pull request. Tests run on all
 supported PHP versions, and with the lowest allowed dependency versions.

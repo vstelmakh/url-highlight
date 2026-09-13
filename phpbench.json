@@ -6,10 +6,15 @@
         "memory_limit": "256M",
         "xdebug.mode": "none"
     },
+    "runner.time_unit": "milliseconds",
+    "runner.progress": "plain",
+    "console.ansi": true,
+    "storage.xml_storage_path": "var/phpbench",
     "report.generators": {
         "custom_compact": {
             "extends": "aggregate",
-            "cols": ["benchmark", "subject", "set", "mem_peak", "mean", "rstdev"],
+            "cols": ["benchmark", "subject", "set", "mem_peak", "mode", "jitter"],
+            "expressions": {"jitter": "rstdev(result_time_avg)"},
             "baseline_expressions": []
         }
     }

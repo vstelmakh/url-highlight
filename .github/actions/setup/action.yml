@@ -58,7 +58,7 @@ runs:
 
     - name: 'Validate composer.json and composer.lock'
       shell: bash
-      run: composer validate
+      run: composer validate --strict --no-interaction
 
     - name: 'Restore Composer cache'
       id: composer_cache

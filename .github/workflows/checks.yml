@@ -79,5 +79,17 @@ jobs:
     steps:
       - *step_checkout
       - *step_setup_main
-      - name: 'Run PHPBench'
-        run: make phpbench
+      - name: 'Run PHPBench (base commit)'
+        id: baseline
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          git fetch --depth=1 origin ${{ github.event.pull_request.base.sha }}
+          git checkout --detach ${{ github.event.pull_request.base.sha }}
+          composer update --prefer-dist --no-progress --no-interaction
+          make phpbench-baseline
+      - name: 'Run PHPBench (current commit)'
+        run: |
+          git checkout --detach ${{ github.sha }}
+          composer update --prefer-dist --no-progress --no-interaction
+          make ${{ steps.baseline.outcome == 'success' && 'phpbench-compare' || 'phpbench' }}

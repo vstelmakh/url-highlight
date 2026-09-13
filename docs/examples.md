@@ -32,6 +32,10 @@ A path may have several segments, and a query several parameters: <a href="http:
 Long and complex URLs are highlighted correctly, query and fragment included: <a href="http://elk.example.com:81/app/kibana#/discover?_g=()&amp;_a=(columns:!(_source),index:&apos;deve-&apos;,interval:auto,query:(query_string:(analyze_wildcard:!t,query:&apos;&apos;)),sort:!(&apos;@timestamp&apos;,desc))" rel="nofollow">http://elk.example.com:81/app/kibana#/discover?_g=()&amp;_a=(columns:!(_source),index:&apos;deve-&apos;,interval:auto,query:(query_string:(analyze_wildcard:!t,query:&apos;&apos;)),sort:!(&apos;@timestamp&apos;,desc))</a>.
 An existing link, like <a href="http://example.com" rel="nofollow">example.com</a>, is not highlighted twice.
 
+> [!NOTE]
+> GitHub does not allow the `ftp` scheme when it renders Markdown, so the FTP example above shows as plain text on this page.
+> The library does produce the anchor, visible in the Markdown source of this page.
+
 ## Matching
 
 The table shows which part of the input is matched as a URL, and the rule that applies.
