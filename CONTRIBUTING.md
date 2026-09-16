@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for the interest in **Url highlight** library. If you find a problem or want to discuss new features
+Thank you for the interest in **URL Highlight** library. If you find a problem or want to discuss new features
 you are welcome to open an [issue](https://github.com/vstelmakh/url-highlight/issues/new)
 and/or a [pull request](https://github.com/vstelmakh/url-highlight/compare).
 

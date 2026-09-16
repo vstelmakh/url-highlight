@@ -1,11 +1,11 @@
-<img src="./resources/url-highlight-logo.svg" width="286" height="93" alt="Url highlight logo">
+<img src="./resources/url-highlight-logo.svg" width="286" height="93" alt="URL Highlight logo">
 
 ---
 
 [![Checks](https://github.com/vstelmakh/url-highlight/actions/workflows/checks.yml/badge.svg)](https://github.com/vstelmakh/url-highlight/actions/workflows/checks.yml)
 [![Packagist Downloads](https://img.shields.io/packagist/dm/vstelmakh/url-highlight?label=Downloads&labelColor=%23363e45&color=%23ff751f)](https://packagist.org/packages/vstelmakh/url-highlight/stats)
 
-**Url highlight** - PHP library to find URLs in text and turn them into clickable links. Made to handle complex URLs,
+**URL Highlight** - PHP library to find URLs in text and turn them into clickable links. Made to handle complex URLs,
 HTML markup and edge cases.
 
 - Works with plain text, HTML or HTML entity encoded input.
