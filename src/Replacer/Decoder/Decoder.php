@@ -25,14 +25,14 @@ final class Decoder
         $encodedOffsets = [];
 
         // Lots of the same HTML entities may repeat throughout an input.
-        // Decoding entity once and keeping the result in a map for further use makes the process noticeably faster.
+        // Decoding an entity once and keeping the result in a map for further use makes the process noticeably faster.
         $decodedEntities = [];
 
         // Matches HTML entities: named, decimal numeric and hexadecimal numeric.
         $pattern = '/&(?:[a-z][a-z0-9]*|#\d+|#x[0-9a-f]+);/i';
 
         // Matching one entity at a time from a moving cursor, rather than collecting them all up front, keeps only
-        // the current match in memory. This approach, significantly saves memory for entity-dense inputs.
+        // the current match in memory. This significantly saves memory for entity-dense inputs.
         while (preg_match($pattern, $encoded, $match, PREG_OFFSET_CAPTURE, $cursor) === 1) {
             [$entity, $encodedOffset] = $match[0];
 
