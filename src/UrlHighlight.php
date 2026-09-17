@@ -38,7 +38,7 @@ final readonly class UrlHighlight
      * Replace URLs in `$text` with rendered links.
      *
      * Example: `Check the example.com website.` -> `Check the <a href="http://example.com">example.com</a> website.`
-     * For custom replacement logic implement your own {@see Highlighter}, see {@see SimpleHighlighter} for example.
+     * For custom replacement logic, implement your own {@see Highlighter}. See {@see SimpleHighlighter} for an example.
      *
      * The `$format` must describe the input, otherwise URLs are missed or matched past their end:
      * - {@see Format::Plain} takes the text as is, ignoring any markup.

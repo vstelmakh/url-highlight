@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Matcher\Domains;
 
 /**
+ * Checks whether a string is a recognized top-level domain.
+ *
  * @internal
  */
 final class TopLevelDomains
