@@ -76,20 +76,11 @@ jobs:
   smoke:
     name: 'Smoke Tests (no dev)'
     runs-on: *runs_on
-    env:
-      DIST_DIR: 'dist'
     steps:
       - *step_checkout
       - *step_setup_main
-      - name: 'Export Distribution'
-        run: |
-          mkdir -p ${{ env.DIST_DIR }}
-          git archive HEAD | tar -x -C ${{ env.DIST_DIR }}
-      - name: 'Install Composer dependencies (no dev)'
-        working-directory: ${{ env.DIST_DIR }}
-        run: composer install --no-dev --prefer-dist --no-progress --no-interaction
       - name: 'Run Smoke Tests'
-        run: php tests/smoke.php ${{ env.DIST_DIR }}/vendor/autoload.php
+        run: make smoke
 
   phpbench:
     name: 'Benchmarks'

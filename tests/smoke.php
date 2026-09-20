@@ -7,9 +7,12 @@
 
 declare(strict_types=1);
 
-require $argv[1] ?? __DIR__ . '/../vendor/autoload.php';
+$autoloadPath = $argv[1] ?? __DIR__ . '/../vendor/autoload.php';
+require $autoloadPath;
 
 use VStelmakh\UrlHighlight\UrlHighlight;
+
+fwrite(STDOUT, 'Autoload path: ' . realpath($autoloadPath) . "\n");
 
 $urlHighlight = new UrlHighlight();
 $text = 'Check the example.com website.';
