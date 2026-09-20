@@ -73,6 +73,17 @@ jobs:
       - name: 'Run PHPUnit'
         run: make phpunit-coverage
 
+  smoke:
+    name: 'Smoke Tests (no dev)'
+    runs-on: *runs_on
+    steps:
+      - *step_checkout
+      - *step_setup_main
+      - name: 'Install Composer dependencies (no dev)'
+        run: composer install --no-dev --prefer-dist --no-progress --no-interaction
+      - name: 'Run smoke tests'
+        run: php tests/smoke.php
+
   phpbench:
     name: 'Benchmarks'
     runs-on: *runs_on
