@@ -2,12 +2,12 @@
 
 /**
  * Verifies the package works with only production dependencies installed. Not a PHPUnit test: PHPUnit itself is a dev
- * dependency and would not be available. Run directly: `php tests/smoke.php`.
+ * dependency and would not be available. Run directly: `php tests/smoke.php [path/to/vendor/autoload.php]`.
  */
 
 declare(strict_types=1);
 
-require __DIR__ . '/../vendor/autoload.php';
+require $argv[1] ?? __DIR__ . '/../vendor/autoload.php';
 
 use VStelmakh\UrlHighlight\UrlHighlight;
 
