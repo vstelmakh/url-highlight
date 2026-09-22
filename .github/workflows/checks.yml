@@ -73,6 +73,15 @@ jobs:
       - name: 'Run PHPUnit'
         run: make phpunit-coverage
 
+  dist_check:
+    name: 'Distribution Check'
+    runs-on: *runs_on
+    steps:
+      - *step_checkout
+      - *step_setup_main
+      - name: 'Run Distribution Check'
+        run: make dist-check
+
   phpbench:
     name: 'Benchmarks'
     runs-on: *runs_on
