@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 .SILENT:
 .PHONY: help phpcs phpcs-fix phpstan phpunit phpunit-coverage phpunit-coverage-clover phpbench phpbench-baseline \
-	phpbench-compare smoke check check-full
+	phpbench-compare dist-check check check-full
 
 # Step headline, example: $(HEADLINE) 'Example headline'
 # Uses printf, because escape handling in echo differs per shell and may not expand \033
@@ -26,6 +26,7 @@ check-full: ## Run full check
 	$(MAKE) phpstan
 	$(MAKE) phpunit-coverage
 	$(MAKE) phpbench
+	$(MAKE) dist-check
 
 phpcs: ## Check code style
 	$(HEADLINE) 'PHP CS Fixer'
@@ -66,13 +67,14 @@ phpbench-compare: ## Run benchmarks and compare against the stored baseline
 		--assert='mode(variant.mem.peak) < mode(baseline.mem.peak) * 1.1'
 
 # Directory to store package distribution as Composer would install it (respects .gitattributes)
-smoke: DIST_DIR = var/dist
-smoke: ## Verify the package works with only production dependencies installed
-	$(HEADLINE) 'Smoke Test (no dev dependencies)'
+dist-check: DIST_DIR = var/dist
+dist-check: ## Verify the package works with only production dependencies installed
+	$(HEADLINE) 'Distribution Check'
 	echo "Exporting distribution to: $(DIST_DIR)"
+	echo "Source: $$(git rev-parse --short HEAD) (uncommitted changes not included)"
 	rm -rf $(DIST_DIR)
 	mkdir -p $(DIST_DIR)
 	git archive HEAD | tar -x -C $(DIST_DIR)
 	[ -f composer.lock ] && cp composer.lock $(DIST_DIR)/composer.lock || true
 	cd $(DIST_DIR) && composer install --no-dev --prefer-dist --no-progress --no-interaction --quiet
-	$(PHP) tests/smoke.php $(DIST_DIR)/vendor/autoload.php
+	$(PHP) tests/smoke_test.php $(DIST_DIR)/vendor/autoload.php
