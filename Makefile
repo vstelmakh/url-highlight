@@ -70,8 +70,8 @@ phpbench-compare: ## Run benchmarks and compare against the stored baseline
 dist-check: DIST_DIR = var/dist
 dist-check: ## Verify the package works with only production dependencies installed
 	$(HEADLINE) 'Distribution Check'
-	echo "Exporting distribution to: $(DIST_DIR)"
-	echo "Source: $$(git rev-parse --short HEAD) (uncommitted changes not included)"
+	printf 'Exporting distribution to: \033[36m%s\033[0m\n' '$(DIST_DIR)'
+	printf 'Source: \033[32m%s\033[0m (uncommitted changes not included)\n\n' "$$(git rev-parse --short HEAD)"
 	rm -rf $(DIST_DIR)
 	mkdir -p $(DIST_DIR)
 	git archive HEAD | tar -x -C $(DIST_DIR)
