@@ -29,8 +29,9 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "VStelmakh\\UrlHighlight\\Benchmarks\\": "benchmarks/",
             "VStelmakh\\UrlHighlight\\Tests\\": "tests/",
-            "VStelmakh\\UrlHighlight\\Benchmarks\\": "benchmarks/"
+            "VStelmakh\\UrlHighlight\\Updater\\": "updater/"
         }
     },
     "config": {
