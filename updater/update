@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use VStelmakh\UrlHighlight\Updater\Updater;
+
+$targetPath = dirname(__DIR__) . '/src/Matcher/Domains/tld_map.php';
+
+try {
+    fwrite(STDOUT, "Updating TLD Map...\n");
+    fwrite(STDOUT, "Path: \033[36m{$targetPath}\033[0m\n\n");
+
+    $updater = Updater::create();
+    $updater->update($targetPath);
+
+    fwrite(STDOUT, "\033[42m\033[30m Success \033[0m\n");
+    exit(0);
+} catch (Throwable $e) {
+    fwrite(STDERR, "{$e->getMessage()}\n");
+    fwrite(STDOUT, "\n\033[41m Error \033[0m\n");
+    exit(1);
+}
