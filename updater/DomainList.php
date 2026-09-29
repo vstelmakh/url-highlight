@@ -66,6 +66,8 @@ final readonly class DomainList
             $result[$domain->unicode] = $domain;
         }
 
+        ksort($result, SORT_NATURAL);
+
         return $result;
     }
 }
