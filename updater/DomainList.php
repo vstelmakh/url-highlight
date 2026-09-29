@@ -63,7 +63,7 @@ final readonly class DomainList
         $result = [];
 
         foreach ($domains as $domain) {
-            $result[$domain->value] = $domain;
+            $result[$domain->unicode] = $domain;
         }
 
         return $result;

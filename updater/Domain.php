@@ -8,23 +8,25 @@ namespace VStelmakh\UrlHighlight\Updater;
 
 final readonly class Domain implements \Stringable
 {
-    public string $value;
+    public string $unicode;
+    public string $punycode;
 
     public function __construct(string $value)
     {
         $this->validate($value);
-        $this->value = $this->normalize($value);
+        $this->unicode = $this->normalize($value);
+        $this->punycode = $this->toPunycode($this->unicode);
     }
 
     #[\Override]
     public function __toString(): string
     {
-        return $this->value;
+        return $this->unicode;
     }
 
-    private function normalize(string $value): string
+    public function isIdn(): bool
     {
-        return mb_strtolower($value);
+        return $this->punycode !== $this->unicode;
     }
 
     private function validate(string $value): void
@@ -63,5 +65,21 @@ final readonly class Domain implements \Stringable
         if ($isValid !== 1) {
             throw new \DomainException(sprintf('Domain value "%s" is invalid.', $value));
         }
+    }
+
+    private function normalize(string $value): string
+    {
+        return mb_strtolower($value);
+    }
+
+    private function toPunycode(string $value): string
+    {
+        $punycode = idn_to_ascii($value, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+
+        if ($punycode === false) {
+            throw new \DomainException(sprintf('Domain value "%s" could not be converted to punycode.', $value));
+        }
+
+        return $punycode;
     }
 }
