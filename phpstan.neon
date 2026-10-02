@@ -5,9 +5,10 @@ parameters:
   level: 9
   tmpDir: var/phpstan
   paths:
+    - benchmarks
     - src
     - tests
-    - benchmarks
+    - updater
 
   reportUnmatchedIgnoredErrors: true
   checkDynamicProperties: true

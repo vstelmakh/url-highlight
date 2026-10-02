@@ -52,6 +52,7 @@ final readonly class DomainList
 
     /**
      * @param list<Domain> $domains
+     *
      * @return array<string, Domain>
      */
     private function resolveDomains(array $domains): array
