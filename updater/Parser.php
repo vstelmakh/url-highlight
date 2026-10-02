@@ -6,15 +6,15 @@ namespace VStelmakh\UrlHighlight\Updater;
 
 final readonly class Parser
 {
-    public const string IANA_TLD_LIST_URL = 'http://data.iana.org/TLD/tlds-alpha-by-domain.txt';
+    public const string IANA_TLD_LIST_URL = 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt';
 
     public function __construct(
-        private LineReader $lineReader,
+        private Filesystem $filesystem,
     ) {}
 
     public function parse(string $url = self::IANA_TLD_LIST_URL): DomainList
     {
-        $lines = $this->lineReader->readLines($url);
+        $lines = $this->filesystem->readLines($url);
         $header = array_shift($lines);
 
         if ($header === null) {

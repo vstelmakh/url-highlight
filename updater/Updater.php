@@ -8,19 +8,20 @@ final readonly class Updater
 {
     public static function create(): self
     {
-        return new self(new Parser(new LineReader()), new Renderer(), new FileWriter());
+        $filesystem = new Filesystem();
+        return new self(new Parser($filesystem), new Renderer(), $filesystem);
     }
 
     public function __construct(
         private Parser $parser,
         private Renderer $renderer,
-        private FileWriter $fileWriter,
+        private Filesystem $filesystem,
     ) {}
 
     public function update(string $targetPath): void
     {
         $domainList = $this->parser->parse();
         $content = $this->renderer->render($domainList);
-        $this->fileWriter->write($targetPath, $content);
+        $this->filesystem->write($targetPath, $content);
     }
 }
