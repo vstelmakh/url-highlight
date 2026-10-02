@@ -2,20 +2,27 @@
 
 declare(strict_types=1);
 
-// @php-cs-fixer-ignore array_indentation
-
 namespace VStelmakh\UrlHighlight\Updater;
 
 final readonly class Domain implements \Stringable
 {
+    private const int IDNA_FLAGS = IDNA_USE_STD3_RULES
+        | IDNA_CHECK_BIDI
+        | IDNA_CHECK_CONTEXTJ
+        | IDNA_NONTRANSITIONAL_TO_ASCII
+        | IDNA_NONTRANSITIONAL_TO_UNICODE;
+
+    private const int IDNA_VARIANT = INTL_IDNA_VARIANT_UTS46;
+
     public string $unicode;
     public string $punycode;
 
     public function __construct(string $value)
     {
-        $this->validate($value);
-        $this->unicode = $this->normalize($value);
+        $this->validateNotEmpty($value);
+        $this->unicode = $this->toUnicode($value);
         $this->punycode = $this->toPunycode($this->unicode);
+        $this->validateSingleLabel($this->punycode);
     }
 
     #[\Override]
@@ -29,57 +36,73 @@ final readonly class Domain implements \Stringable
         return $this->punycode !== $this->unicode;
     }
 
-    private function validate(string $value): void
+    private function validateNotEmpty(string $value): void
     {
-        $pattern = implode('', [
-            '/^(?=[^\-])',            // not start with: "-"
-            '(?:',                    // non-capturing group, consists of:
-                '[^',                     // not (exclude):
-                    '\p{Z}',                  // whitespace
-                    '\p{Sm}',                 // mathematical
-                    '\p{Sc}',                 // currency
-                    '\p{Sk}',                 // modifier symbol
-                    '\p{C}',                  // control character (invisible)
-                    '\p{P}',                  // punctuation
-                ']',
-                '|',
-                '[',                      // except (include):
-                    '\-',                     // "-"
-                    '\x{200C}',               // zero width non-joiner
-                    '\x{200D}',               // zero width joiner
-                    '\x{00B7}',               // middle dot
-                    '\x{0375}',               // greek lower numeral sign
-                    '\x{05F3}',               // hebrew punctuation geresh
-                    '\x{05F4}',               // hebrew punctuation gershayim
-                    '\x{30FB}',               // katakana middle dot
-                    '\x{0660}-\x{0669}',      // arabic-indic digits
-                    '\x{06F0}-\x{06F9}',      // extended arabic-indic digits
-                ']',
-            ')',                       // close group
-            '{1,63}',                  // length: 1-63 chars
-            '(?<=[^\-])$/u',           // not end with: "-"
-        ]);
-
-        $isValid = preg_match($pattern, $value);
-
-        if ($isValid !== 1) {
-            throw new \DomainException(sprintf('Domain value "%s" is invalid.', $value));
+        if ($value === '') {
+            throw new \DomainException('Domain value should not be empty.');
         }
     }
 
-    private function normalize(string $value): string
+    /**
+     * Checks the punycode form, because conversion maps dot variants like "。" to ".".
+     */
+    private function validateSingleLabel(string $punycode): void
     {
-        return mb_strtolower($value);
+        if (str_contains($punycode, '.')) {
+            throw new \DomainException(sprintf('Domain value "%s" should be a single label.', $punycode));
+        }
+    }
+
+    private function toUnicode(string $value): string
+    {
+        $unicode = idn_to_utf8($value, self::IDNA_FLAGS, self::IDNA_VARIANT, $idnaInfo);
+
+        if ($unicode === false) {
+            throw new \DomainException(sprintf(
+                'Domain value "%s" could not be converted to unicode. IDNA errors: %s.',
+                $value,
+                $this->resolveIdnaErrorNames($idnaInfo['errors']),
+            ));
+        }
+
+        return $unicode;
     }
 
     private function toPunycode(string $value): string
     {
-        $punycode = idn_to_ascii($value, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+        $punycode = idn_to_ascii($value, self::IDNA_FLAGS, self::IDNA_VARIANT, $idnaInfo);
 
         if ($punycode === false) {
-            throw new \DomainException(sprintf('Domain value "%s" could not be converted to punycode.', $value));
+            throw new \DomainException(sprintf(
+                'Domain value "%s" could not be converted to punycode. IDNA errors: %s.',
+                $value,
+                $this->resolveIdnaErrorNames($idnaInfo['errors']),
+            ));
         }
 
         return $punycode;
+    }
+
+    /**
+     * Error bitmask resolved to "IDNA_ERROR_*" constant names, or the raw bitmask if no constant matches.
+     */
+    private function resolveIdnaErrorNames(int $errors): string
+    {
+        $constants = get_defined_constants(true)['intl'] ?? [];
+        $names = [];
+
+        foreach ($constants as $name => $value) {
+            $isIdnaError = str_starts_with($name, 'IDNA_ERROR_') && is_int($value);
+
+            if ($isIdnaError && ($errors & $value) !== 0) {
+                $names[] = $name;
+            }
+        }
+
+        if ($names === []) {
+            return (string) $errors;
+        }
+
+        return implode(', ', $names);
     }
 }

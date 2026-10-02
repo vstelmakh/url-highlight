@@ -60,18 +60,7 @@ final readonly class Parser
 
     private function parseDomain(string $line): Domain
     {
-        $normalized = mb_strtolower(trim($line));
-        $isPunycode = str_starts_with($normalized, 'xn--');
-        $value = $isPunycode ? idn_to_utf8($line, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46) : $normalized;
-
-        if ($value === false) {
-            throw new \RuntimeException(sprintf(
-                'Error "%s" on decoding punycode domain "%s".',
-                error_get_last()['message'] ?? '-',
-                $normalized,
-            ));
-        }
-
+        $value = trim($line);
         return new Domain($value);
     }
 }
