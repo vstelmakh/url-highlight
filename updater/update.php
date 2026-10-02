@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 declare(strict_types=1);
@@ -7,14 +6,15 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use VStelmakh\UrlHighlight\Updater\Updater;
 
-$targetPath = dirname(__DIR__) . '/src/Matcher/Domains/tld_map.php';
+$relativePath = 'src/Matcher/Domains/tld_map.php';
+$absolutePath = dirname(__DIR__) . '/' . $relativePath;
 
 try {
-    fwrite(STDOUT, "Updating TLD Map...\n");
-    fwrite(STDOUT, "Path: \033[36m{$targetPath}\033[0m\n\n");
+    fwrite(STDOUT, "Updating top-level domain map\n");
+    fwrite(STDOUT, "Path: \033[36m{$relativePath}\033[0m\n\n");
 
     $updater = Updater::create();
-    $updater->update($targetPath);
+    $updater->update($absolutePath);
 
     fwrite(STDOUT, "\033[42m\033[30m Success \033[0m\n");
     exit(0);

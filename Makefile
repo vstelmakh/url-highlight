@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 .SILENT:
-.PHONY: help phpcs phpcs-fix phpstan phpunit phpunit-coverage phpunit-coverage-clover phpbench phpbench-baseline \
-	phpbench-compare dist-check check check-full
+.PHONY: help check check-full phpcs phpcs-fix phpstan phpunit phpunit-coverage phpunit-coverage-clover phpbench \
+	phpbench-baseline phpbench-compare dist-check tld-update
 
 # Step headline, example: $(HEADLINE) 'Example headline'
 # Uses printf, because escape handling in echo differs per shell and may not expand \033
@@ -78,3 +78,7 @@ dist-check: ## Verify the package works with only production dependencies instal
 	[ -f composer.lock ] && cp composer.lock $(DIST_DIR)/composer.lock || true
 	cd $(DIST_DIR) && composer install --no-dev --prefer-dist --no-progress --no-interaction --quiet
 	$(PHP) tests/smoke_test.php $(DIST_DIR)/vendor/autoload.php
+
+tld-update: ## Update the top-level domain map from the IANA list
+	$(HEADLINE) 'TLD Update'
+	$(PHP) updater/update.php
