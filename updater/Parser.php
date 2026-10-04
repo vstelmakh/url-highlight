@@ -6,19 +6,15 @@ namespace VStelmakh\UrlHighlight\Updater;
 
 final readonly class Parser
 {
-    public const string IANA_TLD_LIST_URL = 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt';
-
-    public function __construct(
-        private Filesystem $filesystem,
-    ) {}
-
-    public function parse(string $url = self::IANA_TLD_LIST_URL): DomainList
+    /**
+     * @param list<string> $lines
+     */
+    public function parse(array $lines): DomainList
     {
-        $lines = $this->filesystem->readLines($url);
         $header = array_shift($lines);
 
         if ($header === null) {
-            throw new \RuntimeException(sprintf('No header line found in "%s".', $url));
+            throw new \RuntimeException('No header line found.');
         }
 
         $version = $this->parseVersion($header);

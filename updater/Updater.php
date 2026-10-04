@@ -6,10 +6,11 @@ namespace VStelmakh\UrlHighlight\Updater;
 
 final readonly class Updater
 {
+    private const string IANA_TLD_LIST_URL = 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt';
+
     public static function create(): self
     {
-        $filesystem = new Filesystem();
-        return new self(new Parser($filesystem), new Renderer(), $filesystem);
+        return new self(new Parser(), new Renderer(), new Filesystem());
     }
 
     public function __construct(
@@ -20,8 +21,9 @@ final readonly class Updater
 
     public function update(string $targetPath): void
     {
-        $domainList = $this->parser->parse();
-        $content = $this->renderer->render($domainList);
+        $lines = $this->filesystem->readLines(self::IANA_TLD_LIST_URL);
+        $domainList = $this->parser->parse($lines);
+        $content = $this->renderer->render($domainList, self::IANA_TLD_LIST_URL);
         $this->filesystem->write($targetPath, $content);
     }
 }
