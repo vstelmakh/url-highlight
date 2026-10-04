@@ -45,6 +45,7 @@ class DomainListTest extends TestCase
             'minimal version' => [1, $date, ['com'], ['com']],
             'internet birth date' => [1, new \DateTimeImmutable('1983-01-01 00:00:00 UTC'), ['com'], ['com']],
             'sorted' => [1, $date, ['укр', 'org', '中国', 'com'], ['com', 'org', 'укр', '中国']],
+            'sorted by bytes' => [1, $date, ['香港', '香格里拉'], ['香格里拉', '香港']],
             'duplicates removed' => [1, $date, ['COM', 'com', 'xn--j1amh', 'укр'], ['com', 'укр']],
         ];
     }

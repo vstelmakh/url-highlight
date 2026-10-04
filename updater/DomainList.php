@@ -68,7 +68,7 @@ final readonly class DomainList implements \Countable
             $result[$domain->unicode] = $domain;
         }
 
-        ksort($result, SORT_NATURAL);
+        ksort($result, SORT_STRING);
 
         return $result;
     }
