@@ -10,20 +10,15 @@ final readonly class Updater
     {
         return new self(
             sourceUrl: 'https://data.iana.org/TLD/tlds-alpha-by-domain.txt',
-            rootDir: dirname(__DIR__),
-            targetPath: 'src/Matcher/Domains/tld_map.php',
+            targetPath: dirname(__DIR__) . '/src/Matcher/Domains/tld_map.php',
             parser: new Parser(),
             renderer: new Renderer(),
             filesystem: new Filesystem(),
         );
     }
 
-    /**
-     * @param string $targetPath relative to $rootDir
-     */
     public function __construct(
         private string $sourceUrl,
-        private string $rootDir,
         private string $targetPath,
         private Parser $parser,
         private Renderer $renderer,
@@ -32,13 +27,12 @@ final readonly class Updater
 
     public function update(): Result
     {
-        $absoluteTargetPath = "{$this->rootDir}/{$this->targetPath}";
-        $previousDomains = $this->loadExistingDomains($absoluteTargetPath);
+        $previousDomains = $this->loadExistingDomains($this->targetPath);
 
         $lines = $this->filesystem->readLines($this->sourceUrl);
         $domainList = $this->parser->parse($lines);
         $content = $this->renderer->render($domainList, $this->sourceUrl);
-        $this->filesystem->write($absoluteTargetPath, $content);
+        $this->filesystem->write($this->targetPath, $content);
 
         return $this->createResult($domainList, $previousDomains);
     }

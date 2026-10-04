@@ -19,7 +19,7 @@ class ContractTest extends TestCase
     public function testUpdaterWritesFileLibraryReads(): void
     {
         $libraryPath = $this->getLibraryMapPath();
-        $updaterPath = $this->getUpdaterProperty('rootDir') . '/' . $this->getUpdaterProperty('targetPath');
+        $updaterPath = $this->getUpdaterProperty('targetPath');
 
         self::assertSame(realpath($libraryPath), realpath($updaterPath));
     }

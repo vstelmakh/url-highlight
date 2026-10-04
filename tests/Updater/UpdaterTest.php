@@ -14,14 +14,14 @@ use VStelmakh\UrlHighlight\Updater\Updater;
 class UpdaterTest extends TestCase
 {
     private const string SOURCE_PATH = __DIR__ . '/tlds.txt';
-    private const string TARGET_PATH = 'tld_map.php';
-
     private string $directory;
+    private string $targetPath;
 
     #[\Override]
     protected function setUp(): void
     {
         $this->directory = dirname(__DIR__, 2) . '/var/tests/updater';
+        $this->targetPath = "{$this->directory}/tld_map.php";
 
         if (!is_dir($this->directory)) {
             mkdir($this->directory, recursive: true);
@@ -85,8 +85,7 @@ class UpdaterTest extends TestCase
             $updater->update();
             self::fail('Expected exception was not thrown.');
         } catch (\RuntimeException $exception) {
-            $path = "{$this->directory}/" . self::TARGET_PATH;
-            self::assertSame("File \"{$path}\" should return an array.", $exception->getMessage());
+            self::assertSame("File \"{$this->targetPath}\" should return an array.", $exception->getMessage());
         }
 
         self::assertSame($content, $this->readTarget(), 'Target should stay unchanged.');
@@ -111,8 +110,7 @@ class UpdaterTest extends TestCase
     {
         return new Updater(
             sourceUrl: $sourceUrl,
-            rootDir: $this->directory,
-            targetPath: self::TARGET_PATH,
+            targetPath: $this->targetPath,
             parser: new Parser(),
             renderer: new Renderer(),
             filesystem: new Filesystem(),
@@ -127,7 +125,7 @@ class UpdaterTest extends TestCase
     {
         return new Result(
             sourceUrl: self::SOURCE_PATH,
-            targetPath: self::TARGET_PATH,
+            targetPath: $this->targetPath,
             version: 2026101400,
             lastUpdated: new \DateTimeImmutable('2026-10-14 07:07:01 UTC'),
             count: 3,
@@ -139,16 +137,16 @@ class UpdaterTest extends TestCase
 
     private function writeTarget(string $content): void
     {
-        file_put_contents("{$this->directory}/" . self::TARGET_PATH, $content);
+        file_put_contents($this->targetPath, $content);
     }
 
     private function readTarget(): string|false
     {
-        return file_get_contents("{$this->directory}/" . self::TARGET_PATH);
+        return file_get_contents($this->targetPath);
     }
 
     private function loadTarget(): mixed
     {
-        return require "{$this->directory}/" . self::TARGET_PATH;
+        return require $this->targetPath;
     }
 }
