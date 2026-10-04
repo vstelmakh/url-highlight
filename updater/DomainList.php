@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace VStelmakh\UrlHighlight\Updater;
 
-final readonly class DomainList
+final readonly class DomainList implements \Countable
 {
     public int $version;
     public \DateTimeImmutable $lastUpdated;
@@ -22,6 +22,7 @@ final readonly class DomainList
         $this->domains = $this->resolveDomains($domains);
     }
 
+    #[\Override]
     public function count(): int
     {
         return count($this->domains);

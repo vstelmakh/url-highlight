@@ -68,7 +68,7 @@ final readonly class Updater
      */
     private function createResult(DomainList $domainList, array $previous): Result
     {
-        $current = array_map(strval(...), array_keys($domainList->domains));
+        $current = array_map(static fn (Domain $domain) => $domain->unicode, $domainList->domains);
         $added = array_values(array_diff($current, $previous));
         $removed = array_values(array_diff($previous, $current));
 
