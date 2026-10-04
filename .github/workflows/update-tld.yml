@@ -1,0 +1,108 @@
+name: 'Update TLDs'
+
+on:
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        description: 'Commit the changes and create a pull request'
+        type: boolean
+        required: true
+        default: false
+  schedule:
+    - cron: '0 8 1 4,10 *' # at 08:00 on day 1 of April and October
+
+concurrency:
+  group: update-tld
+  cancel-in-progress: false
+
+permissions:
+  contents: read # jobs that need more raise it themselves
+
+env:
+  ARTIFACT_NAME: 'tld-update-patch'
+  PATCH_FILE: 'changes.patch'
+
+jobs:
+  update:
+    name: 'Update Domains'
+    runs-on: 'ubuntu-latest'
+    outputs:
+      has_changes: ${{ steps.changes.outputs.has_changes }}
+    steps:
+      - name: 'Git Checkout'
+        uses: actions/checkout@v7
+
+      - name: 'Setup PHP and Composer'
+        uses: ./.github/actions/setup
+        with:
+          php_version: '8.5' # main PHP version
+          composer_prefer: 'latest'
+          persist_cache: 'false'
+
+      - name: 'TLD Updater'
+        run: make tld-update
+
+      - name: 'Git Changes'
+        id: changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'has_changes=false' >> "${GITHUB_OUTPUT}"
+            echo 'No changes.'
+          else
+            echo 'has_changes=true' >> "${GITHUB_OUTPUT}"
+            git --no-pager diff --stat
+            git diff --binary > "${RUNNER_TEMP}/${PATCH_FILE}"
+          fi
+
+      - name: 'Upload Artifact'
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ runner.temp }}/${{ env.PATCH_FILE }}
+          retention-days: 1
+          if-no-files-found: error
+
+  commit:
+    name: 'Commit Result'
+    needs: update
+    if: needs.update.outputs.has_changes == 'true' && (github.event_name == 'schedule' || inputs.create_pr)
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: write # push the branch
+      pull-requests: write # create the pull request, also requires the repository setting to allow it
+    env:
+      BRANCH_NAME: 'update-tld-map-${{ github.run_number }}'
+    steps:
+      - name: 'Git Checkout'
+        uses: actions/checkout@v7
+
+      - name: 'Download Artifact'
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ runner.temp }}
+
+      - name: 'Git Commit'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b "${BRANCH_NAME}"
+          git apply "${RUNNER_TEMP}/${PATCH_FILE}"
+          git commit --all -m 'update top-level domains'
+          git push origin "${BRANCH_NAME}"
+
+      - name: 'Pull Request'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          gh pr create \
+            --base "${BASE_BRANCH}" \
+            --head "${BRANCH_NAME}" \
+            --title 'Update top-level domains' \
+            --body "Updated the top-level domain map from the IANA list. See [workflow run ${GITHUB_RUN_ID}](${RUN_URL}) for the update report."
