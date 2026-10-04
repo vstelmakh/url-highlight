@@ -17,7 +17,7 @@ final readonly class Filesystem
 
         return $this->execute(
             static fn () => file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES, $context),
-            sprintf('reading from "%s"', $path),
+            "Could not read \"{$path}\"",
         );
     }
 
@@ -25,12 +25,12 @@ final readonly class Filesystem
     {
         $this->execute(
             static fn () => file_put_contents($path, $content),
-            sprintf('writing to "%s"', $path),
+            "Could not write \"{$path}\"",
         );
     }
 
     /**
-     * Runs the operation with warnings captured and converted to exception.
+     * Runs the operation with warnings captured. A warning counts as a failure, even if the operation returned a value.
      *
      * @template T
      *
@@ -38,12 +38,12 @@ final readonly class Filesystem
      *
      * @return T
      */
-    private function execute(\Closure $operation, string $action): mixed
+    private function execute(\Closure $operation, string $failureMessage): mixed
     {
-        $error = '';
+        $warning = null;
 
-        set_error_handler(static function (int $severity, string $message) use (&$error): bool {
-            $error = $message;
+        set_error_handler(static function (int $severity, string $message) use (&$warning): bool {
+            $warning ??= $message;
             return true;
         });
 
@@ -53,10 +53,25 @@ final readonly class Filesystem
             restore_error_handler();
         }
 
+        if ($warning !== null) {
+            $reason = $this->resolveReason($warning);
+            throw new \RuntimeException("{$failureMessage}: {$reason}.");
+        }
+
         if ($result === false) {
-            throw new \RuntimeException(sprintf('Error "%s" on %s.', $error, $action));
+            throw new \RuntimeException("{$failureMessage}.");
         }
 
         return $result;
+    }
+
+    /**
+     * Removes the "function(arguments): " prefix PHP adds to warnings, as the caller already names the path.
+     */
+    private function resolveReason(string $warning): string
+    {
+        $reason = preg_replace('/^\w+\([^)]*\): /', '', $warning);
+
+        return $reason ?? $warning;
     }
 }

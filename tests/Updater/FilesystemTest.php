@@ -47,11 +47,18 @@ class FilesystemTest extends TestCase
         $path = "{$this->directory}/missing.txt";
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessageIs(sprintf(
-            'Error "file(%s): Failed to open stream: No such file or directory" on reading from "%s".',
-            $path,
-            $path,
-        ));
+        $this->expectExceptionMessageIs("Could not read \"{$path}\": Failed to open stream: No such file or directory.");
+        $this->filesystem->readLines($path);
+    }
+
+    public function testReadLinesThrowsOnDirectory(): void
+    {
+        $path = $this->directory;
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageIs(
+            "Could not read \"{$path}\": Read of 8192 bytes failed with errno=21 Is a directory.",
+        );
         $this->filesystem->readLines($path);
     }
 
@@ -70,11 +77,7 @@ class FilesystemTest extends TestCase
         $path = "{$this->directory}/missing/output.txt";
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessageIs(sprintf(
-            'Error "file_put_contents(%s): Failed to open stream: No such file or directory" on writing to "%s".',
-            $path,
-            $path,
-        ));
+        $this->expectExceptionMessageIs("Could not write \"{$path}\": Failed to open stream: No such file or directory.");
         $this->filesystem->write($path, 'content');
     }
 
