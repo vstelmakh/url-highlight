@@ -63,6 +63,7 @@ jobs:
           path: ${{ runner.temp }}/${{ env.PATCH_FILE }}
           retention-days: 1
           if-no-files-found: error
+          overwrite: true
 
   commit:
     name: 'Commit Result'
@@ -72,8 +73,9 @@ jobs:
     permissions:
       contents: write # push the branch
       pull-requests: write # create the pull request, also requires the repository setting to allow it
+      actions: write # start the checks workflow on the pull request branch
     env:
-      BRANCH_NAME: 'update-tld-map-${{ github.run_number }}'
+      BRANCH_NAME: 'update-tld-${{ github.run_number }}'
     steps:
       - name: 'Git Checkout'
         uses: actions/checkout@v7
@@ -105,4 +107,11 @@ jobs:
             --base "${BASE_BRANCH}" \
             --head "${BRANCH_NAME}" \
             --title 'Update top-level domains' \
-            --body "Updated the top-level domain map from the IANA list. See [workflow run ${GITHUB_RUN_ID}](${RUN_URL}) for the update report."
+            --body "Updated the top-level domains from the IANA list. See [workflow run ${GITHUB_RUN_ID}](${RUN_URL}) for the update report."
+
+      # Trigger checks manually. Events from the workflow do not trigger other workflows, except workflow_dispatch.
+      - name: 'Trigger Checks'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run checks.yml --ref "${BRANCH_NAME}"
