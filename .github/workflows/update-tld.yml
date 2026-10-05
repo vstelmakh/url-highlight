@@ -19,8 +19,8 @@ permissions:
   contents: read # jobs that need more raise it themselves
 
 env:
-  ARTIFACT_NAME: 'tld-update-patch'
-  PATCH_FILE: 'changes.patch'
+  ARTIFACT_NAME: 'tld-changes'
+  PATCH_FILE: 'tld_changes.patch'
 
 jobs:
   update:
