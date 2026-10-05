@@ -26,6 +26,7 @@ jobs:
   update:
     name: 'Update Domains'
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 10
     outputs:
       has_changes: ${{ steps.changes.outputs.has_changes }}
     steps:
@@ -35,7 +36,7 @@ jobs:
       - name: 'Setup PHP and Composer'
         uses: ./.github/actions/setup
         with:
-          php_version: '8.5' # main PHP version
+          php_version: '8.5'
           composer_prefer: 'latest'
           persist_cache: 'false'
 
@@ -70,6 +71,7 @@ jobs:
     needs: update
     if: needs.update.outputs.has_changes == 'true' && (github.event_name == 'schedule' || inputs.create_pr)
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 10
     permissions:
       contents: write # push the branch
       pull-requests: write # create the pull request, also requires the repository setting to allow it
