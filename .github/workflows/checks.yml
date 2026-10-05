@@ -10,8 +10,11 @@ on:
     - cron: '0 8 * * 0'
 
 concurrency:
-  group: ${{ github.head_ref || github.run_id }}
+  group: checks-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   anchors: # This job is used to hold the anchors (reusable configurations). Expected not to run.
@@ -25,6 +28,7 @@ jobs:
           - php: '8.4' # lowest supported PHP version
             composer: 'lowest'
     runs-on: &runs_on 'ubuntu-latest'
+    timeout-minutes: &timeout_minutes 15
     steps:
       - &step_checkout
         name: 'Git Checkout'
@@ -47,6 +51,7 @@ jobs:
   phpcs:
     name: 'Code Style'
     runs-on: *runs_on
+    timeout-minutes: *timeout_minutes
     steps:
       - *step_checkout
       - *step_setup_main
@@ -56,6 +61,7 @@ jobs:
   phpstan:
     name: 'Static Analysis'
     runs-on: *runs_on
+    timeout-minutes: *timeout_minutes
     steps:
       - *step_checkout
       - *step_setup_main
@@ -65,7 +71,9 @@ jobs:
   phpunit:
     name: 'Tests'
     runs-on: *runs_on
+    timeout-minutes: *timeout_minutes
     strategy:
+      fail-fast: false # report every PHP version, not only the first failure
       matrix: *php_version_matrix
     steps:
       - *step_checkout
@@ -76,6 +84,7 @@ jobs:
   dist_check:
     name: 'Distribution Check'
     runs-on: *runs_on
+    timeout-minutes: *timeout_minutes
     steps:
       - *step_checkout
       - *step_setup_main
@@ -85,6 +94,7 @@ jobs:
   phpbench:
     name: 'Benchmarks'
     runs-on: *runs_on
+    timeout-minutes: *timeout_minutes
     steps:
       - *step_checkout
       - *step_setup_main

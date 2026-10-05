@@ -16,6 +16,7 @@
         "ext-mbstring": "*"
     },
     "require-dev" : {
+        "ext-intl": "*",
         "friendsofphp/php-cs-fixer": "^3.95",
         "phpbench/phpbench": "^1.7",
         "phpstan/phpstan": "^2.2",
@@ -29,8 +30,9 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "VStelmakh\\UrlHighlight\\Benchmarks\\": "benchmarks/",
             "VStelmakh\\UrlHighlight\\Tests\\": "tests/",
-            "VStelmakh\\UrlHighlight\\Benchmarks\\": "benchmarks/"
+            "VStelmakh\\UrlHighlight\\Updater\\": "updater/"
         }
     },
     "config": {

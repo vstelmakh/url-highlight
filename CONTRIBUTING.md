@@ -39,6 +39,7 @@ All the checks run via [Makefile](./Makefile) targets. Run `make` to see the lis
 |--------------------------------|-----------------------------------------------------------------|
 | `make check`                   | Code style, static analysis and tests. Use this before a PR.    |
 | `make check-full`              | Same as `check`, with code coverage and benchmarks.             |
+| `make composer-validate`       | Validate `composer.json`.                                       |
 | `make phpcs`                   | Check code style with PHP CS Fixer, config: `phpcs.php`.        |
 | `make phpcs-fix`               | Fix code style violations.                                      |
 | `make phpstan`                 | Run static analysis with PHPStan, config: `phpstan.neon`.       |
@@ -48,6 +49,7 @@ All the checks run via [Makefile](./Makefile) targets. Run `make` to see the lis
 | `make phpbench`                | Run benchmarks with PHPBench, config: `phpbench.json`.          |
 | `make phpbench-baseline`       | Run benchmarks and store the result to compare against.         |
 | `make phpbench-compare`        | Run benchmarks and compare against the stored baseline.         |
+| `make tld-update`              | Update the top-level domain list from IANA.                     |
 
 The [CI workflow](./.github/workflows/checks.yml) runs the same targets on every pull request. Tests run on all
 supported PHP versions, and with the lowest allowed dependency versions.

@@ -15,8 +15,8 @@ use VStelmakh\UrlHighlight\Highlighter\CallbackHighlighter;
 use VStelmakh\UrlHighlight\Url;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
-fwrite(STDOUT, 'Smoke Test' . "\n");
-fwrite(STDOUT, 'Autoload path: ' . realpath($autoloadPath) . "\n\n");
+echo "Smoke Test\n";
+echo 'Autoload path: ' . realpath($autoloadPath) . "\n\n";
 
 $urlHighlight = new UrlHighlight();
 $text = 'Check the example.com website.';
@@ -62,22 +62,22 @@ success();
 
 function success(): never
 {
-    fwrite(STDOUT, "\033[42m\033[30m OK \033[0m\n");
+    echo "\033[42m\033[30m OK \033[0m\n";
     exit(0);
 }
 
 function fail(string $message, ?string $expected = null, ?string $actual = null): never
 {
-    fwrite(STDERR, "{$message}\n");
+    echo "{$message}\n";
 
     if ($expected !== null) {
-        fwrite(STDERR, "Expected: {$expected}\n");
+        echo "Expected: {$expected}\n";
     }
 
     if ($actual !== null) {
-        fwrite(STDERR, "Actual:   {$actual}\n");
+        echo "Actual:   {$actual}\n";
     }
 
-    fwrite(STDOUT, "\n\033[41m Fail \033[0m\n");
+    echo "\n\033[41m Fail \033[0m\n";
     exit(1);
 }

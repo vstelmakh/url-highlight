@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 .SILENT:
-.PHONY: help phpcs phpcs-fix phpstan phpunit phpunit-coverage phpunit-coverage-clover phpbench phpbench-baseline \
-	phpbench-compare dist-check check check-full
+.PHONY: help check check-full composer-validate phpcs phpcs-fix phpstan phpunit phpunit-coverage \
+	phpunit-coverage-clover phpbench phpbench-baseline phpbench-compare dist-check tld-update
 
 # Step headline, example: $(HEADLINE) 'Example headline'
 # Uses printf, because escape handling in echo differs per shell and may not expand \033
@@ -17,16 +17,23 @@ help: ## Show available commands
 		| awk 'BEGIN {FS = ":.*## "}; {printf "  \033[32m%-24s\033[0m %s\n", $$1, $$2}'
 
 check: ## Run quick check
+	$(MAKE) composer-validate
 	$(MAKE) phpcs
 	$(MAKE) phpstan
 	$(MAKE) phpunit
 
 check-full: ## Run full check
+	$(MAKE) composer-validate
 	$(MAKE) phpcs
 	$(MAKE) phpstan
 	$(MAKE) phpunit-coverage
 	$(MAKE) phpbench
 	$(MAKE) dist-check
+
+# Lock file is not committed, therefore no reason to validate
+composer-validate: ## Validate composer.json
+	$(HEADLINE) 'Composer Validate'
+	composer validate --strict --no-check-lock --no-interaction --ansi
 
 phpcs: ## Check code style
 	$(HEADLINE) 'PHP CS Fixer'
@@ -78,3 +85,7 @@ dist-check: ## Verify the package works with only production dependencies instal
 	[ -f composer.lock ] && cp composer.lock $(DIST_DIR)/composer.lock || true
 	cd $(DIST_DIR) && composer install --no-dev --prefer-dist --no-progress --no-interaction --quiet
 	$(PHP) tests/smoke_test.php $(DIST_DIR)/vendor/autoload.php
+
+tld-update: ## Update the top-level domain map from the IANA list
+	$(HEADLINE) 'TLD Update'
+	$(PHP) updater/update.php
