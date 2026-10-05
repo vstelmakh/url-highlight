@@ -27,14 +27,14 @@ final readonly class Updater
 
     public function update(): Result
     {
-        $previousDomains = $this->loadExistingDomains($this->targetPath);
+        $previous = $this->loadExistingDomains($this->targetPath);
 
         $lines = $this->filesystem->readLines($this->sourceUrl);
         $domainList = $this->parser->parse($lines);
         $content = $this->renderer->render($domainList, $this->sourceUrl);
         $this->filesystem->write($this->targetPath, $content);
 
-        return $this->createResult($domainList, $previousDomains);
+        return $this->createResult($domainList, $previous);
     }
 
     /**
