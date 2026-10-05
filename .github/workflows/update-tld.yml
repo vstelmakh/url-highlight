@@ -53,6 +53,9 @@ jobs:
           else
             echo 'has_changes=true' >> "${GITHUB_OUTPUT}"
             git --no-pager diff --stat
+            echo '::group::Full Diff'
+            git --no-pager diff --color=always
+            echo '::endgroup::'
             git diff --binary > "${RUNNER_TEMP}/${PATCH_FILE}"
           fi
 
