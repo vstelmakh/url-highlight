@@ -631,7 +631,6 @@ return [
     'jpmorgan' => true,
     'jprs' => true,
     'juegos' => true,
-    'juniper' => true,
     'kaufen' => true,
     'kddi' => true,
     'ke' => true,
