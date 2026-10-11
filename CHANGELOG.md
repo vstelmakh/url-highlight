@@ -2,6 +2,9 @@
 All notable changes to this project are documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
+## 4.0.1
+- Updated a top-level domain list to recent changes
+
 ## 4.0.0
 Version 4 is a major rethink of the library, based on everything learned since the first release.
 The public interface is new and much simpler, so code written using version 3.x needs changes.
