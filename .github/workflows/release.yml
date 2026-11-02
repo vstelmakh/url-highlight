@@ -1,0 +1,91 @@
+name: 'Release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, also used as the Git tag name (example: 1.2.3)'
+        type: string
+        required: true
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read # jobs that need more raise it themselves
+
+env:
+  VERSION: ${{ inputs.version }}
+
+jobs:
+  validate:
+    name: 'Validate'
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 5
+    outputs:
+      changelog: ${{ steps.changelog.outputs.notes }}
+    steps:
+      - name: 'Git Checkout'
+        uses: actions/checkout@v7
+      - name: 'Check Branch'
+        run: |
+          if [[ "$GITHUB_REF" != 'refs/heads/main' ]]; then
+            echo "::error title=Invalid branch::Release allowed from 'main' only, got '$GITHUB_REF'."
+            exit 1
+          fi
+      - name: 'Check Version'
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error title=Invalid version::Expected format X.Y.Z, got '$VERSION'."
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null; then
+            echo "::error title=Tag exists::Tag '$VERSION' already exists."
+            exit 1
+          fi
+      - name: 'Parse Changelog'
+        id: changelog
+        run: |
+          if ! grep -Fxq "## $VERSION" CHANGELOG.md; then
+            echo "::error title=No changelog::CHANGELOG.md has no '## $VERSION' section."
+            exit 1
+          fi
+          # Lines after the version heading, up to the next version heading, without leading blank lines
+          notes="$(awk -v heading="## $VERSION" '
+            $0 == heading { found = 1; next }
+            found && /^## / { exit }
+            found && !started && /^[[:space:]]*$/ { next }
+            found { started = 1; print }
+          ' CHANGELOG.md)"
+          if [[ -z "${notes//[[:space:]]/}" ]]; then
+            echo "::error title=Empty changelog::CHANGELOG.md section '## $VERSION' is empty."
+            exit 1
+          fi
+          printf '%s\n' "$notes"
+          delimiter="EOF_$(openssl rand -hex 16)"
+          printf 'notes<<%s\n%s\n%s\n' "$delimiter" "$notes" "$delimiter" >> "$GITHUB_OUTPUT"
+
+  checks:
+    name: 'Checks'
+    needs: validate
+    uses: ./.github/workflows/checks.yml
+
+  publish:
+    name: 'Publish'
+    needs: [validate, checks]
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 5
+    permissions:
+      contents: write # create the tag and the release
+    steps:
+      - name: 'Create Release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NOTES: ${{ needs.validate.outputs.changelog }}
+        run: |
+          gh release create "$VERSION" \
+            --target "$GITHUB_SHA" \
+            --title "$VERSION" \
+            --notes "$NOTES"
