@@ -2,6 +2,9 @@
 All notable changes to this project are documented in this file.  
 Releases following [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
+## 4.0.2
+- URLs with an unsafe scheme (`javascript`, `vbscript`, `data`) are no longer matched, to prevent XSS
+
 ## 4.0.1
 - Updated a top-level domain list to recent changes
 

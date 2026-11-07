@@ -86,6 +86,26 @@ class MatcherTest extends TestCase
         ];
     }
 
+    #[DataProvider('unsafeSchemeDataProvider')]
+    public function testMatchSkipsUrlWithUnsafeScheme(string $text): void
+    {
+        $actual = iterator_to_array($this->matcher->match($text), false);
+        self::assertSame([], $actual);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function unsafeSchemeDataProvider(): array
+    {
+        return [
+            'javascript' => ['Run javascript://example.com/%0aalert(1) now.'],
+            'javascript mixed case' => ['Run JavaScript://example.com/%0aalert(1) now.'],
+            'vbscript' => ['Run vbscript://example.com/%0amsgbox(1) now.'],
+            'data' => ['Run data://example.com/text/html now.'],
+        ];
+    }
+
     public function testMatchContinuesAfterSkippedUrl(): void
     {
         $text = 'Open filename.txt and example.com now.';

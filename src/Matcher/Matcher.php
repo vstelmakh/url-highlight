@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace VStelmakh\UrlHighlight\Matcher;
 
 /**
- * Finds URLs in a string via {@see UrlRegex}, then discards the ones with an invalid host and trims trailing
- * punctuation carried over from the surrounding text.
+ * Finds URLs in a string via {@see UrlRegex}, then discards the ones with an unsafe scheme or an invalid host and trims
+ * trailing punctuation carried over from the surrounding text.
  *
  * @internal
  */
 final readonly class Matcher
 {
     private PunctuationFilter $punctuationFilter;
+    private SchemeValidator $schemeValidator;
     private HostValidator $hostValidator;
     private UrlRegex $regex;
 
     public function __construct()
     {
         $this->punctuationFilter = new PunctuationFilter();
+        $this->schemeValidator = new SchemeValidator();
         $this->hostValidator = new HostValidator();
         $this->regex = new UrlRegex();
     }
@@ -29,6 +31,10 @@ final readonly class Matcher
     public function match(string $text): \Generator
     {
         foreach ($this->regex->findAll($text) as $match) {
+            if (!$this->schemeValidator->isValid($match->url)) {
+                continue;
+            }
+
             if (!$this->hostValidator->isValid($match->url)) {
                 continue;
             }
