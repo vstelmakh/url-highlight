@@ -163,6 +163,14 @@ class UrlHighlightTest extends TestCase
                 'Visit http://example.com/?a=1&b=2 now.',
                 'Visit <a href="http://example.com/?a=1&amp;b=2">http://example.com/?a=1&amp;b=2</a> now.',
             ],
+            'url with unsafe scheme' => [
+                'Run javascript://example.com/%0aalert(document.cookie) now.',
+                'Run javascript://example.com/%0aalert(document.cookie) now.',
+            ],
+            'url with custom scheme' => [
+                'Open myapp://example.com/settings now.',
+                'Open <a href="myapp://example.com/settings">myapp://example.com/settings</a> now.',
+            ],
         ];
     }
 
@@ -292,6 +300,10 @@ class UrlHighlightTest extends TestCase
             'url inside markup is found' => [
                 '<a href="mailto:hello@example.com">Example</a>',
                 ['mailto:hello@example.com'],
+            ],
+            'url with unsafe scheme is skipped' => [
+                'Run javascript://example.com/%0aalert(1) or visit example.com.',
+                ['example.com'],
             ],
             'no url' => [
                 'not url',
