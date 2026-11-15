@@ -59,8 +59,8 @@ the input text.
 
 By default, each URL is simply wrapped in an anchor tag by [SimpleHighlighter](./src/Highlighter/SimpleHighlighter.php).
 For any custom logic, you can use a [CallbackHighlighter](./src/Highlighter/CallbackHighlighter.php). To build the
-link, use [Anchor](./src/Highlighter/Anchor.php). It escapes the link text and attribute values for you. The example
-below adds a `nofollow` attribute and uses the host as the link text:
+link, use [Anchor](./src/Highlighter/Anchor.php) helper. It escapes the link text and attribute values for you.
+The example below adds a `nofollow` attribute and uses the host as the link text:
 
 ```php
 <?php
