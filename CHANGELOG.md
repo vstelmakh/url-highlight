@@ -2,6 +2,9 @@
 All notable changes to this project are documented in this file.  
 Releases follow the [Semantic Versioning](https://semver.org/spec/v2.0.0.html) specification.  
 
+## 4.1.0
+- Added [Anchor](./src/Highlighter/Anchor.php) helper to simplify creating escaped links in custom highlighters.
+
 ## 4.0.2
 - Excluded URLs with an unsafe scheme (`javascript`, `vbscript`, `data`) from matching to prevent XSS.
 

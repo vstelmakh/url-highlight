@@ -20,6 +20,7 @@ final readonly class CallbackHighlighter implements Highlighter
     /**
      * @param callable(Url): string $callback Called once per detected URL. Returns the replacement string written
      *                                        directly into the output, so any HTML must be properly escaped.
+     *                                        Use {@see Anchor} to build a link with escaped text and attributes.
      */
     public function __construct(callable $callback)
     {

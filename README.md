@@ -58,19 +58,22 @@ the input text.
 #### Custom Highlighter
 
 By default, each URL is simply wrapped in an anchor tag by [SimpleHighlighter](./src/Highlighter/SimpleHighlighter.php).
-For any custom logic, you can use a [CallbackHighlighter](./src/Highlighter/CallbackHighlighter.php). The example below
-adds a `nofollow` attribute and uses the host as the link text:
+For any custom logic, you can use a [CallbackHighlighter](./src/Highlighter/CallbackHighlighter.php). To build the
+link, use [Anchor](./src/Highlighter/Anchor.php) helper. It escapes the link text and attribute values for you.
+The example below adds a `nofollow` attribute and uses the host as the link text:
 
 ```php
 <?php
+use VStelmakh\UrlHighlight\Highlighter\Anchor;
 use VStelmakh\UrlHighlight\Highlighter\CallbackHighlighter;
 use VStelmakh\UrlHighlight\Url;
 
-$highlighter = new CallbackHighlighter(fn (Url $url) => sprintf(
-    '<a href="%s" rel="nofollow">%s</a>',
-    htmlspecialchars($url->toHref()),
-    htmlspecialchars($url->host),
-));
+$highlighter = new CallbackHighlighter(function (Url $url): string {
+    return Anchor::fromUrl($url)
+        ->withText($url->host)
+        ->withAttribute('rel', 'nofollow')
+        ->render();
+});
 
 echo $urlHighlight->highlight('Visit http://example.com/path?q=hello today.', $highlighter);
 
@@ -78,8 +81,61 @@ echo $urlHighlight->highlight('Visit http://example.com/path?q=hello today.', $h
 // Visit <a href="http://example.com/path?q=hello" rel="nofollow">example.com</a> today.
 ```
 
+`Anchor` helper provides the next methods:
+- `withText()` sets the link text. The text is escaped.
+- `withHtml()` sets markup inside the link, for example an icon. The HTML is not escaped.
+- `withAttribute()` adds an attribute or replaces its value. A `null` value renders the name only.
+- `render()` returns the link as HTML. `(string) $anchor` does the same.
+
 A highlighter does not have to produce a link. The returned string replaces the URL, so it may be anything, for example
 `[redacted]` for URLs pointing to an external host.
+
+More examples:
+
+<details>
+<summary>Put HTML inside the link</summary>
+
+```php
+<?php
+use VStelmakh\UrlHighlight\Highlighter\Anchor;
+use VStelmakh\UrlHighlight\Highlighter\CallbackHighlighter;
+use VStelmakh\UrlHighlight\Url;
+
+$highlighter = new CallbackHighlighter(function (Url $url): string {
+    $html = sprintf(
+        '<i class="icon-link"></i> %s',
+        htmlspecialchars($url->host),
+    );
+
+    return Anchor::fromUrl($url)->withHtml($html)->render();
+});
+
+echo $urlHighlight->highlight('Visit http://example.com/path?q=hello today.', $highlighter);
+
+// Output:
+// Visit <a href="http://example.com/path?q=hello"><i class="icon-link"></i> example.com</a> today.
+```
+</details>
+
+<details>
+<summary>Redact external URLs</summary>
+
+```php
+<?php
+use VStelmakh\UrlHighlight\Highlighter\Anchor;
+use VStelmakh\UrlHighlight\Highlighter\CallbackHighlighter;
+use VStelmakh\UrlHighlight\Url;
+
+$highlighter = new CallbackHighlighter(function (Url $url): string {
+    return $url->host === 'example.com' ? Anchor::fromUrl($url)->render() : '[redacted]';
+});
+
+echo $urlHighlight->highlight('Read example.com/docs, not other.org/spam.', $highlighter);
+
+// Output:
+// Read <a href="http://example.com/docs">example.com/docs</a>, not [redacted].
+```
+</details>
 
 > [!TIP]
 > There is also the [Highlighter](./src/Highlighter/Highlighter.php) interface. Implement it in a dedicated class for
@@ -87,7 +143,9 @@ A highlighter does not have to produce a link. The returned string replaces the 
 > See [SimpleHighlighter](./src/Highlighter/SimpleHighlighter.php) for an example.
 
 > [!IMPORTANT]
-> The returned string from highlighter is written to the output as is. Remember to escape HTML when necessary.
+> The string a highlighter returns is written to the output as is. Escape every untrusted part of the HTML you
+> build yourself or pass to `withHtml()`. `Anchor` escapes attribute values but does not validate them, so do not set
+> attributes like `href` or `onclick` from untrusted input.
 
 #### Input Format
 

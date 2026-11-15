@@ -52,22 +52,25 @@ echo $urlHighlight->highlight($text, format: Format::HtmlEncoded);
 
 `HtmlHighlighter` and `MarkdownHighlighter` are removed, together with the constructor options for the scheme, tag
 attributes and surrounding content. Build the replacement string yourself with
-[CallbackHighlighter](../src/Highlighter/CallbackHighlighter.php).
+[CallbackHighlighter](../src/Highlighter/CallbackHighlighter.php) and the [Anchor](../src/Highlighter/Anchor.php)
+helper (available since 4.1).
 
 The example below adds a `nofollow` attribute and uses the host as the link text, which in 3.x meant constructor
 options plus an overridden `getText()`:
 
 ```diff
 -$highlighter = new HtmlHighlighter('https', ['rel' => 'nofollow']);
-+$highlighter = new CallbackHighlighter(fn (Url $url) => sprintf(
-+    '<a href="%s" rel="nofollow">%s</a>',
-+    htmlspecialchars($url->toHref('https')),
-+    htmlspecialchars($url->host),
-+));
++$highlighter = new CallbackHighlighter(function (Url $url): string {
++    return Anchor::fromUrl($url, 'https')
++        ->withText($url->host)
++        ->withAttribute('rel', 'nofollow')
++        ->render();
++});
 ```
 
 ```php
 <?php
+use VStelmakh\UrlHighlight\Highlighter\Anchor;
 use VStelmakh\UrlHighlight\Highlighter\CallbackHighlighter;
 use VStelmakh\UrlHighlight\Url;
 
@@ -88,6 +91,7 @@ as plain text, which covers the scheme whitelist and blacklist, match emails and
 
 ```php
 <?php
+use VStelmakh\UrlHighlight\Highlighter\Anchor;
 use VStelmakh\UrlHighlight\Highlighter\CallbackHighlighter;
 use VStelmakh\UrlHighlight\Url;
 
@@ -97,7 +101,7 @@ $highlighter = new CallbackHighlighter(function (Url $url): string {
         return $url->full;
     }
 
-    return sprintf('<a href="%s">%s</a>', htmlspecialchars($url->toHref()), htmlspecialchars($url->full));
+    return Anchor::fromUrl($url)->render();
 });
 
 echo $urlHighlight->highlight('See https://example.com, example.com, user@example.com.', $highlighter);
