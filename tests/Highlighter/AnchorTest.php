@@ -121,6 +121,13 @@ class AnchorTest extends TestCase
         ];
     }
 
+    public function testToString(): void
+    {
+        $anchor = self::createAnchor(full: 'example.com', host: 'example.com')->withAttribute('rel', 'nofollow');
+        $actual = (string) $anchor;
+        self::assertSame($anchor->render(), $actual);
+    }
+
     public function testImmutability(): void
     {
         $anchor = self::createAnchor(full: 'example.com', host: 'example.com');
