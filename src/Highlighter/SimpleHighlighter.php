@@ -16,6 +16,6 @@ final readonly class SimpleHighlighter implements Highlighter
     #[\Override]
     public function render(Url $url): string
     {
-        return (string) Anchor::fromUrl($url);
+        return Anchor::fromUrl($url)->render();
     }
 }

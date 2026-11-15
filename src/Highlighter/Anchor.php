@@ -76,7 +76,9 @@ final readonly class Anchor implements \Stringable
     {
         $attributes = '';
         foreach ($this->attributes as $name => $value) {
-            $attributes .= $value === null ? " {$name}" : sprintf(' %s="%s"', $name, self::escape($value));
+            $attributes .= $value === null
+                ? sprintf(' %s', $name)
+                : sprintf(' %s="%s"', $name, self::escape($value));
         }
 
         return sprintf('<a%s>%s</a>', $attributes, $this->innerHtml);
