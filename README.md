@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="resources/logo-on-dark.svg">
-  <img src="resources/logo-on-light.svg" width="450" alt="URL Highlight logo">
+  <img src="resources/logo-on-light.svg" width="420" alt="URL Highlight logo">
 </picture>
 
 ---
